@@ -19,13 +19,11 @@ C:\Users\Administrator\Desktop\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.
 C:\Users\Administrator\Desktop\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.csproj.CopyComplete
 C:\Users\Administrator\Desktop\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.exe
 C:\Users\Administrator\Desktop\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.pdb
-C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\Pages\ShellView.g.cs
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\App.g.cs
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\GeneratedInternalTypeHelper.g.cs
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine_MarkupCompile.cache
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine_MarkupCompile.lref
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\App.baml
-C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\Pages\ShellView.baml
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.g.resources
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.Properties.Resources.resources
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.csproj.GenerateResource.cache
@@ -41,3 +39,6 @@ C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\bin\Debug\PropertyCha
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\bin\Debug\Stylet.pdb
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\bin\Debug\Stylet.xml
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.csproj.CopyComplete
+C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.csprojAssemblyReference.cache
+C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\Pages\MainWindow.g.cs
+C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\Pages\MainWindow.baml

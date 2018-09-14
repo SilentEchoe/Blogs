@@ -72,8 +72,8 @@
     <Compile Include="Bootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Pages\ShellView.xaml.cs">
-      <DependentUpon>ShellView.xaml</DependentUpon>
+    <Compile Include="Pages\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\ShellViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -103,7 +103,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Pages\ShellView.xaml">
+    <Page Include="Pages\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
