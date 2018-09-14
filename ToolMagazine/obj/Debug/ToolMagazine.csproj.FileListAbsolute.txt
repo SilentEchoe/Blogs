@@ -20,7 +20,6 @@ C:\Users\Administrator\Desktop\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.
 C:\Users\Administrator\Desktop\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.exe
 C:\Users\Administrator\Desktop\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.pdb
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\App.g.cs
-C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\GeneratedInternalTypeHelper.g.cs
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine_MarkupCompile.cache
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine_MarkupCompile.lref
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\App.baml
@@ -42,3 +41,8 @@ C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazin
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.csprojAssemblyReference.cache
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\Pages\MainWindow.g.cs
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\Pages\MainWindow.baml
+C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\bin\Debug\MaterialDesignColors.dll
+C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\bin\Debug\MaterialDesignThemes.Wpf.dll
+C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\bin\Debug\MaterialDesignThemes.Wpf.pdb
+C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\bin\Debug\MaterialDesignThemes.Wpf.xml
+C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\GeneratedInternalTypeHelper.g.cs
