@@ -46,3 +46,5 @@ C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\bin\Debug\MaterialDes
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\bin\Debug\MaterialDesignThemes.Wpf.pdb
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\bin\Debug\MaterialDesignThemes.Wpf.xml
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\Pages\Login\Login.g.cs
+C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\obj\Debug\Pages\Login\Login.baml
