@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\pc-20171030\Desktop\git\ToolMagazine\ToolMagazine\App.xaml
-11174055942
+2154068943
 
-11-224540005
+12-323669227
 171741270823
-Pages\MainWindow.xaml;
+Pages\Login\Login.xaml;Pages\MainWindow.xaml;
 
-True
+False
 
