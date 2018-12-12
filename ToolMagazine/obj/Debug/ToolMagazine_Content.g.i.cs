@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("log.ico")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("img/email.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("img/password.png")]
 
 
