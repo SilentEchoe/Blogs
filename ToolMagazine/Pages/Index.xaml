@@ -4,11 +4,52 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ToolMagazine.Pages"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
          Height="450" Width="800"
-        d:DataContext="{d:DesignInstance local:IndexViewModel}" Title="主页">
+        d:DataContext="{d:DesignInstance local:IndexViewModel}" >
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.CheckBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ListBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.RadioButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <!--<materialDesignConverters:BooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />-->
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
-        <Grid HorizontalAlignment="Left" Height="409" Margin="6,8,0,0" VerticalAlignment="Top" Width="139"/>
+        <Grid HorizontalAlignment="Left" Height="409" Margin="6,8,0,0" VerticalAlignment="Top" Width="139">
+            <materialDesign:PopupBox
+                    Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
+  PlacementMode="BottomAndAlignCentres"
+  ToolTipService.Placement="Right"
+  ToolTip="PopupBox, Style MaterialDesignMultiFloatingActionPopupBox"
+  Opened="PopupBox_OnOpened"
+  Closed="PopupBox_OnClosed" Margin="0,276,0,77">
+                <StackPanel>
+                    <Button
+      ToolTip="One with custom opacity"
+      Opacity="0.5">
+                        1
+                    </Button>
+                    <Button
+      ToolTip="Two">
+                        2
+                    </Button>
+                    <Button
+      ToolTip="Three">
+                        3
+                    </Button>
+                </StackPanel>
+            </materialDesign:PopupBox>
+
+        </Grid>
         <Grid HorizontalAlignment="Left" Height="409" Margin="148,6,0,0" VerticalAlignment="Top" Width="139"/>
         <Grid HorizontalAlignment="Left" Height="409" Margin="293,6,0,0" VerticalAlignment="Top" Width="489"/>
 

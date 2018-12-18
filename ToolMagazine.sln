@@ -5,16 +5,27 @@ VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolMagazine", "ToolMagazine\ToolMagazine.csproj", "{52049FBB-694F-4C95-B2C0-8CE564D54883}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialDesignThemes.Wpf", "..\..\MaterialDesignInXamlToolkit-master\MaterialDesignThemes.Wpf\MaterialDesignThemes.Wpf.csproj", "{F079FB0A-A8ED-4216-B6A5-345756751A04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		AppVeyor|Any CPU = AppVeyor|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{52049FBB-694F-4C95-B2C0-8CE564D54883}.AppVeyor|Any CPU.ActiveCfg = Release|Any CPU
+		{52049FBB-694F-4C95-B2C0-8CE564D54883}.AppVeyor|Any CPU.Build.0 = Release|Any CPU
 		{52049FBB-694F-4C95-B2C0-8CE564D54883}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{52049FBB-694F-4C95-B2C0-8CE564D54883}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52049FBB-694F-4C95-B2C0-8CE564D54883}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52049FBB-694F-4C95-B2C0-8CE564D54883}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F079FB0A-A8ED-4216-B6A5-345756751A04}.AppVeyor|Any CPU.ActiveCfg = AppVeyor|Any CPU
+		{F079FB0A-A8ED-4216-B6A5-345756751A04}.AppVeyor|Any CPU.Build.0 = AppVeyor|Any CPU
+		{F079FB0A-A8ED-4216-B6A5-345756751A04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F079FB0A-A8ED-4216-B6A5-345756751A04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F079FB0A-A8ED-4216-B6A5-345756751A04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F079FB0A-A8ED-4216-B6A5-345756751A04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
