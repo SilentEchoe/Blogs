@@ -76,4 +76,6 @@ D:\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.Properties.Resources.res
 D:\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.csproj.GenerateResource.cache
 D:\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.csproj.CoreCompileInputs.cache
 D:\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.csproj.CopyComplete
+D:\git\ToolMagazine\ToolMagazine\obj\Debug\Pages\Index.g.cs
+D:\git\ToolMagazine\ToolMagazine\obj\Debug\Pages\Index.baml
 D:\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.csprojAssemblyReference.cache
