@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DB>
+  <table id="1">
+    <tableName>user</tableName>
+    <name>
+      <firstName></firstName>
+    </name>
+    <name>email</name>
+    <name>password</name>
+    <name>head_portrait</name>
+  </table>
+  <table id="2">
+    <tableName>file</tableName>
+    <name>id</name>
+    <name>email</name>
+    <name>password</name>
+    <name>head_portrait</name>
+  </table>
+</DB>
