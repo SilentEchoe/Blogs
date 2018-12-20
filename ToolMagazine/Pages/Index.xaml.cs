@@ -23,5 +23,10 @@ namespace ToolMagazine.Pages
         {
             InitializeComponent();
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

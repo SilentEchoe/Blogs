@@ -1,0 +1,8 @@
+D:\git\ToolMagazine\ToolMagazine\obj\Release\ToolMagazine.csprojAssemblyReference.cache
+D:\git\ToolMagazine\ToolMagazine\obj\Release\Pages\Index.g.cs
+D:\git\ToolMagazine\ToolMagazine\obj\Release\Pages\Login\Login.g.cs
+D:\git\ToolMagazine\ToolMagazine\obj\Release\Pages\MainWindow.g.cs
+D:\git\ToolMagazine\ToolMagazine\obj\Release\App.g.cs
+D:\git\ToolMagazine\ToolMagazine\obj\Release\GeneratedInternalTypeHelper.g.cs
+D:\git\ToolMagazine\ToolMagazine\obj\Release\ToolMagazine_MarkupCompile.cache
+D:\git\ToolMagazine\ToolMagazine\obj\Release\ToolMagazine_MarkupCompile.lref
