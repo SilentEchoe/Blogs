@@ -1,0 +1,17 @@
+D:\git\ToolMagazine\ToolDB\bin\Debug\ToolDB.dll.config
+D:\git\ToolMagazine\ToolDB\bin\Debug\ToolDB.dll
+D:\git\ToolMagazine\ToolDB\bin\Debug\ToolDB.pdb
+D:\git\ToolMagazine\ToolDB\bin\Debug\EntityFramework.dll
+D:\git\ToolMagazine\ToolDB\bin\Debug\EntityFramework.SqlServer.dll
+D:\git\ToolMagazine\ToolDB\bin\Debug\System.Data.SQLite.dll
+D:\git\ToolMagazine\ToolDB\bin\Debug\System.Data.SQLite.EF6.dll
+D:\git\ToolMagazine\ToolDB\bin\Debug\System.Data.SQLite.Linq.dll
+D:\git\ToolMagazine\ToolDB\bin\Debug\EntityFramework.xml
+D:\git\ToolMagazine\ToolDB\bin\Debug\EntityFramework.SqlServer.xml
+D:\git\ToolMagazine\ToolDB\bin\Debug\System.Data.SQLite.xml
+D:\git\ToolMagazine\ToolDB\bin\Debug\System.Data.SQLite.dll.config
+D:\git\ToolMagazine\ToolDB\obj\Debug\ToolDB.csprojAssemblyReference.cache
+D:\git\ToolMagazine\ToolDB\obj\Debug\ToolDB.csproj.CoreCompileInputs.cache
+D:\git\ToolMagazine\ToolDB\obj\Debug\ToolDB.csproj.CopyComplete
+D:\git\ToolMagazine\ToolDB\obj\Debug\ToolDB.dll
+D:\git\ToolMagazine\ToolDB\obj\Debug\ToolDB.pdb

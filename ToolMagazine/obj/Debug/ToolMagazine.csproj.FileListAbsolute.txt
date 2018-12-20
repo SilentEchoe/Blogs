@@ -81,10 +81,11 @@ D:\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.pdb
 D:\git\ToolMagazine\ToolMagazine\bin\Debug\EntityFramework.dll
 D:\git\ToolMagazine\ToolMagazine\bin\Debug\EntityFramework.SqlServer.dll
 D:\git\ToolMagazine\ToolMagazine\bin\Debug\System.Data.SQLite.dll
-D:\git\ToolMagazine\ToolMagazine\bin\Debug\System.Data.SQLite.EF6.dll
-D:\git\ToolMagazine\ToolMagazine\bin\Debug\System.Data.SQLite.Linq.dll
 D:\git\ToolMagazine\ToolMagazine\bin\Debug\EntityFramework.xml
 D:\git\ToolMagazine\ToolMagazine\bin\Debug\EntityFramework.SqlServer.xml
 D:\git\ToolMagazine\ToolMagazine\bin\Debug\System.Data.SQLite.xml
 D:\git\ToolMagazine\ToolMagazine\bin\Debug\System.Data.SQLite.dll.config
 D:\git\ToolMagazine\ToolMagazine\obj\Debug\ToolMagazine.csprojAssemblyReference.cache
+D:\git\ToolMagazine\ToolMagazine\bin\Debug\ToolDB.dll
+D:\git\ToolMagazine\ToolMagazine\bin\Debug\ToolDB.pdb
+D:\git\ToolMagazine\ToolMagazine\bin\Debug\ToolDB.dll.config
