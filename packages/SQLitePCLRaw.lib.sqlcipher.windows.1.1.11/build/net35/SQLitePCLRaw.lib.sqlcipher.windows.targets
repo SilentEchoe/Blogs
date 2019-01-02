@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Automatically generated-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="InjectReference_f1805707-10b1-479b-8c1f-5870fa5d0ee1" BeforeTargets="ResolveAssemblyReferences">
+    <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
+      <Content Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x86\native\sqlcipher.dll">
+        <Link>x86\sqlcipher.dll</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Pack>false</Pack>
+      </Content>
+      <Content Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\sqlcipher.dll">
+        <Link>x64\sqlcipher.dll</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Pack>false</Pack>
+      </Content>
+    </ItemGroup>
+  </Target>
+  <PropertyGroup>
+    <ResolveAssemblyReferencesDependsOn>$(ResolveAssemblyReferencesDependsOn);InjectReference_f1805707-10b1-479b-8c1f-5870fa5d0ee1</ResolveAssemblyReferencesDependsOn>
+  </PropertyGroup>
+</Project>

@@ -27,6 +27,8 @@ namespace ToolDB
                     //cmd.CommandText = "CREATE TABLE IF NOT EXISTS t1(id varchar(4),score int)";
                     cmd.ExecuteNonQuery();
                 }
+                // 添加密码
+                cn.ChangePassword("123456");
                 cn.Close();
                 return true;
             }
@@ -37,5 +39,8 @@ namespace ToolDB
             }
 
         }
+
+
+
     }
 }
