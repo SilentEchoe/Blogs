@@ -7,7 +7,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Height="450" Width="800"
-        d:DataContext="{d:DesignInstance local:ShellViewModel}" Loaded="Window_Loaded" >
+        d:DataContext="{d:DesignInstance local:IndexViewModel}" Loaded="Window_Loaded" >
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -16,7 +16,15 @@
         </Grid.ColumnDefinitions>
         <Grid HorizontalAlignment="Left" Height="409" Margin="6,8,0,0" VerticalAlignment="Top" Width="139"/>
         <Grid HorizontalAlignment="Left" Height="409" Margin="148,6,0,0" VerticalAlignment="Top" Width="139"/>
-        <Grid HorizontalAlignment="Left" Height="409" Margin="293,6,0,0" VerticalAlignment="Top" Width="489" Grid.ColumnSpan="2"/>
+        <Grid HorizontalAlignment="Left" Height="409" Margin="293,6,0,0" VerticalAlignment="Top" Width="489" Grid.ColumnSpan="2">
+            <RichTextBox Name="richTextBox" AcceptsTab="True" IsReadOnly="True" HorizontalAlignment="Left" Height="314" Margin="10,72,0,0" VerticalAlignment="Top" Width="469">
+                <FlowDocument>
+                    <Paragraph>
+                        <Run Text="RichTextBox"/>
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+        </Grid>
 
     </Grid>
 </Window>

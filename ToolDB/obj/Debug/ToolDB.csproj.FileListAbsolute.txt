@@ -17,7 +17,3 @@ D:\git\ToolMagazine\ToolDB\obj\Debug\ToolDB.pdb
 D:\git\ToolMagazine\ToolDB\obj\Debug\ToolDB.csprojAssemblyReference.cache
 D:\git\ToolMagazine\ToolDB\bin\Debug\x86\sqlcipher.dll
 D:\git\ToolMagazine\ToolDB\bin\Debug\x64\sqlcipher.dll
-D:\git\ToolMagazine\ToolDB\bin\Debug\SQLitePCLRaw.batteries_sqlcipher.dll
-D:\git\ToolMagazine\ToolDB\bin\Debug\SQLitePCLRaw.batteries_v2.dll
-D:\git\ToolMagazine\ToolDB\bin\Debug\SQLitePCLRaw.core.dll
-D:\git\ToolMagazine\ToolDB\bin\Debug\SQLitePCLRaw.provider.sqlcipher.dll
