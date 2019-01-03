@@ -20,15 +20,26 @@ namespace ToolMagazine.Pages
     /// </summary>
     public partial class IndexView : Window
     {
+
+      
         public IndexView()
         {
             InitializeComponent();
         }
-
+       
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
 
-            string filename = @"C:\Users\Lenovo\Desktop\学习笔记.txt";
+           // string filename = @"C:\Users\Lenovo\Desktop\学习笔记.txt";
+           
+          
+        }
+
+      
+
+        // 富文本流
+        private void Droptext(string filename)
+        {
             if (string.IsNullOrEmpty(filename))
             {
                 throw new ArgumentNullException();
@@ -45,7 +56,13 @@ namespace ToolMagazine.Pages
                 documentTextRange.Load(new MemoryStream(Encoding.UTF8.GetBytes(sr.ReadToEnd())), dataFormat);
 
             }
-          
+        }
+
+      
+
+        private void Window_Drop(object sender, EventArgs e)
+        {
+
         }
     }
 }
