@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-D:\git\ToolMagazine\ToolMagazine\obj\Debug\
+D:\Tool_git\ToolMagazine\ToolMagazine\obj\Debug\
 ToolMagazine
 none
 false
 DEBUG;TRACE
-D:\git\ToolMagazine\ToolMagazine\App.xaml
+D:\Tool_git\ToolMagazine\ToolMagazine\App.xaml
 3739980044
 
 10412640862
-221414736181
+22769768584
 Pages\Index.xaml;Pages\Login\Login.xaml;Pages\MainWindow.xaml;
 
 False

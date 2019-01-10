@@ -30,9 +30,9 @@ namespace ToolMagazine.Pages
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
 
-           // string filename = @"C:\Users\Lenovo\Desktop\学习笔记.txt";
-           
-          
+            // string filename = @"C:\Users\Lenovo\Desktop\学习笔记.txt";
+
+           // Menu_grit.AllowDrop = true;
         }
 
       
@@ -64,5 +64,21 @@ namespace ToolMagazine.Pages
         {
 
         }
+
+        private void TextBox_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.Copy;
+            e.Handled = true;
+        }
+
+        private void TextBox_PreviewDrop(object sender, DragEventArgs e)
+        {
+            foreach (string f in (string[])e.Data.GetData(DataFormats.FileDrop))
+            {
+                Droptext(f);
+            }
+        }
+
+
     }
 }

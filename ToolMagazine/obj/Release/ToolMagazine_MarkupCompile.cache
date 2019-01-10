@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-D:\git\ToolMagazine\ToolMagazine\obj\Release\
+D:\Tool_git\ToolMagazine\ToolMagazine\obj\Release\
 ToolMagazine
 none
 false
 TRACE
-D:\git\ToolMagazine\ToolMagazine\App.xaml
+D:\Tool_git\ToolMagazine\ToolMagazine\App.xaml
 3739980044
 
-10412640862
-22189585628
+141574858903
+22653197440
 Pages\Index.xaml;Pages\Login\Login.xaml;Pages\MainWindow.xaml;
 
-False
+True
 
