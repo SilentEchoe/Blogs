@@ -6,6 +6,12 @@ import (
 
 type Weapon int
 
+// 将NewInt定义为int 类型
+type NewInt int
+
+// 将int取一个别名叫 IntAlias
+type IntAlias = int
+
 const (
 	Arrow Weapon = iota // 开始生成枚举
 	Shuriken
