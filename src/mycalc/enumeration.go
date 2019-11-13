@@ -1,7 +1,10 @@
 package main
 
+//package main
+
 import (
 	"fmt"
+	"strconv"
 )
 
 type Weapon int
@@ -20,7 +23,12 @@ const (
 	Blower
 )
 
+var a string = "3"
+
 func main() {
+	// strconv.Itoa() 将int 类型转换为string 类型
+	fmt.Println("a" + strconv.Itoa(32)) // a32
+	fmt.Println(strconv.Atoi(a))
 	fmt.Println(Arrow, Shuriken, SniperRifle, Rifle, Blower)
 
 	// 使用枚举类型并赋初值
