@@ -1,4 +1,4 @@
-package main
+//package main
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ var list [4]string
 var array [4][2]int
 
 // 初始化二维数组
-
+// 可以理解为申明了一个两行两列的素组列表
 var arrayList [2][2]int
 
 func main() {
@@ -38,5 +38,10 @@ func main() {
 	arrayList[0][0] = 10
 	fmt.Println(array[0][1])
 	fmt.Println(arrayList[0][0])
+
+	// 将 array1 的索引为 1 的维度复制到一个同类型的新数组里
+	//var array3 [2]int = arrayList[1]
+	// 将数组中指定的整型值复制到新的整型变量里
+	//var value int = arrayList[1][0]
 
 }
