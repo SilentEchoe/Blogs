@@ -74,5 +74,16 @@ func main() {
 		fmt.Printf("Index: %d Value: %d\n", index, value)
 	}
 
+	//关键字 range 总是会从切片头部开始迭代。如果想对迭代做更多的控制，依旧可以使用传统的 for 循环
+	for index := 2; index < len(a); index++ {
+		fmt.Printf("Index: %d Value: %d\n", index, a[index])
+	}
+
 	fmt.Println(a)
+
+	// 多维数组
+	slice := [][]int{{10}, {100, 200}}
+	// 追加一个元素
+	slice[0] = append(slice[0], 20)
+
 }
