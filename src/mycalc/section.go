@@ -55,5 +55,24 @@ func main() {
 	//在切片开头添加元素一般都会导致内存重新分配，而且会导致已有元素全部被复制一次
 	// 因此在切片的开头添加元素的性能要比从尾部追加元素的性能要差很多
 
+	// 删除开头第一个元素
+	a = a[1:]
+
+	// 删除开头1个元素 使用append进行删除
+	a = append(a[:0], a[1:]...)
+
+	// 删除中间的元素
+
+	a = append(a[:2], a[2+1:]...)
+
+	// 删除尾部删除
+	a = a[:len(a)-1]
+
+	//range 关键词
+
+	for index, value := range a {
+		fmt.Printf("Index: %d Value: %d\n", index, value)
+	}
+
 	fmt.Println(a)
 }
