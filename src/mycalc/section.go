@@ -14,7 +14,7 @@ var highRiseBuilding [30]int
 //var strList []string
 
 func main() {
-	var a = [3]int{1, 2, 3}
+	var a = []int{1, 2, 3}
 	// a[0:1] 代表从第一个元素开始 到第二个元素结束
 	fmt.Println(a, a[0:1])
 
@@ -37,4 +37,23 @@ func main() {
 	fmt.Println(c, b)
 	fmt.Println(len(c), len(b))
 
+	//为数组a 添加追加一个元素
+	a = append(a, 1)
+	fmt.Println(a)
+
+	// 追加多个元素, 手写解包方式
+	a = append(a, 1, 2, 3)
+	// 追加一个切片
+	a = append(a, []int{1, 2, 3}...)
+
+	//在开头添加一个元素
+	a = append([]int{4}, a...)
+
+	// 在开头添加1个切片
+	a = append([]int{-3, -2, -1}, a...)
+
+	//在切片开头添加元素一般都会导致内存重新分配，而且会导致已有元素全部被复制一次
+	// 因此在切片的开头添加元素的性能要比从尾部追加元素的性能要差很多
+
+	fmt.Println(a)
 }
