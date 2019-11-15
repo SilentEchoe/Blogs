@@ -59,4 +59,21 @@ JLoop:
 		fmt.Println(0)
 	}
 
+	switch b {
+	// 一分支多值
+	case "mum", "hello":
+		fmt.Println(1)
+	}
+
+	//跨越 case 的 fallthrough——兼容C语言的 case 设计
+	// 执行完一个独立的case 分支后不会结束，会继续向下执行
+	var s = "hello"
+	switch {
+	case s == "hello":
+		fmt.Println("hello")
+		fallthrough
+	case s != "world":
+		fmt.Println("world")
+	}
+
 }
