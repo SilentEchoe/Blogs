@@ -75,5 +75,4 @@ JLoop:
 	case s != "world":
 		fmt.Println("world")
 	}
-
 }
