@@ -19,4 +19,44 @@ func main() {
 	//	return
 	//}
 
+	//Go 语言中的循环语句只支持for关键字
+	sum := 0
+	for i := 0; i < 10; i++ {
+		sum += i
+
+	}
+	fmt.Println(sum)
+
+	for {
+		sum++
+		if sum > 100 {
+			break
+		}
+	}
+
+	fmt.Println(sum)
+
+	// Go语言的 for 循环同样支持 continue 和 break 来控制循环
+	// 但是它提供了一个更高级的 break，可以选择中断哪一个循环
+
+JLoop:
+	for j := 0; j < 5; j++ {
+		for i := 0; i < 10; i++ {
+			if i > 5 {
+				break JLoop
+			}
+			fmt.Println(i)
+		}
+	}
+
+	b := "hello"
+	switch b {
+	case "hello":
+		fmt.Println(1)
+	case "world":
+		fmt.Println(2)
+	default:
+		fmt.Println(0)
+	}
+
 }
