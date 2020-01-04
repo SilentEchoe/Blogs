@@ -10,7 +10,7 @@ type person struct {
 }
 
 // NewPerson 包含
-// person 返回类型
+// *person 返回类型
 func NewPerson(name string) *person {
 	return &person{
 		Name: name,
@@ -19,6 +19,7 @@ func NewPerson(name string) *person {
 
 // 为了访问age 和 sal 我们编写一对SetXxx的方法和GetXxx的方法
 func (p *person) SetAge(age int) {
+	hypot(1, 2, "调用Test包")
 	if age > 0 && age < 150 {
 		p.age = age
 	} else {

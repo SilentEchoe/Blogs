@@ -12,4 +12,5 @@ func main() {
 	p.SetSal(5000)
 	fmt.Println(p)
 	fmt.Println(p.Name, " age =", p.GetAge(), " sal = ", p.GetSal())
+
 }
