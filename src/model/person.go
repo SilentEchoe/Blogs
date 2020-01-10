@@ -19,7 +19,7 @@ func NewPerson(name string) *person {
 
 // 为了访问age 和 sal 我们编写一对SetXxx的方法和GetXxx的方法
 func (p *person) SetAge(age int) {
-	hypot(1, 2, "调用Test包")
+	hypot(1, 2, hp)
 	if age > 0 && age < 150 {
 		p.age = age
 	} else {
