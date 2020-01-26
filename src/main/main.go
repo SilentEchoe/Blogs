@@ -12,5 +12,7 @@ func main() {
 	// fmt.Println(p.Name, " age =", p.GetAge(), " sal = ", p.GetSal())
 	fmt.Println("hello go")
 
+
+		
 	
 }
