@@ -1,19 +1,25 @@
 package main
 
-cmd = newCommand(
-	"version",
-	&version,
-	"show version",
+import (
+	"fmt"
 )
-func newCommand(name string, varref *int, comment string) *Command {
-    return &Command{
-        Name:    name,
-        Var:     varref,
-        Comment: comment,
-    }
+
+type Address struct {
+    Province    string
+    City        string
+    ZipCode     int
+    PhoneNumber string
 }
 
+
+
 func main()  {
-	
+	addr := Address{
+		"四川",
+		"成都",
+		610000,
+		"0",
+	}
+	fmt.Println(addr)
 }
 
