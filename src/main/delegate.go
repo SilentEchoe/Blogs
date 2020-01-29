@@ -16,6 +16,29 @@ func funcDo(v int) {
     fmt.Println("call function do:", v)
 }
 
+
+// 实例化一个通关字符串映射函数切片的map
+var eventByName = make(map[string][]func(interface{}))
+
+// 事件
+func RegisterEvent(name string,callback func(interface{})){
+	list := eventByName[name]
+
+	list = append(list, callback)
+
+	eventByName[name] = list
+}
+
+func CallEvent(name string, param interface{}) {
+    // 通过名字找到事件列表
+    list := eventByName[name]
+    // 遍历这个事件的所有回调
+    for _, callback := range list {
+        // 传入参数调用回调
+        callback(param)
+    }
+}
+
 func main(){
 
 	// 声明一个函数回调
