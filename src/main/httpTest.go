@@ -18,6 +18,7 @@ func main() {
     }
     // 为标头添加信息
     req.Header.Add("User-Agent", "myClient")
+    
     // 开始请求
     resp, err := client.Do(req)
     // 处理请求的错误

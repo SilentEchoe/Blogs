@@ -1,0 +1,18 @@
+{
+    "workbench.colorTheme": "Visual Studio Dark",
+    "files.autoSave": "onFocusChange",
+    "go.buildOnSave": "off",
+    "go.lintOnSave" :"off",
+    "go.vetOnSave":"off",
+    "go.buildTags": "",
+    "go.buildFlags": [],
+    "go.lintFlags": [],
+    "go.vetFlags": [],
+    "go.coverOnSave": false,
+    "go.useCodeSnippetsOnFunctionSuggest":true,
+    "go.formatTool": "goreturns",
+    "go.goroot": "C:\\Go",
+    "go.gopath": "D:\\PrivateProjects\\LearningNotes-Go",
+    "go.gocodeAutoBuild": false
+
+}
