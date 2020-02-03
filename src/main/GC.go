@@ -19,8 +19,9 @@ func entry(){
 }
 
 func main(){
-	entry()
 
+	entry()
+	
 	for i := 0;i < 10 ; i++ {
 		time.Sleep(time.Second)
 		runtime.GC()
