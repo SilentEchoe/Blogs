@@ -1,11 +1,22 @@
 package main
 
-// 定义读和写
-type ReadWriter struct{
-	*Reader
-	*Writer
-}
+import (
+	"bufio"
+	"bytes"
+	"fmt"
+)
 
-type Reader struct{
-	//contains f
+
+
+func main(){
+	data := []byte("C语言中文网")
+	rd := bytes.NewReader(data)
+	r := bufio.NewReader(rd)
+
+	var buf [128]byte
+	// [:] 代表全部
+	n, err := r.Read(buf[:])
+	fmt.Println(string(buf[:n]), n, err)
+
+	
 }
