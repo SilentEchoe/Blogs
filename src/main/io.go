@@ -10,6 +10,7 @@ import (
 
 func main(){
 	data := []byte("C语言中文网")
+	// 读取并返回一个字节，如果没有字节可读，则返回错误信息
 	rd := bytes.NewReader(data)
 	r := bufio.NewReader(rd)
 
