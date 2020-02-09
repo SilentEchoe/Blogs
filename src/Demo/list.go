@@ -28,7 +28,7 @@ func (m MyStringList) Swap(i,j int)  {
 func main()  {
 	//准备一个切片
 
-	names := sort.StringSlice{
+	names := []string{
 		"3. Triple Kill",
 		"5. Penta Kill",
 		"2. Double Kill",
@@ -36,7 +36,7 @@ func main()  {
 		"1. First Blood",
 	}
 
-	sort.Sort(names)
+	sort.Strings(names)
 
 	for _, v := range names {
 		fmt.Printf("%s\n",v)
