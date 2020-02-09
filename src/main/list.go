@@ -28,7 +28,7 @@ func (m MyStringList) Swap(i,j int)  {
 func main()  {
 	//准备一个切片
 
-	names := MyStringList{
+	names := sort.StringSlice{
 		"3. Triple Kill",
 		"5. Penta Kill",
 		"2. Double Kill",
