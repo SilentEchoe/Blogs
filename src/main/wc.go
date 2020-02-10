@@ -2,6 +2,8 @@ package main
 
 import "io"
 
+// 构造内嵌的例子
+
 // 声明一个设备结构
 type  device struct {
 
@@ -29,6 +31,7 @@ func main()  {
 type Writer interface {
 	Write(p []byte) (n int, err error)
 }
+
 
 // 定义构造
 type Closer interface {
