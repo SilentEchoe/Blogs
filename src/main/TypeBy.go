@@ -24,4 +24,52 @@ func (b *bird) Fly()  {
 	fmt.Println("bird:fly")
 }
 
-// 为鸟
+// 为鸟添加Walk()方法,实现行走动物接口
+func (b *bird) Walk()  {
+	fmt.Println("bird:walk")
+}
+
+type pig struct {
+}
+
+// 为猪添加Walk()方法，实现行走动物接口
+func (p *pig) Walk()  {
+	fmt.Println("pig:walk")
+}
+
+func main()  {
+	// 创建动物的名字到实例的映射
+	animals := map[string]interface{}{
+		"bird":new(bird),
+		"pig" : new(pig),
+	}
+
+
+	for name,obj := range animals{
+		f, isFlyer := obj.(Flyer)
+		w, isWalker := obj.(Walker)
+
+		fmt.Printf("name: %s isFlyer: %v isWalker: %v\n", name, isFlyer, isWalker)
+
+		if isFlyer  {
+			f.Fly()
+		}
+
+		if isWalker {
+			w.Walk()
+		}
+
+	}
+
+
+
+}
+
+
+
+
+
+
+
+
+
