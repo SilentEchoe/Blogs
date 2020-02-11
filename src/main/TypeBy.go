@@ -37,6 +37,7 @@ func (p *pig) Walk()  {
 	fmt.Println("pig:walk")
 }
 
+//将接口转换为其他接口
 func main()  {
 	// 创建动物的名字到实例的映射
 	animals := map[string]interface{}{
