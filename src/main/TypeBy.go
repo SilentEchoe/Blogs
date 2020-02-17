@@ -4,14 +4,13 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 
 func main()  {
-	var colors map[string]string
-
-	colors["Red"]="Red"
-
 	source := []string{"A1","A2","A3","A4","A5"}
 
 	// 截取数组的第三个元素
@@ -23,4 +22,13 @@ func main()  {
 		fmt.Printf("Index: %d value: %d\n",index,value)
 
 	}
+}
+
+
+type Time struct {
+	sec int64
+
+	nsec int32
+	
+	loc *Location
 }
