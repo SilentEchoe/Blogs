@@ -1,10 +1,14 @@
 package main
 
+
+
 import (
 	"fmt"
 	"io"
 	"net/http"
-	"os")
+	"os"
+	)
+
 
 func init()  {
 	if len(os.Args) !=2 {
@@ -12,6 +16,7 @@ func init()  {
 		os.Exit(-1)
 	}
 }
+
 
 func main()  {
 	r,err := http.Get(os.Args[1])
