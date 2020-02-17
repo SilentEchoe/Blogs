@@ -23,11 +23,26 @@ func (u *user) notify(){
 		u.name,u.email)
 }
 
-func main()  {
-	u := user{"Bill","bill@email.com"}
-	sendNotification(u)
+type admin struct {
+	name string
+	email string
 }
 
+func (a *admin) notify()  {
+	fmt.Printf("Sending user email to %s<%s>\n",
+		a.name,a.email)
+}
+
+func main()  {
+	bill := user{"Bill","bill@email.com"}
+	sendNotification(&bill)
+
+	lisa := admin{"Bill","bill@email.com"}
+	sendNotification(&lisa)
+
+}
+
+// 值类型接受
 func sendNotification(n notifier)  {
 	n.notify()
 }
