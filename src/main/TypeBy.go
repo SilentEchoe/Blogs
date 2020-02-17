@@ -29,6 +29,6 @@ type Time struct {
 	sec int64
 
 	nsec int32
-	
+
 	loc *Location
 }

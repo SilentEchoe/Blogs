@@ -1,24 +1,27 @@
 package main
 
-import "io"
+import (
+	"fmt"
+	"io"
+	"net/http"
+	"os")
 
-type device struct {
-}
-
-func (d *device)Write(p []byte) (n int, err error)  {
-	return  0,nil
-}
-
-func (d *device) Close() error  {
-	return nil
+func init()  {
+	if len(os.Args) !=2 {
+		fmt.Println("Usage: ./example2 <url>")
+		os.Exit(-1)
+	}
 }
 
 func main()  {
-	var wc io.WriteCloser = new(device)
-	wc.Write(nil)
+	r,err := http.Get(os.Args[1])
+	if err != nil{
+		fmt.Println(err)
+		return
+	}
 
-	wc.Close()
-
-	var writeOnly io.Writer = new(device)
-	writeOnly.Write(nil)
+	io.Copy(os.Stdout,r.Body)
+	if  err := r.Body.Close();err!= nil {
+		fmt.Println(err)
+	}
 }
