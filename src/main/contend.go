@@ -30,5 +30,4 @@ func incCounter(id int)  {
 		value++
 		counter  = value
 	}
-
 }
