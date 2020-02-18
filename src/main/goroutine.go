@@ -10,7 +10,7 @@ var wg sync.WaitGroup
 
 func main()  {
 	// 分配一个逻辑处理器给调度器使用
-	runtime.GOMAXPROCS(1)
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// wg 用来等待程序完成
 	// 计数加2,表示要等待两个goroutine
