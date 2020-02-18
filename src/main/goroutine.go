@@ -6,46 +6,41 @@ import (
 	"sync"
 	)
 
+var wg sync.WaitGroup
+
 func main()  {
 	// 分配一个逻辑处理器给调度器使用
 	runtime.GOMAXPROCS(1)
 
 	// wg 用来等待程序完成
 	// 计数加2,表示要等待两个goroutine
-	var wg sync.WaitGroup
+
 	wg.Add(2)
 
-	fmt.Println("Start Goroutines")
+	fmt.Println("Create Goroutines")
 
-	//声明一个匿名函数 并创建goroutine
+	go printPrime("A")
+	go printPrime("B")
 
-	go func() {
-		// 在函数退出时候调用Done 来通知main 函数工作已经完成
-		defer  wg.Done()
-
-		for count := 0; count < 3 ; count++  {
-			for char :='a'; char < 'a' +26 ; char++  {
-				fmt.Printf("%c", char)
-			}
-		}
-	}()
-
-	go func() {
-		// 在函数退出时候调用Done 来通知main 函数工作已经完成
-		defer  wg.Done()
-
-		for count := 0; count < 3 ; count++  {
-			for char :='A'; char < 'A' +26 ; char++  {
-				fmt.Printf("%c", char)
-			}
-		}
-	}()
-
-	fmt.Println("Waiting To Finish")
+	fmt.Println("Waiting To Fininsh")
 	wg.Wait()
 
-	fmt.Println("\nTerminating Program")
+	fmt.Println("Terminating Program")
 
+}
 
+func printPrime(prefix string)  {
+	// 在函数退出时调用Done来通知main 函数已经
+	defer  wg.Done()
 
+netx:
+	for outer := 2; outer<5000 ;outer++  {
+		for inner := 2;inner < outer ;inner++  {
+			if outer%inner == 0 {
+				continue netx
+			}
+		}
+		fmt.Printf("%s:%d\n",prefix,outer)
+	}
+	fmt.Println("Compeleted",prefix)
 }
