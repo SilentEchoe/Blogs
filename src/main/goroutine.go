@@ -10,6 +10,7 @@ import (
 var (
 	counter int64
 	wg sync.WaitGroup
+	mutex sync.Mutex
 )
 
 func main()  {
