@@ -2,10 +2,14 @@
 
 此项目为Go的学习项目，基于Gin的WebApi服务端
 
-/bin : 包含可执行文件，如：编译器，Go工具
-/doc : 包含实例程序，代码工具，本地文档等
-/lib ：包含文档模板
-/misc：包含与支持Go编辑器有关的配置文件以及cgo的示例
-/os_arch: 包含标准库的包的对象文件(.a)
-/src : 包含源代码构建脚本和便准库的包的完整源代码
-/src/cmd : 包含Go和C的编译器和命令行脚本
+项目结构：
+
+```
+LearningNotes-Go/
+├── conf 存储配置文件
+├── middleware 应用中间件
+├── models 数据库模型
+├── pkg 第三方包
+├── routers 路由逻辑处理
+└── runtime 应用运行时数据
+```
