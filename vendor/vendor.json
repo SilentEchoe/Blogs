@@ -1,0 +1,12 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"path": "github.com/gin-gonic/gin",
+			"revision": "",
+			"version": "v1.2"
+		}
+	],
+	"rootPath": "LearningNotes-Go"
+}
