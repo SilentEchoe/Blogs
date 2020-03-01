@@ -18,6 +18,10 @@ func GetTags(c *gin.Context) {
 
 	// c.Query 用户获取?name=test Url的参数
 	name := c.Query("name")
+
+	// 这里创建了两个string类型的map interface代表空接口
+	// 因为所有类型都能实现空接口 所以Key是string类型 values 为任意类型
+
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
 
