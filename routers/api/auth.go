@@ -1,21 +1,20 @@
 package api
 
 import (
-	"github.com/astaxie/beego/validation"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 
+	"github.com/astaxie/beego/validation"
+	"github.com/gin-gonic/gin"
+
 	"LearningNotes-Go/models"
-
-	"LearningNotes-Go/pkg/util"
-
 	"LearningNotes-Go/pkg/e"
+	"LearningNotes-Go/pkg/util"
 )
 
 type auth struct {
-	Username string `valid:"Required;MaxSize(50)"`
-	Password string `valid:"Required;MaxSize(50)"`
+	Username string `valid:"Required; MaxSize(50)"`
+	Password string `valid:"Required; MaxSize(50)"`
 }
 
 func GetAuth(c *gin.Context) {
