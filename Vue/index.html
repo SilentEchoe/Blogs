@@ -1,36 +1,17 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>学习笔记</title>
-<script src="https://cdn.jsdelivr.net/npm/vue"></script>
-</head>
-<body>
-<div id="app">
-  <p>{{ message }}</p>
-</div>
-<div id="app-2">
-    <span v-bind:title="message">
-        鼠标悬停查看内容
-    </span>
-</div>
-
-<script>
-new Vue({
-  el: '#app',
-  data: {
-    message: 'Hello Vue.js!'
-  }
-})
-
-var app2 = new Vue({
-    el:'#app-2',
-    data:{
-        message: '页面加载于 ' + new Date().toLocaleString()
-    }
-})
-
-
-</script>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <title>blogvue3</title>
+  </head>
+  <body>
+    <noscript>
+      <strong>We're sorry but blogvue3 doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div><!-- 通过app 提供挂载元素，动态的路由加载-->
+    <!-- built files will be auto injected -->
+  </body>
 </html>
