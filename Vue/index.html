@@ -2,12 +2,17 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>博客</title>
+<title>学习笔记</title>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
 <body>
 <div id="app">
   <p>{{ message }}</p>
+</div>
+<div id="app-2">
+    <span v-bind:title="message">
+        鼠标悬停查看内容
+    </span>
 </div>
 
 <script>
@@ -17,6 +22,15 @@ new Vue({
     message: 'Hello Vue.js!'
   }
 })
+
+var app2 = new Vue({
+    el:'#app-2',
+    data:{
+        message: '页面加载于 ' + new Date().toLocaleString()
+    }
+})
+
+
 </script>
 </body>
 </html>
