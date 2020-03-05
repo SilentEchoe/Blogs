@@ -23,10 +23,15 @@ export default {
 </script>
 
 <style  scoped>
-#Top{
-    width: 100%;
-    height: 20%;
-    
+div{
+    border-style: solid; 
+    border-width:5px;
+}
+
+#Top{   
+    width: 80%;
+    height: 100px;
+    border:red 1px;
 }
 
 #CenTen{
