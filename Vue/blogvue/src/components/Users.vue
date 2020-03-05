@@ -5,7 +5,9 @@
             顶部
         </div>
         
-        <div id="CenTen">中部内容</div>
+        <div id="CenTen">
+             <markdown />
+            中部内容</div>
         
         <div id="Bottom">底部内容</div>
        
@@ -16,9 +18,15 @@
 
 <script>
 import { Button, Table } from 'view-design';
-
+import markdown from '@/assets/ApiDocument.md'
+// 代码高亮
+import 'highlight.js/styles/github.css'
+// 其他元素使用 github 的样式
+import 'github-markdown-css'
 export default {
-    
+    components: {
+    markdown
+  },
 }
 </script>
 
