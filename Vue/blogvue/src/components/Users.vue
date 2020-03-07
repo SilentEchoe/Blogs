@@ -2,8 +2,9 @@
     <div class="layout">
         <Layout>
             <Header>
-                <Menu mode="horizontal" theme="dark" active-name="1">
-                    <div class="layout-logo"></div>
+                <Menu mode="horizontal" theme="dark" active-name="1" >
+                    <div class="layout-logo" >
+                        <img src="logo.png" width="100" height="20" alt="logo"></div>
                     <div class="layout-nav">
                         <MenuItem name="1">
                             <Icon type="ios-navigate"></Icon>
@@ -66,16 +67,17 @@ div{
     position: relative;
     border-radius: 4px;
     overflow: hidden;
+    
 }
 .layout-logo{
     width: 100px;
     height: 30px;
-    background: #5b6270;
     border-radius: 3px;
     float: left;
     position: relative;
     top: 15px;
     left: 20px;
+    
 }
 .layout-nav{
     width: 420px;
@@ -85,6 +87,10 @@ div{
 .layout-footer-center{
     text-align: center;
     
+}
+
+header {
+    height: 400px;
 }
 </style>>
 
