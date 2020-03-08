@@ -9,7 +9,10 @@ import (
 	"LearningNotes-Go/routers/api/v1"
 )
 
+// 初始化路由
 func InitRouter() *gin.Engine {
+
+	// 实例化一个gin对象
 	r := gin.New()
 
 	r.Use(gin.Logger())
