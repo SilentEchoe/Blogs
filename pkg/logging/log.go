@@ -21,7 +21,6 @@ var (
 	levelFlags = []string{"DEBUG", "INFO", "WARN", "ERROR", "FATAL"}
 )
 
-// 利用iota 实现枚举
 const (
 	DEBUG Level = iota
 	INFO
@@ -31,9 +30,9 @@ const (
 )
 
 func init() {
-	// 获取文件路径
 	filePath := getLogFileFullPath()
 	F = openLogFile(filePath)
+
 	logger = log.New(F, DefaultPrefix, log.LstdFlags)
 }
 
