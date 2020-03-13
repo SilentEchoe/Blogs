@@ -1,4 +1,0 @@
-[INFO][article.go:77]2020/03/11 07:26:09 [err.key: %s, err.message: %s state 状态只允许0或1]
-[INFO][article.go:77]2020/03/11 07:26:09 [err.key: %s, err.message: %s tag_id 标签ID必须大于0]
-[INFO][article.go:77]2020/03/11 07:26:24 [err.key: %s, err.message: %s state 状态只允许0或1]
-[INFO][article.go:77]2020/03/11 07:26:24 [err.key: %s, err.message: %s tag_id 标签ID必须大于0]
