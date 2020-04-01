@@ -12,7 +12,13 @@ import (
 	"net/http"
 )
 
-//获取型号名
+// @Summary 获取型号名
+// @Produce  json
+// @Param name query string true "Name"
+// @Param state query int false "State"
+// @Param created_by query int false "CreatedBy"
+// @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/tags [post]
 func GetModuleName(c *gin.Context) {
 	data := make(map[string]interface{})
 	maps := make(map[string]interface{})
@@ -23,7 +29,7 @@ func GetModuleName(c *gin.Context) {
 		code = e.SUCCESS
 
 		data["lists"] = models.GetModuleName(util.GetPage(c), setting.PageSize, maps)
-		data["total"] = models.GetArticleTotal(maps)
+		data["total"] = models.GetModuleNameTotal(maps)
 
 	} else {
 		for _, err := range valid.Errors {

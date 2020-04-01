@@ -41,13 +41,6 @@ func GetTags(c *gin.Context) {
 	})
 }
 
-// @Summary Add
-// @Produce  json
-// @Param name query string true "Name"
-// @Param state query int false "State"
-// @Param created_by query int false "CreatedBy"
-// @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/tags [post]
 func AddTag(c *gin.Context) {
 	name := c.Query("name")
 	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
