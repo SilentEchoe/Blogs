@@ -1,11 +1,5 @@
 package models
 
-import (
-	_ "time"
-
-	_ "github.com/jinzhu/gorm"
-)
-
 type ModuleName struct {
 	Model
 	Id         string `json:"id"`
@@ -16,6 +10,12 @@ type ModuleName struct {
 
 func GetModuleName(pageNum int, pageSize int, maps interface{}) (moduleNames []ModuleName) {
 	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&moduleNames)
+
+	return
+}
+
+func GetModuleNameTotal(maps interface{}) (count int) {
+	db.Model(&ModuleName{}).Where(maps).Count(&count)
 
 	return
 }

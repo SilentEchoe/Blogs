@@ -47,6 +47,8 @@ func InitRouter() *gin.Engine {
 		//删除指定文章
 		apiv1.DELETE("/articles/:id", v1.DeleteArticle)
 
+		//获取moduleName
+		apiv1.GET("/moduleNames", v1.GetModuleName)
 	}
 
 	return r
