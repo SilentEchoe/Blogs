@@ -49,6 +49,8 @@ func InitRouter() *gin.Engine {
 
 		//获取moduleName
 		apiv1.GET("/moduleNames", v1.GetModuleName)
+		// 新增型号名
+		apiv1.POST("/moduleNames", v1.AddModuleName)
 	}
 
 	return r
