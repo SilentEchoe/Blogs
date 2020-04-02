@@ -1,27 +1,27 @@
 package models
 
-type ModelName struct {
+type madame struct {
 	Model
 
-	ModelName  string `json:"model_name"`
+	Name       string `json:"name"`
 	CreatedBy  string `json:"created_by"`
 	ModifiedBy string `json:"modified_by"`
 	State      int    `json:"state"`
 }
 
-func GetModelNames(pageNum int, pageSize int, maps interface{}) (tags []ModelName) {
-	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
+func GetModelNames(pageNum int, pageSize int, maps interface{}) (modelNames []madame) {
+	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&modelNames)
 
 	return
 }
 
 func GetModelNameTotal(maps interface{}) (count int) {
-	db.Model(&ModelName{}).Where(maps).Count(&count)
+	db.Model(&madame{}).Where(maps).Count(&count)
 
 	return
 }
 func ExistModelNameByName(name string) bool {
-	var modelName ModelName
+	var modelName madame
 	db.Select("id").Where("name = ?", name).First(&modelName)
 	if modelName.ID > 0 {
 		return true
@@ -31,8 +31,8 @@ func ExistModelNameByName(name string) bool {
 }
 
 func AddModelName(name string, state int, createdBy string) bool {
-	db.Create(&ModelName{
-		ModelName: name,
+	db.Create(&madame{
+		Name:      name,
 		State:     state,
 		CreatedBy: createdBy,
 	})
@@ -41,7 +41,7 @@ func AddModelName(name string, state int, createdBy string) bool {
 }
 
 func ExistModelNameByID(id int) bool {
-	var modelName ModelName
+	var modelName madame
 	db.Select("id").Where("id = ?", id).First(&modelName)
 	if modelName.ID > 0 {
 		return true
@@ -51,13 +51,13 @@ func ExistModelNameByID(id int) bool {
 }
 
 func DeleteModelName(id int) bool {
-	db.Where("id = ?", id).Delete(&ModelName{})
+	db.Where("id = ?", id).Delete(&madame{})
 
 	return true
 }
 
 func EditModelName(id int, data interface{}) bool {
-	db.Model(&ModelName{}).Where("id = ?", id).Updates(data)
+	db.Model(&madame{}).Where("id = ?", id).Updates(data)
 
 	return true
 }
