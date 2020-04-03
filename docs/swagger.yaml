@@ -3,6 +3,29 @@ info:
   license: {}
 paths:
   /api/v1/tags:
+    get:
+      parameters:
+      - description: Name
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: State
+        in: query
+        name: state
+        type: integer
+      - description: CreatedBy
+        in: query
+        name: created_by
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 获取所有的型号名
     post:
       parameters:
       - description: Name
@@ -25,5 +48,5 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: Add
+      summary: 获取所有的型号名
 swagger: "2.0"

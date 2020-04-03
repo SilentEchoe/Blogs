@@ -1,19 +1,6 @@
 package v1
 
-import (
-	"github.com/astaxie/beego/validation"
-	"net/http"
-
-	"github.com/gin-gonic/gin"
-	//"github.com/astaxie/beego/validation"
-	"github.com/Unknwon/com"
-
-	"LearningNotes-Go/models"
-	"LearningNotes-Go/pkg/e"
-	"LearningNotes-Go/pkg/setting"
-	"LearningNotes-Go/pkg/util"
-)
-
+/*
 //获取多个文章标签
 func GetTags(c *gin.Context) {
 	name := c.Query("name")
@@ -80,3 +67,4 @@ func AddTag(c *gin.Context) {
 		"data": make(map[string]string),
 	})
 }
+*/

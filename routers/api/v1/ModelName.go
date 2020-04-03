@@ -11,7 +11,13 @@ import (
 	"net/http"
 )
 
-//获取所有的型号名
+// @Summary 获取所有的型号名
+// @Produce  json
+// @Param name query string true "Name"
+// @Param state query int false "State"
+// @Param created_by query int false "CreatedBy"
+// @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/tags [Get]
 func GetModelNames(c *gin.Context) {
 	name := c.Query("name")
 
@@ -41,12 +47,18 @@ func GetModelNames(c *gin.Context) {
 
 }
 
-//新增型号名
+// @Summary 获取所有的型号名
+// @Produce  json
+// @Param name query string true "Name"
+// @Param state query int false "State"
+// @Param created_by query int false "CreatedBy"
+// @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/tags [Post]
 func AddModelName(c *gin.Context) {
 	name := c.Query("name")
 	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
 	createdBy := c.Query("created_by")
-
+	parentId := com.StrTo(c.DefaultQuery("parent_id", "0")).MustInt()
 	valid := validation.Validation{}
 	valid.Required(name, "name").Message("名称不能为空")
 	valid.MaxSize(name, 100, "name").Message("名称最长为100字符")
@@ -58,7 +70,7 @@ func AddModelName(c *gin.Context) {
 	if !valid.HasErrors() {
 		if !models.ExistModelNameByName(name) {
 			code = e.SUCCESS
-			models.AddModelName(name, state, createdBy)
+			models.AddModelName(name, state, createdBy, parentId)
 		} else {
 			code = e.ERROR_EXIST_TAG
 		}
