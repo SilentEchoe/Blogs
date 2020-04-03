@@ -47,10 +47,11 @@ func GetModelNames(c *gin.Context) {
 
 }
 
-// @Summary 获取所有的型号名
+// @Summary 新增型号名
 // @Produce  json
 // @Param name query string true "Name"
 // @Param state query int false "State"
+// @Param parentId query int false "parent_id"
 // @Param created_by query int false "CreatedBy"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/tags [Post]
