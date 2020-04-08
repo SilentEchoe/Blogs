@@ -21,6 +21,7 @@ func GetModelNameTotal(maps interface{}) (count int) {
 
 	return
 }
+
 func ExistModelNameByName(name string) bool {
 	var modelName Madalena
 	db.Select("id").Where("module_name = ?", name).First(&modelName)
