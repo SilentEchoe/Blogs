@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-// @Summary 获取所有的型号名
+// @Summary 获取所有的型号类型
 // @Produce  json
 // @Param name query string true "Name"
 // @Param state query int false "State"
@@ -31,7 +31,7 @@ func GetModelTypes(c *gin.Context) {
 	code := e.SUCCESS
 
 	data["lists"] = models.GetModelTypes(util.GetPage(c), setting.PageSize, maps)
-	data["total"] = models.GetModelNameTotal(maps)
+	data["total"] = models.GetModelTypeTotal(maps)
 
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,

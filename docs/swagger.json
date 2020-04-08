@@ -5,7 +5,7 @@
         "license": {}
     },
     "paths": {
-        "/api/v1/tags": {
+        "/api/v1/GetModelTypes": {
             "get": {
                 "produces": [
                     "application/json"
@@ -40,8 +40,53 @@
                         }
                     }
                 }
-            },
+            }
+        },
+        "/api/v1/moduleName": {
             "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "新增型号名",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Name",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "State",
+                        "name": "state",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "parent_id",
+                        "name": "parentId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "CreatedBy",
+                        "name": "created_by",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/moduleNames": {
+            "get": {
                 "produces": [
                     "application/json"
                 ],

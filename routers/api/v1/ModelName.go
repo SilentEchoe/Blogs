@@ -17,7 +17,7 @@ import (
 // @Param state query int false "State"
 // @Param created_by query int false "CreatedBy"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/tags [Get]
+// @Router /api/v1/moduleNames [Get]
 func GetModelNames(c *gin.Context) {
 	name := c.Query("name")
 
@@ -54,7 +54,7 @@ func GetModelNames(c *gin.Context) {
 // @Param parentId query int false "parent_id"
 // @Param created_by query int false "CreatedBy"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/tags [Post]
+// @Router /api/v1/moduleName [Post]
 func AddModelName(c *gin.Context) {
 	name := c.Query("name")
 	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
