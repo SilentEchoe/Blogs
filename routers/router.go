@@ -33,6 +33,9 @@ func InitRouter() *gin.Engine {
 
 		//查询型号类型
 		apiv1.GET("/moduleType", v1.GetModelTypes)
+
+		//查询bin模板
+		apiv1.GET("/")
 	}
 
 	return r

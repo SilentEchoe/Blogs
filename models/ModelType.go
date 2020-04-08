@@ -14,7 +14,6 @@ type MadalenaType struct {
 }
 
 func GetModelTypes(pageNum int, pageSize int, maps interface{}) (madalenaType []MadalenaType) {
-	//db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&madalenaType)
 	db.Preload("Madalena").Where(maps).Offset(pageNum).Limit(pageSize).Find(&madalenaType)
 
 	return
