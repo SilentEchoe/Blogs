@@ -3,9 +3,9 @@ package models
 type MadalenaAttrValue struct {
 	Model
 
-	MadalenaTypeId string `json:"madalena_type_id"`
-	attrKey        string `json:"attr_key"`
-	attrValue      string `json:"attr_value"`
+	MadalenaTypeId int    `json:"madalena_type_id"`
+	AttrKey        string `json:"attr_key"`
+	AttrValue      string `json:"attr_value"`
 	Bins           int    `json:"bin_template"`
 	Version        string `json:"version"`
 	Sn             string `json:"sn"`
@@ -23,7 +23,8 @@ type Bins struct {
 
 // 查找bin文件
 
-func GetBin(MadalenaTypeId int, attrKey string, attrValue string, version string) (bins []Bins) {
+func GetBin(madalenaTypeId int, attrKey string, attrValue string, version string) (madalenaAttrValue []MadalenaAttrValue) {
+	db.Where(&MadalenaAttrValue{MadalenaTypeId: madalenaTypeId, AttrKey: "0,0", AttrValue: "0,0", Version: "AOC-1"}).First(&madalenaAttrValue)
 
 	return
 }

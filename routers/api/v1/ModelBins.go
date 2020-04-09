@@ -3,8 +3,6 @@ package v1
 import (
 	"LearningNotes-Go/models"
 	"LearningNotes-Go/pkg/e"
-	"fmt"
-
 	/*"LearningNotes-Go/pkg/setting"
 	"LearningNotes-Go/pkg/util"*/
 	"github.com/gin-gonic/gin"
@@ -24,26 +22,22 @@ func GetModelBins(c *gin.Context) {
 	// 先根据modelId 和compatibility 查到model_type_id
 	id := c.Query("modelId")
 	compatibilityType := c.Query("compatibilityType")
-	//id := c.PostForm("modelId")
+	attrKey := c.Query("attrKey")
+	attrValue := c.Query("attrValue")
+	version := c.Query("version")
+	// string 转换int
 	modelId, err := strconv.Atoi(id)
-	fmt.Print(modelId)
-	//compatibilityType := c.PostForm("compatibilityType")
 	if err == nil {
-		MadalenaTypeId := models.GetModelTypeId(modelId, compatibilityType)
-		code = e.SUCCESS
-		data["lists"] = MadalenaTypeId
-		data["code"] = modelId
-		/*maps["MadalenaTypeId"] = MadalenaTypeId
-		maps["attrKey"] = c.PostForm("attrKey")
-		maps["attrValue"] = c.PostForm("attrValue")
-		maps["Version"] = c.PostForm("version")
-		models.GetBinTemplate(maps)
 
-		data["lists"] = models.GetBin(util.GetPage(c), setting.PageSize, maps)
-		code = e.SUCCESS*/
-		fmt.Print(MadalenaTypeId)
-	} else {
-		fmt.Print(err)
+		MadalenaTypeId := models.GetModelTypeId(modelId, compatibilityType)
+
+		Bins := models.GetBin(MadalenaTypeId, attrKey, attrValue, version)
+
+		data["lists"] = MadalenaTypeId
+		data["base64"] = Bins
+
+		code = e.SUCCESS
+
 	}
 
 	c.JSON(http.StatusOK, gin.H{
