@@ -22,8 +22,8 @@ type Bins struct {
 }
 
 // 查找bin文件
-func GetBin(pageNum int, pageSize int, maps interface{}) (bins []Bins) {
 
-	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&bins)
+func GetBin(MadalenaTypeId int, attrKey string, attrValue string, version string) (bins []Bins) {
+
 	return
 }

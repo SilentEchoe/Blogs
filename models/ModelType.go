@@ -25,9 +25,10 @@ func GetModelTypeTotal(maps interface{}) (count int) {
 	return
 }
 
-func GetModelTypeId(modelId int, compatibleType string) int {
+func GetModelTypeId(modelId int, compatibleType string) (count int) {
 	var madalena MadalenaType
 	db.Where(&MadalenaType{CompatibleType: compatibleType, MadalenaId: modelId}).First(&madalena)
+
 	return madalena.ID
 }
 
