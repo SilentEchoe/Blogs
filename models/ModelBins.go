@@ -24,7 +24,7 @@ type Bins struct {
 // 查找bin文件
 
 func GetBin(madalenaTypeId int, attrKey string, attrValue string, version string) (madalenaAttrValue []MadalenaAttrValue) {
-	db.Where(&MadalenaAttrValue{MadalenaTypeId: madalenaTypeId, AttrKey: "0,0", AttrValue: "0,0", Version: "AOC-1"}).First(&madalenaAttrValue)
+	db.Where(&MadalenaAttrValue{MadalenaTypeId: madalenaTypeId, AttrKey: attrKey, AttrValue: attrValue, Version: version}).First(&madalenaAttrValue)
 
 	return
 }
