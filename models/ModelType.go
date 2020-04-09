@@ -24,3 +24,15 @@ func GetModelTypeTotal(maps interface{}) (count int) {
 
 	return
 }
+
+func GetModelTypeId(modelId int, compatibleType string) int {
+	var madalena MadalenaType
+	db.Where(&MadalenaType{CompatibleType: compatibleType, MadalenaId: modelId}).First(&madalena)
+	return madalena.ID
+}
+
+// 查询bin模板
+func GetBinTemplate(maps interface{}) (madalenaType []MadalenaType) {
+	db.Where(maps).First(&madalenaType)
+	return
+}

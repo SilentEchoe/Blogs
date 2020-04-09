@@ -23,8 +23,7 @@ type Bins struct {
 
 // 查找bin文件
 func GetBin(pageNum int, pageSize int, maps interface{}) (bins []Bins) {
+
 	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&bins)
 	return
 }
-
-// 查找
