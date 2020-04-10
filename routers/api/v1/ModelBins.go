@@ -31,15 +31,11 @@ func GetModelBins(c *gin.Context) {
 		// 先根据modelId 和compatibility 查到model_type_id
 		MadalenaTypeId := models.GetModelTypeId(modelId, compatibilityType)
 		// 根据model_type_id,attrKey, attrValue, version 这四种属性查到bin模板
-		Bins := models.GetBin(MadalenaTypeId, attrKey, attrValue, version)
+		BinTemplate := models.GetBin(MadalenaTypeId, attrKey, attrValue, version)
 
-		// 如果bin模板为空 代表使用的是bin文件
-		if Bins[0].BinTemplate != "" {
-
-		}
-
-		data["base64"] = Bins
-
+		data["BinTemplate"] = BinTemplate
+		Bins := models.GetBins(BinTemplate[0].ID)
+		data["Bins"] = Bins
 		code = e.SUCCESS
 	}
 

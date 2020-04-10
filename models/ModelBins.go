@@ -11,7 +11,7 @@ type MadalenaAttrValue struct {
 	Sn             string `json:"sn"`
 }
 
-type Bins struct {
+type MadalenaBins struct {
 	Model
 
 	MadalenaAttrValueId int    `json:"madalena_attr_value_id"`
@@ -31,6 +31,7 @@ func GetBin(madalenaTypeId int, attrKey string, attrValue string, version string
 
 // 查找bin文件
 
-func GetBins(madalenaAttrValueId int) (bins []Bins) {
-	db.Where(&Bins{MadalenaAttrValueId: madalenaAttrValueId, IsDelete: 0}).First(&bins)
+func GetBins(madalenaAttrValueId int) (bins []MadalenaBins) {
+	db.Where(&MadalenaBins{MadalenaAttrValueId: madalenaAttrValueId, IsDelete: 0}).Find(&bins)
+	return
 }
