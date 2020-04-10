@@ -33,10 +33,12 @@ func GetModelBins(c *gin.Context) {
 		// 根据model_type_id,attrKey, attrValue, version 这四种属性查到bin模板
 		Bins := models.GetBin(MadalenaTypeId, attrKey, attrValue, version)
 
-		data["lists"] = MadalenaTypeId
+		// 如果bin模板为空 代表使用的是bin文件
+		if Bins[0].BinTemplate != "" {
+
+		}
+
 		data["base64"] = Bins
-		data["test"] = Bins[0]
-		data["test1"] = Bins[0].Bins
 
 		code = e.SUCCESS
 	}
