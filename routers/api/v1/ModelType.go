@@ -40,7 +40,3 @@ func GetModelTypes(c *gin.Context) {
 	})
 
 }
-
-func GetModelTypeId(c *gin.Context) {
-
-}

@@ -19,7 +19,7 @@ func GetModelBins(c *gin.Context) {
 	data := make(map[string]interface{})
 	//maps := make(map[string]interface{})
 	code := e.ERROR
-	// 先根据modelId 和compatibility 查到model_type_id
+
 	id := c.Query("modelId")
 	compatibilityType := c.Query("compatibilityType")
 	attrKey := c.Query("attrKey")
@@ -28,16 +28,17 @@ func GetModelBins(c *gin.Context) {
 	// string 转换int
 	modelId, err := strconv.Atoi(id)
 	if err == nil {
-
+		// 先根据modelId 和compatibility 查到model_type_id
 		MadalenaTypeId := models.GetModelTypeId(modelId, compatibilityType)
-
+		// 根据model_type_id,attrKey, attrValue, version 这四种属性查到bin模板
 		Bins := models.GetBin(MadalenaTypeId, attrKey, attrValue, version)
 
 		data["lists"] = MadalenaTypeId
 		data["base64"] = Bins
+		data["test"] = Bins[0]
+		data["test1"] = Bins[0].Bins
 
 		code = e.SUCCESS
-
 	}
 
 	c.JSON(http.StatusOK, gin.H{

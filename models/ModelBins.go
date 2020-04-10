@@ -6,7 +6,7 @@ type MadalenaAttrValue struct {
 	MadalenaTypeId int    `json:"madalena_type_id"`
 	AttrKey        string `json:"attr_key"`
 	AttrValue      string `json:"attr_value"`
-	Bins           int    `json:"bin_template"`
+	Bins           string `json:"bin_template"`
 	Version        string `json:"version"`
 	Sn             string `json:"sn"`
 }
