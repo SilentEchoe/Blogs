@@ -34,6 +34,7 @@ func GetModelBins(c *gin.Context) {
 		BinTemplate := models.GetBin(MadalenaTypeId, attrKey, attrValue, version)
 
 		data["BinTemplate"] = BinTemplate
+
 		Bins := models.GetBins(BinTemplate[0].ID)
 		data["Bins"] = Bins
 		code = e.SUCCESS
