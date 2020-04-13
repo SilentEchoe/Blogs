@@ -3,11 +3,12 @@ package v1
 import (
 	"LearningNotes-Go/models"
 	"LearningNotes-Go/pkg/e"
+	"strconv"
+
 	/*"LearningNotes-Go/pkg/setting"
 	"LearningNotes-Go/pkg/util"*/
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 )
 
 // @Summary 获取bin文件
@@ -16,15 +17,22 @@ import (
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/GetModelBins [Get]
 func GetModelBins(c *gin.Context) {
+
 	data := make(map[string]interface{})
 	//maps := make(map[string]interface{})
 	code := e.ERROR
 
-	id := c.Query("modelId")
-	compatibilityType := c.Query("compatibilityType")
+	id := c.PostForm("modelId")
+	/*compatibilityType := c.Query("compatibilityType")
 	attrKey := c.Query("attrKey")
 	attrValue := c.Query("attrValue")
-	version := c.Query("version")
+	version := c.Query("version")*/
+
+	compatibilityType := c.PostForm("compatibilityType")
+	attrKey := c.PostForm("attrKey")
+	attrValue := c.PostForm("attrValue")
+	version := c.PostForm("version")
+
 	// string 转换int
 	modelId, err := strconv.Atoi(id)
 	if err == nil {
