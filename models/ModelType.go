@@ -1,39 +1,39 @@
 package models
 
-type MadalenaType struct {
+type ModalBinType struct {
 	Model
 
-	MadalenaId int           `json:"madalena_id" gorm:"index"`
-	Madalena   ConfModalName `json:"Madalena"`
+	MadalenaId    int           `json:"modal_id" gorm:"index"`
+	ConfModalName ConfModalName `json:"ConfModalName"`
 
 	CompatibleType   string `json:"compatible_type"`
 	Type             string `json:"type"`
 	ProcessingMethod string `json:"processing_method"`
 	ThresholdValue   int    `json:"threshold_value"`
-	State            int    `json:"state"`
+	State            int    `json:"model_type"`
 }
 
-func GetModelTypes(pageNum int, pageSize int, maps interface{}) (madalenaType []MadalenaType) {
-	db.Preload("Madalena").Where(maps).Offset(pageNum).Limit(pageSize).Find(&madalenaType)
+func GetModelTypes(pageNum int, pageSize int, maps interface{}) (madalenaType []ModalBinType) {
+	db.Preload("ConfModalName").Where(maps).Offset(pageNum).Limit(pageSize).Find(&madalenaType)
 
 	return
 }
 
 func GetModelTypeTotal(maps interface{}) (count int) {
-	db.Model(&MadalenaType{}).Where(maps).Count(&count)
+	db.Model(&ModalBinType{}).Where(maps).Count(&count)
 
 	return
 }
 
 func GetModelTypeId(modelId int, compatibleType string) (count int) {
-	var madalena MadalenaType
-	db.Where(&MadalenaType{CompatibleType: compatibleType, MadalenaId: modelId}).First(&madalena)
+	var madalena ModalBinType
+	db.Where(&ModalBinType{CompatibleType: compatibleType, MadalenaId: modelId}).First(&madalena)
 
 	return madalena.ID
 }
 
 // 查询bin模板
-func GetBinTemplate(maps interface{}) (madalenaType []MadalenaType) {
+func GetBinTemplate(maps interface{}) (madalenaType []ModalBinType) {
 	db.Where(maps).First(&madalenaType)
 	return
 }

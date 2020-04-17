@@ -33,7 +33,7 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/moduleName", v1.AddModelName)
 
 		//查询型号类型
-		apiv1.GET("/moduleType", v1.GetModelTypes)
+		apiv1.GET("/moduleTypes", v1.GetModelTypes)
 
 		//查询bin文件
 		apiv1.POST("/moduleBins", v1.GetModelBins)
