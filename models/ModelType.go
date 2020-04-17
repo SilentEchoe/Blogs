@@ -6,11 +6,14 @@ type ModalBinType struct {
 	MadalenaId    int           `json:"modal_id" gorm:"index"`
 	ConfModalName ConfModalName `json:"ConfModalName"`
 
-	CompatibleType   string `json:"compatible_type"`
-	Type             string `json:"type"`
+	CompatibleType string `json:"compatible_type"`
+	Type           string `json:"type"`
+
+	//处理方式 0使用bin模板 1使用bin文件
 	ProcessingMethod string `json:"processing_method"`
 	ThresholdValue   int    `json:"threshold_value"`
-	State            int    `json:"model_type"`
+
+	State int `json:"model_type"`
 }
 
 func GetModelTypes(pageNum int, pageSize int, maps interface{}) (madalenaType []ModalBinType) {
