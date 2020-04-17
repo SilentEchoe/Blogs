@@ -3,8 +3,8 @@ package models
 type MadalenaType struct {
 	Model
 
-	MadalenaId int      `json:"madalena_id" gorm:"index"`
-	Madalena   Madalena `json:"Madalena"`
+	MadalenaId int           `json:"madalena_id" gorm:"index"`
+	Madalena   ConfModalName `json:"Madalena"`
 
 	CompatibleType   string `json:"compatible_type"`
 	Type             string `json:"type"`

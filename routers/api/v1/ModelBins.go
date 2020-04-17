@@ -23,11 +23,6 @@ func GetModelBins(c *gin.Context) {
 	code := e.ERROR
 
 	id := c.PostForm("modelId")
-	/*compatibilityType := c.Query("compatibilityType")
-	attrKey := c.Query("attrKey")
-	attrValue := c.Query("attrValue")
-	version := c.Query("version")*/
-
 	compatibilityType := c.PostForm("compatibilityType")
 	attrKey := c.PostForm("attrKey")
 	attrValue := c.PostForm("attrValue")
