@@ -13,7 +13,11 @@ import (
 
 // @Summary 获取bin文件
 // @Produce  json
-// @Param name query string true "Name"
+// @Param name query string true "modelId"
+// @Param name query string true "compatibilityType"
+// @Param name query string true "attrKey"
+// @Param name query string true "attrValue"
+// @Param name query string true "version"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/GetModelBins [Get]
 func GetModelBins(c *gin.Context) {

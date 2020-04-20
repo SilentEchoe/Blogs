@@ -21,7 +21,7 @@ type ConfigFileManger struct {
 	ModalId        int    `json:"modal_id"`
 	CompatibleType string `json:"compatible_type"`
 	ConfigFiles    string `json:"config_files"`
-	enable         string `json:"enable"`
+	Enable         string `json:"enable"`
 }
 
 // 查询对应的配置文件
@@ -30,7 +30,9 @@ func GetConfigFileById(id []int) (confides []ConfigFiles) {
 	return
 }
 
-// 根据ID查到配置文件
+// GetConfigsById 根据型号id查找配置文件
+// confideManger.ConfigFiles 返回参数  返回配置文件id组
+// string 返回类型
 func GetConfigsById(id int) string {
 	var confideManger ConfigFileManger
 	db.Where("modal_id = ?", id).First(&confideManger)

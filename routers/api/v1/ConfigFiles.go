@@ -12,11 +12,11 @@ import (
 	"net/http"
 )
 
-// @Summary 获取bin文件
+// @Summary 获取配置文件
 // @Produce  json
-// @Param name query string true "Name"
+// @Param name query int true "modelId"
 // @Success 200 {string} string "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/GetModelBins [Get]
+// @Router /api/v1/GetConfigFiles [Get]
 func GetConfigFiles(c *gin.Context) {
 
 	data := make(map[string]interface{})
