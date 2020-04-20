@@ -41,6 +41,7 @@ func GetModelBins(c *gin.Context) {
 		Bins := models.GetBins(BinTemplate[0].ID)
 		data["Bins"] = Bins
 		code = e.SUCCESS
+
 	}
 
 	c.JSON(http.StatusOK, gin.H{
