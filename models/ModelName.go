@@ -49,6 +49,7 @@ func ExistModelNameByID(id int) bool {
 	if modelName.ID > 0 {
 		return true
 	}
+	return false
 }
 
 func DeleteModelName(id int) bool {

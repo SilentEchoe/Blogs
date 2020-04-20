@@ -18,7 +18,7 @@ type ConfigFileManger struct {
 	Model
 
 	ID             int    `json:"id"`
-	ModalId        string `json:"modal_id"`
+	ModalId        int    `json:"modal_id"`
 	CompatibleType string `json:"compatible_type"`
 	ConfigFiles    string `json:"config_files"`
 	enable         string `json:"enable"`

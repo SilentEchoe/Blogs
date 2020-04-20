@@ -37,6 +37,9 @@ func InitRouter() *gin.Engine {
 
 		//查询bin文件
 		apiv1.POST("/moduleBins", v1.GetModelBins)
+
+		//查询配置文件
+		apiv1.GET("/configFiles", v1.GetConfigFiles)
 	}
 
 	return r
