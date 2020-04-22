@@ -29,9 +29,6 @@ func InitRouter() *gin.Engine {
 		//获取moduleName
 		apiv1.GET("/moduleNames", v1.GetModelNames)
 
-		//新增型号名
-		apiv1.POST("/moduleName", v1.AddModelName)
-
 		//查询型号类型
 		apiv1.GET("/moduleTypes", v1.GetModelTypes)
 
