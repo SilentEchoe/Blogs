@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+//tag 不能使用19000-19999 之间的数，这部分数是保留的。
+// 1-15的tag数只占用1个字节的空间 它们应该用在频繁使用的字段
+// 16-2047 占用两个字节
+message Person{
+    int32 id = 1;
+    string name =2;
+    float height = 3;
+    float weight = 4;
+    bytes avatar = 5;
+    string email = 6;
+    bool email_verified = 7;
+
+
+    repeated string phone_numbers = 8; // packed
+}
