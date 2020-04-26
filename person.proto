@@ -69,5 +69,8 @@ enum Gender{
 }
 
 
-
+// 生成指定文件
 // protoc first.proto --csharp_out=csharp
+
+// 生成所有文件
+// protoc *.proto --csharp_out=csharp
