@@ -3,17 +3,52 @@ package main
 import (
 	"fmt"
 	firstpb "github.com/AnAnonymousFriend/LearningNotes-Go/src/first"
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"io/ioutil"
 	"log"
 )
 
 func main()  {
-	pm := NewPersonMessage()
-	writeToFile("person.bin",pm)
+	//pm := NewPersonMessage()
+	//writeToFile("person.bin",pm)
+
+	pm2 := &firstpb.PersonMessage{}
+	_ = readFromFile("person.bin", pm2)
+	fmt.Println(pm2)
+
+	pmString := toJSON(pm2)
+	fmt.Println(pmString)
+
+}
+
+func readFromFile(fileName string, pb proto.Message) error  {
+	dataBytes, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		log.Fatalln("读取文件时发生错误",err.Error())
+	}
+	err = proto.Unmarshal(dataBytes,pb)
+	if err !=nil {
+		log.Fatalln("转换为结构体的时候发生错误",err.Error())
+	}
+
+	return nil
+
+}
+
+func toJSON(pb proto.Message)string  {
+ 	marshaler := jsonpb.Marshaler{}
+ 	
+ 	str ,err := marshaler.MarshalToString(pb)
+	if err !=nil {
+		log.Fatalln("转换为Json时发生错误", err.Error())
+	}
+	
+	return  str
 }
 
 func writeToFile(fileName string, pb proto.Message) error  {
+	// 序列化
 	dataBytes, err := proto.Marshal(pb)
 	if err != nil {
 		log.Fatalln("无法序列化")
