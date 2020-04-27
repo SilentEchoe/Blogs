@@ -37,7 +37,7 @@ func readFromFile(fileName string, pb proto.Message) error  {
 }
 
 func toJSON(pb proto.Message)string  {
- 	marshaler := jsonpb.Marshaler{}
+ 	marshaler := jsonpb.Marshaler{Indent:"     "}
  	
  	str ,err := marshaler.MarshalToString(pb)
 	if err !=nil {
