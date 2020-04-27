@@ -1,6 +1,11 @@
 syntax = "proto3";
 
+
+// protoc --proto_path src/ --go_out=src/ src/first/person.proto
+
 package example.firts;
+
+option go_package ="firstpb";
 
 message PersonMessage {
     int32 id = 1;
