@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package example.second;
+
+option go_package = "enumpb";
+
+message EnumMessage{
+    int32 id =1;
+}
+
+enum Gender {
+    option allow_alias = true;
+
+    NOT_SPECIFIED =0;
+
+}
