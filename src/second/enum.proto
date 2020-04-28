@@ -6,11 +6,16 @@ option go_package = "enumpb";
 
 message EnumMessage{
     int32 id =1;
+    Gender gender = 2;
 }
 
 enum Gender {
     option allow_alias = true;
 
-    NOT_SPECIFIED =0;
+    NOT_SPECIFIED = 0;
+    WOMAN = 1;
+    MAN = 2;
 
+    FEMALE = 1;
+    MALE = 2;
 }

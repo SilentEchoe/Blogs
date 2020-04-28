@@ -4,6 +4,8 @@
 // 	protoc        v3.11.4
 // source: first/person.proto
 
+// protoc --proto_path src/ --go_out=src/ src/first/person.proto
+
 package firstpb
 
 import (

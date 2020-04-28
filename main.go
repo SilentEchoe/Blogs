@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	firstpb "github.com/AnAnonymousFriend/LearningNotes-Go/src/first"
+	enumpb "github.com/AnAnonymousFriend/LearningNotes-Go/src/second"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"io/ioutil"
@@ -20,6 +21,10 @@ func main()  {
 	pmString := toJSON(pm2)
 	fmt.Println(pmString)
 
+	em := NewEnumMessage()
+
+	fmt.Println(enumpb.Gender_name[int32(em.Gender)])
+
 }
 
 func readFromFile(fileName string, pb proto.Message) error  {
@@ -36,7 +41,15 @@ func readFromFile(fileName string, pb proto.Message) error  {
 
 }
 
+func NewEnumMessage() *enumpb.EnumMessage{
+	em := enumpb.EnumMessage{
+		Id: 345,
+		Gender : enumpb.Gender_FEMALE,
+	}
+	em.Gender = enumpb.Gender_FEMALE
 
+	return  &em
+}
 
 
 
