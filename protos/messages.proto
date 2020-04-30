@@ -1,0 +1,6 @@
+syntax = "protos3";
+
+//option csharp_namespace = "GrpcServer.Web.Protos";
+option go_package = "pb";
+
+import "enums.proto";
