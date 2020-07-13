@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/micro/go-micro/registry"
+
 	"github.com/micro/go-micro/registry/etcd"
 	"github.com/micro/go-micro/web"
 )
