@@ -2,13 +2,8 @@ package main
 
 import (
 	"LearningNotes-Go/Services"
-	"fmt"
+	"LearningNotes-Go/Weblib"
 
-	//"LearningNotes-Go/Weblib"
-	"context"
-
-	//"LearningNotes-Go/Weblib"
-	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/web"
@@ -19,13 +14,13 @@ func main() {
 	consulReg := consul.NewRegistry( //新建一个consul注册的地址，也就是我们consul服务启动的机器ip+端口
 		registry.Addrs("127.0.0.1:8500"),
 	)
-	ginRouter := gin.Default()
+	/*ginRouter := gin.Default()*/
 
 	myService := micro.NewService(micro.Name("prodservice.client"))
 
 	prodService := Services.NewProdService("prodservice", myService.Client())
 
-	v1Group := ginRouter.Group("/v1")
+	/*v1Group := ginRouter.Group("/v1")
 	{
 		v1Group.Handle("POST", "/prods", func(ginCtx *gin.Context) {
 			var prodReq Services.ProdsRequest
@@ -40,12 +35,12 @@ func main() {
 
 		})
 
-	}
+	}*/
 
 	httpServer := web.NewService(
 		web.Name("httpprodservice"), //注册进consul服务中的service名字
 		web.Address(":8001"),        //注册进consul服务中的端口,也是这里我们gin的server地址
-		web.Handler(ginRouter),
+		web.Handler(Weblib.NewGinRouter(prodService)),
 		web.Registry(consulReg),
 	)
 
