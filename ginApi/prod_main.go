@@ -3,39 +3,41 @@ package main
 import (
 	"LearningNotes-Go/Services"
 	"LearningNotes-Go/Weblib"
-
+	"context"
+	"fmt"
 	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/metadata"
+
+	"github.com/micro/go-micro/client"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/web"
 	"github.com/micro/go-plugins/registry/consul"
 )
 
+type logWrapper struct {
+	client.Client
+}
+
+func (l *logWrapper) Call(ctx context.Context, req client.Request, rsp interface{}, opts ...client.CallOption) error {
+	md, _ := metadata.FromContext(ctx)
+	fmt.Printf("[Log Wrapper] ctx: %v service: %s method: %s\n", md, req.Service(), req.Endpoint())
+	return l.Client.Call(ctx, req, rsp)
+}
+
+func NewLogWrapper(c client.Client) client.Client {
+	return &logWrapper{c}
+}
+
 func main() {
 	consulReg := consul.NewRegistry( //新建一个consul注册的地址，也就是我们consul服务启动的机器ip+端口
 		registry.Addrs("127.0.0.1:8500"),
 	)
-	/*ginRouter := gin.Default()*/
-
-	myService := micro.NewService(micro.Name("prodservice.client"))
+	myService := micro.NewService(
+		micro.Name("prodservice.client"),
+		micro.WrapClient(NewLogWrapper),
+	)
 
 	prodService := Services.NewProdService("prodservice", myService.Client())
-
-	/*v1Group := ginRouter.Group("/v1")
-	{
-		v1Group.Handle("POST", "/prods", func(ginCtx *gin.Context) {
-			var prodReq Services.ProdsRequest
-			err := ginCtx.Bind(&prodReq)
-
-			if err != nil {
-				ginCtx.JSON(500, gin.H{"status": err.Error()})
-			} else {
-				prodRes, _ := prodService.GetProdsList(context.Background(), &prodReq)
-				ginCtx.JSON(200, gin.H{"data": prodRes.Data})
-			}
-
-		})
-
-	}*/
 
 	httpServer := web.NewService(
 		web.Name("httpprodservice"), //注册进consul服务中的service名字
