@@ -26,39 +26,7 @@ func GetProdsList(ginCtx *gin.Context) {
 	if err != nil {
 		ginCtx.JSON(500, gin.H{"status": err.Error()})
 	} else {
-
 		prodRes, _ := prodService.GetProdsList(context.Background(), &prodReq)
-
 		ginCtx.JSON(200, gin.H{"data": prodRes.Data})
-		/*if err != nil {
-			ginCtx.JSON(500, gin.H{"status": err.Error()})
-		} else {
-			ginCtx.JSON(200, gin.H{"data": prodRes.Data})
-		}*/
-		/*//熔断代码改造
-		configA := hystrix.CommandConfig{
-			Timeout: 1000,
-		}
-		//配置command
-		hystrix.ConfigureCommand("getprods", configA)
-
-		// 执行使用Do 方法
-		var prodRes *Services.ProdListResponse
-
-		err := hystrix.Do("getprods", func() error {
-			prodRes, err = prodService.GetProdsList(context.Background(), &prodReq)
-			return err
-		}, func(err error) error {
-
-			prodRes, err = defaultProds()
-			return err
-		})
-
-		if err != nil {
-			ginCtx.JSON(500, gin.H{"status": err.Error()})
-		} else {
-			ginCtx.JSON(200, gin.H{"data": prodRes.Data})
-		}*/
-
 	}
 }
