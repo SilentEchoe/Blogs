@@ -4,7 +4,6 @@ import (
 	"LearningNotes-Go/Services"
 	"context"
 	"github.com/gin-gonic/gin"
-	"strconv"
 )
 
 /*
@@ -20,23 +19,6 @@ func GetProdsList(ginCtx *gin.Context) {
 	}
 }*/
 
-func newProd(id int32, pname string) *Services.ProdModel {
-	return &Services.ProdModel{ProdID: id, ProdName: pname}
-}
-
-// 熔断的降级方法
-// 降级方法尽量不要有异常，且最好不需要连接数据库，可从Redis 或文本文件读取数据
-func defaultProds() (*Services.ProdListResponse, error) {
-	models := make([]*Services.ProdModel, 0)
-	var i int32
-	for i = 0; i < 5; i++ {
-		models = append(models, newProd(20+i, "prodname"+strconv.Itoa(20+int(i))))
-	}
-	res := &Services.ProdListResponse{}
-	res.Data = models
-	return res, nil
-}
-
 func GetProdsList(ginCtx *gin.Context) {
 	prodService := ginCtx.Keys["prodservice"].(Services.ProdService)
 	var prodReq Services.ProdsRequest
@@ -45,12 +27,14 @@ func GetProdsList(ginCtx *gin.Context) {
 		ginCtx.JSON(500, gin.H{"status": err.Error()})
 	} else {
 
-		prodRes, err := prodService.GetProdsList(context.Background(), &prodReq)
-		if err != nil {
+		prodRes, _ := prodService.GetProdsList(context.Background(), &prodReq)
+
+		ginCtx.JSON(200, gin.H{"data": prodRes.Data})
+		/*if err != nil {
 			ginCtx.JSON(500, gin.H{"status": err.Error()})
 		} else {
 			ginCtx.JSON(200, gin.H{"data": prodRes.Data})
-		}
+		}*/
 		/*//熔断代码改造
 		configA := hystrix.CommandConfig{
 			Timeout: 1000,
