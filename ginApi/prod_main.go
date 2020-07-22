@@ -3,6 +3,7 @@ package main
 import (
 	"LearningNotes-Go/Services"
 	"LearningNotes-Go/Weblib"
+	"LearningNotes-Go/Wrappers"
 	"context"
 	"fmt"
 	"github.com/micro/go-micro"
@@ -35,6 +36,7 @@ func main() {
 	myService := micro.NewService(
 		micro.Name("prodservice.client"),
 		micro.WrapClient(NewLogWrapper),
+		micro.WrapClient(Wrappers.NewProdsWrapper),
 	)
 
 	prodService := Services.NewProdService("prodservice", myService.Client())
