@@ -14,7 +14,7 @@ func PanicIfError(err error) {
 
 func GetProdDetail(ginCtx *gin.Context) {
 	var prodReq Services.ProdsRequest
-	PanicIfError(ginCtx.Bind(&prodReq))
+	PanicIfError(ginCtx.BindUri(&prodReq))
 	prodService := ginCtx.Keys["prodservice"].(Services.ProdService)
 	resp, _ := prodService.GetProdsDetail(context.Background(), &prodReq)
 	ginCtx.JSON(200, gin.H{"data": resp.Data})
