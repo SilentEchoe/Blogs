@@ -25,3 +25,8 @@ func (*ProdService) GetProdsList(ctx context.Context, in *Service.ProdsRequest, 
 func newProd(id int32, pname string) *Service.ProdModel {
 	return &Service.ProdModel{ProdID: id, ProdName: pname}
 }
+
+func (*ProdService) GetProdsDetail(ctx context.Context, req *Service.ProdsRequest, rsp *Service.ProdDetailResponse) error {
+	rsp.Data = newProd(req.ProdId, "测试商品详情")
+	return nil
+}
