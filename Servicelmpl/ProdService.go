@@ -27,6 +27,8 @@ func newProd(id int32, pname string) *Service.ProdModel {
 }
 
 func (*ProdService) GetProdsDetail(ctx context.Context, req *Service.ProdsRequest, rsp *Service.ProdDetailResponse) error {
+	time.Sleep(time.Second * 3)
+
 	rsp.Data = newProd(req.ProdId, "测试商品详情")
 	return nil
 }

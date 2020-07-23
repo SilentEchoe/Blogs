@@ -24,7 +24,7 @@ func (l *ProdsWrapper) Call(ctx context.Context, req client.Request, rsp interfa
 		return l.Client.Call(ctx, req, rsp)
 	}, func(err error) error {
 
-		defaultProds(rsp)
+		defaultData(rsp)
 		return nil
 	})
 }
@@ -47,4 +47,14 @@ func defaultProds(rsp interface{}) {
 	}
 	result := rsp.(*Services.ProdListResponse)
 	result.Data = models
+}
+
+// 通用的降级方法
+func defaultData(rsp interface{}) {
+	switch t := rsp.(type) {
+	case *Services.ProdListResponse:
+		defaultProds(rsp)
+	case *Services.ProdDetailResponse:
+		t.Data = newProd(10, "降级商品")
+	}
 }
