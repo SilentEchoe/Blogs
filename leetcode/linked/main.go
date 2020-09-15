@@ -7,20 +7,20 @@ import "fmt"
 type node struct {
 	LastNode *node
 	NextNode *node
-	Value    string
+	Value    int
 }
 
 func main() {
 	nodeLink := new(node)
-	nodeLink.Value = "one"
+	nodeLink.Value = 2
 
 	node1 := new(node)
-	node1.Value = "two"
+	node1.Value = 4
 	node1.LastNode = nodeLink
 	nodeLink.NextNode = node1
 
 	node2 := new(node)
-	node2.Value = "three"
+	node2.Value = 3
 	node2.LastNode = node1
 	node1.NextNode = node2
 
