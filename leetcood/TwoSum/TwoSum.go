@@ -16,6 +16,7 @@ func main() {
 
 }
 
+// 暴力破解
 func TwoSum(nums []int, target int) []int {
 	var lennum = len(nums) - 1
 	for i := 0; i <= lennum; i++ {
@@ -37,5 +38,12 @@ func TwoSum(nums []int, target int) []int {
 			}
 		}
 	}
+	return nil
+}
+
+// map
+
+func TwoSum(nums []int, target int) []int {
+
 	return nil
 }
