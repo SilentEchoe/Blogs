@@ -65,7 +65,7 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 	str3 := strconv.FormatInt(int1+int2, 10)
 
 	//NewNode(str3)
-	return NewNode(str3)
+	return NewNode2(str3)
 }
 
 func LinkedToString(l1 *ListNode) string {
@@ -85,7 +85,6 @@ func LinkedToString(l1 *ListNode) string {
 
 // 创建N个节点的循环链表
 func NewNode(str string) *ListNode {
-
 	r := new(ListNode)
 	str1 := str[0:1]
 	intr, _ := strconv.Atoi(str1)
@@ -114,4 +113,21 @@ func (node *ListNode) AddNode(int2 int) {
 	r := new(ListNode)
 	r.Val = int2
 	node.Next = r
+}
+
+func NewNode2(str string) *ListNode {
+	r := new(ListNode)
+	str1 := str[len(str)-1 : len(str)]
+	intr, _ := strconv.Atoi(str1)
+	r.Val = intr
+
+	for i := len(str); i > 0; i-- {
+
+		str2 := str[len(str)-1 : len(str)]
+		int2, _ := strconv.Atoi(str2)
+		r.AddNode(int2)
+
+	}
+
+	return r
 }
