@@ -121,9 +121,8 @@ func NewNode2(str string) *ListNode {
 	intr, _ := strconv.Atoi(str1)
 	r.Val = intr
 
-	for i := len(str); i > 0; i-- {
-
-		str2 := str[len(str)-1 : len(str)]
+	for i := len(str) - 1; i > 0; i-- {
+		str2 := str[i-1 : i]
 		int2, _ := strconv.Atoi(str2)
 		r.AddNode(int2)
 
