@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strconv"
-	"strings"
 )
 
 /**
@@ -43,11 +42,11 @@ func main() {
 	node22.Val = 4
 	node11.Next = node22
 
+	//addTwoNumbers(nodeLink, nodeLink2)
 	nowlistNode := addTwoNumbers(nodeLink, nodeLink2)
-
 	for {
 		if nowlistNode != nil {
-			fmt.Print(nowlistNode.Val)
+			fmt.Println(nowlistNode.Val)
 			nowlistNode = nowlistNode.Next
 		} else {
 			break
@@ -60,19 +59,18 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 	var strl1 = LinkedToString(l1)
 
 	var strl2 = LinkedToString(l2)
+
 	int1, _ := strconv.ParseInt(strl1, 10, 64)
 	int2, _ := strconv.ParseInt(strl2, 10, 64)
 	str3 := strconv.FormatInt(int1+int2, 10)
 
-	NewNode(strings.Fields(str3))
-	return nil
+	//NewNode(str3)
+	return NewNode(str3)
 }
 
 func LinkedToString(l1 *ListNode) string {
 	var strl1 string
-
 	nowlistNode := l1
-
 	for {
 		if nowlistNode != nil {
 			str21 := strconv.Itoa(nowlistNode.Val)
@@ -86,17 +84,34 @@ func LinkedToString(l1 *ListNode) string {
 }
 
 // 创建N个节点的循环链表
-func NewNode(str []string) *ListNode {
-	//p := new(ListNode)
-	for i := 0; i < len(str); i++ {
-		int1, _ := strconv.Atoi(str[i])
-		fmt.Println(int1)
-		/*int1, _ := strconv.Atoi(str[i])
-		r := new(ListNode)
-		r.Val = int1
-		p = r
-		p.Next = r*/
+func NewNode(str string) *ListNode {
+
+	r := new(ListNode)
+	str1 := str[0:1]
+	intr, _ := strconv.Atoi(str1)
+	r.Val = intr
+
+	for i := 1; i < len(str); i++ {
+
+		str2 := str[i : i+1]
+		int2, _ := strconv.Atoi(str2)
+		r.AddNode(int2)
 
 	}
-	return nil
+
+	return r
+}
+
+// 添加节点到链表尾部
+func (node *ListNode) AddNode(int2 int) {
+	for {
+		if node.Next != nil {
+			node = node.Next
+		} else {
+			break
+		}
+	}
+	r := new(ListNode)
+	r.Val = int2
+	node.Next = r
 }
