@@ -10,7 +10,7 @@ type node struct {
 	Value    int
 }
 
-func main() {
+func init() {
 	nodeLink := new(node)
 	nodeLink.Value = 2
 
