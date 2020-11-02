@@ -6,5 +6,10 @@ type ListNode struct {
 }
 
 func deleteDuplicates(head *ListNode) *ListNode {
-	return nil
+
+	if head == nil {
+		return nil
+	}
+	deleteDuplicates(head)
+	return head
 }
