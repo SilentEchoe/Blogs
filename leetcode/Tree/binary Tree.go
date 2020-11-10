@@ -36,13 +36,12 @@ func main() {
 		Right: &tree20,
 	}
 
-	//println("参数为%d:", preorderTraversal(&tree3))
-	//for _, v := range preorderTraversal(&tree3) {
-	//	println(v)
-	//}
+	//var i = maxDepth(&tree3)
+	//println(i)
 
-	var i = maxDepth(&tree3)
-	println(i)
+	var req = divideAndConquer(&tree3)
+	println(req)
+
 }
 
 func maxDepth(root *TreeNode) int {
@@ -53,6 +52,25 @@ func maxDepth(root *TreeNode) int {
 
 	left := maxDepth(root.Left)
 	right := maxDepth(root.Right)
+	// conquer：合并左右子树结果
+	if left > right {
+		return left + 1
+	}
+	return right + 1
+}
+
+func divideAndConquer(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	// divide：分左右子树分别计算
+	left := maxDepth(root.Left)
+	right := maxDepth(root.Right)
+
+	if left == -1 || right == -1 || left-right > 1 || right-left > 1 {
+		return -1
+	}
+
 	// conquer：合并左右子树结果
 	if left > right {
 		return left + 1

@@ -9,9 +9,6 @@ func main() {
 
 }
 
-//
-//func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
-//	for key,value range l1:{
-//
-//}
-//}
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+	return nil
+}
