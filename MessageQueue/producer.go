@@ -38,7 +38,9 @@ func main() {
 
 	//println(runtime.NumCPU())
 
-	go NewDoTask()
+	//go NewDoTask()
+	go DoTask(globalQueue)
+
 	cancelled(done)
 	//time.Sleep(20 * time.Second)
 	println("任务结束")
@@ -60,17 +62,20 @@ func NewDoTask() {
 	done <- 0
 }
 
-func DoTask(m MyQueue) {
+func DoTask(m []MyQueue) {
+	for _, value := range m {
+		if value.key == "show" {
+			//time.Sleep(1000)
+			println("执行show 任务")
+		}
 
-	if m.key == "show" {
-		//time.Sleep(1000)
-		println("执行show 任务")
+		if value.key == "update" {
+			//time.Sleep(1000)
+			println("update 任务")
+		}
 	}
+	done <- 0
 
-	if m.key == "update" {
-		//time.Sleep(1000)
-		println("update 任务")
-	}
 }
 
 func showQueQu() {
