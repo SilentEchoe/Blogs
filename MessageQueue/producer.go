@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"runtime"
-	"sync"
 	"time"
 )
 
@@ -23,8 +21,6 @@ func QueQuPopup() {
 	globalQueue = globalQueue[1:]
 }
 
-var wg sync.WaitGroup
-
 func main() {
 	for i := 0; i < 5; i++ {
 		var task1 = MyQueue{
@@ -41,35 +37,24 @@ func main() {
 		QueQuSend(task2)
 	}
 
-	runtime.GOMAXPROCS(1)
-	wg.Add(1)
+	println(runtime.NumCPU())
 
 	go NewDoTask()
-	wg.Wait()
-	//go NewDoTask()
-
+	time.Sleep(10 * time.Microsecond)
 	println("任务结束")
+
+	select {}
+
 }
 
 func NewDoTask() {
-	defer wg.Done()
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 10000; i++ {
 		println("执行任务", i)
 	}
 
 }
 
-func spinner(delay time.Duration) {
-	for {
-		for _, r := range `-\|/` {
-			fmt.Printf("\r%c", r)
-			time.Sleep(delay)
-		}
-	}
-}
-
 func DoTask(m MyQueue) {
-	defer wg.Done()
 
 	if m.key == "show" {
 		//time.Sleep(1000)
