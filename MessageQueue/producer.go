@@ -1,9 +1,6 @@
 package main
 
-import (
-	"runtime"
-	"time"
-)
+import "fmt"
 
 type MyQueue struct {
 	key     string
@@ -21,6 +18,8 @@ func QueQuPopup() {
 	globalQueue = globalQueue[1:]
 }
 
+var done = make(chan int)
+
 func main() {
 	for i := 0; i < 5; i++ {
 		var task1 = MyQueue{
@@ -37,21 +36,28 @@ func main() {
 		QueQuSend(task2)
 	}
 
-	println(runtime.NumCPU())
+	//println(runtime.NumCPU())
 
 	go NewDoTask()
-	time.Sleep(10 * time.Microsecond)
+	cancelled(done)
+	//time.Sleep(20 * time.Second)
 	println("任务结束")
-
-	select {}
 
 }
 
+func cancelled(done chan int) {
+	select {
+	case <-done:
+		fmt.Println("quit")
+		return
+	}
+}
+
 func NewDoTask() {
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 100; i++ {
 		println("执行任务", i)
 	}
-
+	done <- 0
 }
 
 func DoTask(m MyQueue) {
