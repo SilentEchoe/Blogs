@@ -8,17 +8,8 @@ type MyQueue struct {
 	IsExist int
 }
 
-var globalQueue = make([]MyQueue, 0)
-
-func QueQuSend(queue MyQueue) {
-	globalQueue = append(globalQueue, queue)
-}
-
-func QueQuPopup() {
-	globalQueue = globalQueue[1:]
-}
-
 var done = make(chan int)
+var globalQueue = make([]MyQueue, 0)
 
 func main() {
 	for i := 0; i < 5; i++ {
@@ -37,7 +28,6 @@ func main() {
 	}
 
 	//println(runtime.NumCPU())
-
 	//go NewDoTask()
 	go DoTask(globalQueue)
 
@@ -46,6 +36,13 @@ func main() {
 	println("任务结束")
 
 }
+func QueQuSend(queue MyQueue) {
+	globalQueue = append(globalQueue, queue)
+}
+
+func QueQuPopup() {
+	globalQueue = globalQueue[1:]
+}
 
 func cancelled(done chan int) {
 	select {
@@ -53,13 +50,6 @@ func cancelled(done chan int) {
 		fmt.Println("quit")
 		return
 	}
-}
-
-func NewDoTask() {
-	for i := 0; i < 100; i++ {
-		println("执行任务", i)
-	}
-	done <- 0
 }
 
 func DoTask(m []MyQueue) {
@@ -73,7 +63,9 @@ func DoTask(m []MyQueue) {
 			//time.Sleep(1000)
 			println("update 任务")
 		}
+		QueQuPopup()
 	}
+
 	done <- 0
 
 }
