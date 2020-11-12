@@ -1,78 +1,66 @@
 package main
 
-import "fmt"
-
-type MyQueue struct {
-	key     string
-	value   string
+type Task struct {
+	Topic   string
+	msg     interface{}
 	IsExist int
 }
 
-var done = make(chan int)
-var globalQueue = make([]MyQueue, 0)
+type Subscription interface {
+	publish(topic string, msg interface{}) error
+	subscribe(topic string) (chan interface{}, error)
+	unsubscribe(topic string) error
+	close()
+	broadcast(msg interface{}, subscribers []chan interface{})
+}
 
-func main() {
-	for i := 0; i < 5; i++ {
-		var task1 = MyQueue{
-			key:     "show",
-			value:   "show log",
-			IsExist: 0,
+var MyTaskQueue = make([]Task, 0)
+var MySubscription = make([]string, 0)
+
+func publish(tn string, msg interface{}) error {
+	var newTask = Task{
+		Topic:   tn,
+		msg:     msg,
+		IsExist: 0,
+	}
+	MyTaskQueue = append(MyTaskQueue, newTask)
+	return nil
+}
+
+func subscribe(topic string) (chan interface{}, error) {
+	var isExist = false
+	for _, value := range MySubscription {
+		if value == topic {
+			isExist = false
+			break
 		}
-		QueQuSend(task1)
-		var task2 = MyQueue{
-			key:     "update",
-			value:   "show log",
-			IsExist: 0,
-		}
-		QueQuSend(task2)
+	}
+	if isExist {
+		MySubscription = append(MySubscription, topic)
 	}
 
-	//println(runtime.NumCPU())
-	//go NewDoTask()
-	go DoTask(globalQueue)
-
-	cancelled(done)
-	//time.Sleep(20 * time.Second)
-	println("任务结束")
-
-}
-func QueQuSend(queue MyQueue) {
-	globalQueue = append(globalQueue, queue)
-}
-
-func QueQuPopup() {
-	globalQueue = globalQueue[1:]
-}
-
-func cancelled(done chan int) {
-	select {
-	case <-done:
-		fmt.Println("quit")
-		return
-	}
-}
-
-func DoTask(m []MyQueue) {
-	for _, value := range m {
-		if value.key == "show" {
-			//time.Sleep(1000)
-			println("执行show 任务")
+	msgChan := make(chan interface{})
+	for _, value := range MyTaskQueue {
+		if value.Topic == topic {
+			msgChan <- value
 		}
-
-		if value.key == "update" {
-			//time.Sleep(1000)
-			println("update 任务")
-		}
-		QueQuPopup()
 	}
-
-	done <- 0
-
+	return msgChan, nil
 }
 
-func showQueQu() {
+func unsubscribe(topic string) error {
+	for _, value := range MySubscription {
+		if value == topic {
 
-	for _, value := range globalQueue {
-		println(value.key, value.value)
+		}
 	}
+	var index = 0
+	for i := 0; i <= len(MySubscription)-1; i++ {
+		if MySubscription[i] == topic {
+			index = i
+			break
+		}
+	}
+	MySubscription = append(MySubscription[:index], MySubscription[index+1:]...)
+	return nil
 }
