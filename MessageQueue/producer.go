@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type Task struct {
 	Topic   string
 	msg     interface{}
@@ -17,9 +19,9 @@ type Subscription interface {
 var MyTaskQueue = make([]Task, 0)
 var MySubscription = make([]string, 0)
 
-func publish(tn string, msg interface{}) error {
+func publish(topic string, msg interface{}) error {
 	var newTask = Task{
-		Topic:   tn,
+		Topic:   topic,
 		msg:     msg,
 		IsExist: 0,
 	}
@@ -29,31 +31,35 @@ func publish(tn string, msg interface{}) error {
 
 func subscribe(topic string) (chan interface{}, error) {
 	var isExist = false
+
 	for _, value := range MySubscription {
 		if value == topic {
 			isExist = false
 			break
+		} else {
+			isExist = true
 		}
 	}
-	if isExist {
+
+	if len(MySubscription) == 0 || isExist {
 		MySubscription = append(MySubscription, topic)
 	}
 
-	msgChan := make(chan interface{})
-	for _, value := range MyTaskQueue {
-		if value.Topic == topic {
-			msgChan <- value
+	msgChan := make(chan interface{}, len(MyTaskQueue))
+
+	go func() {
+		for _, value := range MyTaskQueue {
+			if value.Topic == topic {
+				msgChan <- value
+			}
 		}
-	}
+		close(msgChan)
+	}()
+
 	return msgChan, nil
 }
 
 func unsubscribe(topic string) error {
-	for _, value := range MySubscription {
-		if value == topic {
-
-		}
-	}
 	var index = 0
 	for i := 0; i <= len(MySubscription)-1; i++ {
 		if MySubscription[i] == topic {
@@ -61,6 +67,25 @@ func unsubscribe(topic string) error {
 			break
 		}
 	}
-	MySubscription = append(MySubscription[:index], MySubscription[index+1:]...)
+	if index != 0 {
+		MySubscription = append(MySubscription[:index], MySubscription[index+1:]...)
+	}
 	return nil
+}
+
+func broadcast(msg interface{}, subscribers []chan interface{}) {
+
+}
+
+func main() {
+
+	publish("Select", "show log")
+
+	var consumer, err = subscribe("Select")
+	if err == nil {
+		select {
+		case res := <-consumer:
+			fmt.Println(res)
+		}
+	}
 }
