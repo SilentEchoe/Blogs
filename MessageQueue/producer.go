@@ -79,9 +79,17 @@ func broadcast(msg interface{}, subscribers []chan interface{}) {
 
 func main() {
 
-	publish("Select", "show log")
+	_ = publish("Select", "show log")
+	_ = publish("Delect", "Delect this log")
+	go NewDoSelectTask("Select")
+	go NewDoSelectTask("Delect")
+	for {
 
-	var consumer, err = subscribe("Select")
+	}
+}
+
+func NewDoSelectTask(topic string) {
+	var consumer, err = subscribe(topic)
 	if err == nil {
 		select {
 		case res := <-consumer:
