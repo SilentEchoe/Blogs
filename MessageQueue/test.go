@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"strings"
 	"sync"
 	"time"
 )
@@ -73,4 +75,35 @@ func (p *Publisher) Close() {
 		delete(p.subscribers, sub)
 		close(sub)
 	}
+}
+
+func main() {
+	p := NewPublisher(100*time.Millisecond, 10)
+	defer p.Close()
+
+	all := p.Subscribe()
+	goland := p.SubscribeTopic(func(v interface{}) bool {
+		if s, ok := v.(string); ok {
+			return strings.Contains(s, "goland")
+		}
+		return false
+	})
+
+	p.Publish("hello, world !")
+	p.Publish("hello, goland !")
+
+	go func() {
+		for msg := range all {
+			fmt.Println("all:", msg)
+		}
+	}()
+
+	go func() {
+		for msg := range goland {
+			fmt.Println("golang:", msg)
+		}
+	}()
+
+	time.Sleep(3 * time.Second)
+
 }
