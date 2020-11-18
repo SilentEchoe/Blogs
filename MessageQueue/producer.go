@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 type Task struct {
 	Topic   string
@@ -77,23 +80,26 @@ func broadcast(msg interface{}, subscribers []chan interface{}) {
 
 }
 
+var wg sync.WaitGroup
+
 func main() {
 
+	wg.Add(2)
 	_ = publish("Select", "show log")
 	_ = publish("Delect", "Delect this log")
 	go NewDoSelectTask("Select")
 	go NewDoSelectTask("Delect")
-	for {
-
-	}
+	wg.Wait()
 }
 
 func NewDoSelectTask(topic string) {
 	var consumer, err = subscribe(topic)
 	if err == nil {
+		defer wg.Done()
 		select {
 		case res := <-consumer:
 			fmt.Println(res)
 		}
+
 	}
 }
