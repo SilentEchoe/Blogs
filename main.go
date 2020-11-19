@@ -1,19 +1,20 @@
 package main
 
-type Test struct {
-	value int
-}
+import "fmt"
 
 func main() {
-	var slice1 = make([]Test, 0)
-	test := Test{
-		value: 1,
-	}
-	slice1 = append(slice1, test)
+	slice := []int{6, 7, 8}
+	myMap := make(map[int]*int)
 
-	for key, value := range slice1 {
-		println(key)
-		println(value.value)
+	for index, value := range slice {
+		myMap[index] = &value
 	}
+	fmt.Println("=====new map=====")
+	printMap(myMap)
+}
 
+func printMap(myMap map[int]*int) {
+	for key, value := range myMap {
+		fmt.Printf("map[%v]=%v\n", key, *value)
+	}
 }
