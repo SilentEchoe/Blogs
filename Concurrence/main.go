@@ -7,7 +7,10 @@ import (
 
 // Mutex 嵌入式
 type Counter struct {
-	sync.Mutex
+	CounterType int
+	Name        string
+
+	mu    sync.Mutex
 	Count uint64
 }
 
@@ -21,9 +24,9 @@ func main() {
 			defer wg.Done()
 			// 对变量count执行10次加1
 			for j := 0; j < 100000; j++ {
-				counter.Lock()
+				counter.mu.Lock()
 				counter.Count++
-				counter.Unlock()
+				counter.mu.Unlock()
 			}
 		}()
 	}
