@@ -1,14 +1,17 @@
 package main
 
-import "github.com/go-ping/ping"
+import (
+	"github.com/go-ping/ping"
+)
 
 func main() {
-	pinger, err := ping.NewPinger("www.google.com")
+	pinger, err := ping.NewPinger("www.baidu.com")
 	if err != nil {
 		panic(err)
 	}
-	pinger.Count = 1
-	err = pinger.Run() // Blocks until finished.
+	pinger.SetPrivileged(true)
+	pinger.Count = 3
+	err = pinger.Run() // blocks until finished
 	if err != nil {
 		panic(err)
 	}

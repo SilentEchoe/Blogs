@@ -3,34 +3,63 @@ package main
 import (
 	"fmt"
 	"sync"
+	"sync/atomic"
+	"time"
+	"unsafe"
 )
 
-// Mutex 嵌入式
-type Counter struct {
-	CounterType int
-	Name        string
-
-	mu    sync.Mutex
-	Count uint64
+func main() {
+	count()
 }
 
-func main() {
-	var counter Counter
-	// 使用WaitGroup等待10个goroutine完成
-	var wg sync.WaitGroup
-	wg.Add(10)
-	for i := 0; i < 10; i++ {
+const (
+	mutexLocked = 1 << iota // mutex is locked
+	mutexWoken
+	mutexStarving
+	mutexWaiterShift = iota
+)
+
+type Mutex struct {
+	sync.Mutex
+}
+
+func (m *Mutex) Count() int {
+	// 获取state字段的值
+	v := atomic.LoadInt32((*int32)(unsafe.Pointer(&m.Mutex)))
+	v = v >> mutexWaiterShift //得到等待者的数值
+	v = v + (v & mutexLocked) //再加上锁持有者的数量，0或者1
+	return int(v)
+}
+
+// 锁是否被持有
+func (m *Mutex) IsLocked() bool {
+	state := atomic.LoadInt32((*int32)(unsafe.Pointer(&m.Mutex)))
+	return state&mutexLocked == mutexLocked
+}
+
+// 是否有等待者被唤醒
+func (m *Mutex) IsWoken() bool {
+	state := atomic.LoadInt32((*int32)(unsafe.Pointer(&m.Mutex)))
+	return state&mutexWoken == mutexWoken
+}
+
+// 锁是否处于饥饿状态
+func (m *Mutex) IsStarving() bool {
+	state := atomic.LoadInt32((*int32)(unsafe.Pointer(&m.Mutex)))
+	return state&mutexStarving == mutexStarving
+}
+
+func count() {
+	var mu Mutex
+	for i := 0; i < 1000; i++ { // 启动1000个goroutine
 		go func() {
-			defer wg.Done()
-			// 对变量count执行10次加1
-			for j := 0; j < 100000; j++ {
-				counter.mu.Lock()
-				counter.Count++
-				counter.mu.Unlock()
-			}
+			mu.Lock()
+			time.Sleep(time.Second)
+			mu.Unlock()
 		}()
 	}
-	// 等待10个goroutine完成
-	wg.Wait()
-	fmt.Println(counter.Count)
+
+	time.Sleep(time.Second)
+	// 输出锁的信息
+	fmt.Printf("waitings: %d, isLocked: %t, woken: %t,  starving: %t\n", mu.Count(), mu.IsLocked(), mu.IsWoken(), mu.IsStarving())
 }
