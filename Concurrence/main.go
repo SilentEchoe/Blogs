@@ -23,7 +23,7 @@ type Mutex struct {
 	sync.Mutex
 }
 
-func (m *Mutex) Count() int {
+func (m *Mutex) count() int {
 	// 获取state字段的值
 	v := atomic.LoadInt32((*int32)(unsafe.Pointer(&m.Mutex)))
 	v = v >> mutexWaiterShift //得到等待者的数值
@@ -61,5 +61,5 @@ func count() {
 
 	time.Sleep(time.Second)
 	// 输出锁的信息
-	fmt.Printf("waitings: %d, isLocked: %t, woken: %t,  starving: %t\n", mu.Count(), mu.IsLocked(), mu.IsWoken(), mu.IsStarving())
+	fmt.Printf("waitings: %d, isLocked: %t, woken: %t,  starving: %t\n", mu.count(), mu.IsLocked(), mu.IsWoken(), mu.IsStarving())
 }
