@@ -38,7 +38,10 @@ func main() {
 		go worker(&counter, &wg)
 	}
 
+	for {
+		println(counter.Count())
+	}
+
 	wg.Wait()
-	println(counter.Count())
 
 }
