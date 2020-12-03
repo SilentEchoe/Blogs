@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh"
 	"log"
-	"net"
 	"sync"
 	"time"
 )
@@ -36,16 +35,36 @@ func (p *PoolConn) unsign() {
 	p.mu.Unlock()
 }
 
-func GetShhClient(clineName string) *net.Conn {
-	return nil
-}
-
 var ClientPool = make(map[string]*PoolConn, 150)
 
 func PutSshPool(deviceID string, device *PoolConn) {
 	println(device.device.sshHost)
 	println(device.device.sshUser)
 	ClientPool[deviceID] = device
+}
+
+func GetSshPool(key string) {
+	var client = ClientPool[key]
+	if client != nil {
+		var sshClient = client.client
+		if sshClient != nil {
+			session, err := sshClient.NewSession()
+			if err != nil {
+				log.Fatal("创建ssh session 失败", err)
+			}
+			defer session.Close()
+			//执行远程命令
+			combo, err := session.CombinedOutput("whoami; cd /; ls -al;echo https://github.com/dejavuzhou/felix")
+			if err != nil {
+				log.Fatal("远程执行cmd 失败", err)
+			}
+			log.Println("命令输出:", string(combo))
+			println(client)
+		} else {
+			println("sshClient 为空")
+		}
+
+	}
 }
 
 func main() {
@@ -63,9 +82,12 @@ func main() {
 
 	var isCreate = CreateSshClient(&poolConn)
 	if isCreate != nil {
+		poolConn.client = isCreate
 		PutSshPool("172.168.1.76", &poolConn)
+		println("创建成功")
 	}
-	println(*isCreate)
+
+	GetSshPool("172.168.1.76")
 
 }
 
@@ -125,8 +147,4 @@ func CreateSshClient(conn *PoolConn) *ssh.Client {
 	}
 	return sshClient
 
-}
-
-func GetSshClient() *ssh.Client {
-	return nil
 }
