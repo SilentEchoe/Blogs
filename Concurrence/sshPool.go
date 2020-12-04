@@ -38,32 +38,13 @@ func (p *PoolConn) unsign() {
 var ClientPool = make(map[string]*PoolConn, 150)
 
 func PutSshPool(deviceID string, device *PoolConn) {
-	println(device.device.sshHost)
-	println(device.device.sshUser)
 	ClientPool[deviceID] = device
 }
 
 func GetSshPool(key string) {
 	var client = ClientPool[key]
 	if client != nil {
-		var sshClient = client.client
-		if sshClient != nil {
-			session, err := sshClient.NewSession()
-			if err != nil {
-				log.Fatal("创建ssh session 失败", err)
-			}
-			defer session.Close()
-			//执行远程命令
-			combo, err := session.CombinedOutput("whoami; cd /; ls -al;echo https://github.com/dejavuzhou/felix")
-			if err != nil {
-				log.Fatal("远程执行cmd 失败", err)
-			}
-			log.Println("命令输出:", string(combo))
-			println(client)
-		} else {
-			println("sshClient 为空")
-		}
-
+		execute(client, "ls")
 	}
 }
 
@@ -86,47 +67,11 @@ func main() {
 		PutSshPool("172.168.1.76", &poolConn)
 		println("创建成功")
 	}
+	go Reconnection()
 
 	GetSshPool("172.168.1.76")
 
-}
-
-func SSH() {
-	sshHost := "172.168.1.76"
-	sshUser := "huoshen"
-	sshPassword := "123456"
-	sshPort := 22
-
-	//创建sshp登陆配置
-	config := &ssh.ClientConfig{
-		Timeout: time.Second, //ssh 连接time out 时间一秒钟, 如果ssh验证错误 会在一秒内返回
-		User:    sshUser,
-		//HostKeyCallback: ssh.InsecureIgnoreHostKey(), //这个可以， 但是不够安全
-		//HostKeyCallback: hostKeyCallBackFunc(h.Host),
-	}
-	config.Auth = []ssh.AuthMethod{ssh.Password(sshPassword)}
-
-	//dial 获取ssh client
-	addr := fmt.Sprintf("%s:%d", sshHost, sshPort)
-	sshClient, err := ssh.Dial("tcp", addr, config)
-
-	if err != nil {
-		log.Fatal("创建ssh client 失败", err)
-	}
-	defer sshClient.Close()
-
-	//创建ssh-session
-	session, err := sshClient.NewSession()
-	if err != nil {
-		log.Fatal("创建ssh session 失败", err)
-	}
-	defer session.Close()
-	//执行远程命令
-	combo, err := session.CombinedOutput("whoami; cd /; ls -al;echo https://github.com/dejavuzhou/felix")
-	if err != nil {
-		log.Fatal("远程执行cmd 失败", err)
-	}
-	log.Println("命令输出:", string(combo))
+	select {}
 }
 
 func CreateSshClient(conn *PoolConn) *ssh.Client {
@@ -146,5 +91,44 @@ func CreateSshClient(conn *PoolConn) *ssh.Client {
 		return nil
 	}
 	return sshClient
+
+}
+
+func execute(conn *PoolConn, cmd string) {
+	if conn != nil {
+		conn.mu.Lock()
+		defer conn.mu.Unlock()
+		session, err := conn.client.NewSession()
+		if err != nil {
+			log.Fatal("创建ssh session 失败", err)
+		}
+		defer session.Close()
+		//执行远程命令
+		combo, err := session.CombinedOutput(cmd)
+		if err != nil {
+			conn.unusable = false
+			log.Fatal("远程执行cmd 失败", err)
+		}
+		log.Println("命令输出:", string(combo))
+	} else {
+		println("sshClient 为空")
+	}
+}
+
+func Reconnection() {
+	for {
+		for key, value := range ClientPool {
+			if !value.unusable {
+				var client = CreateSshClient(value)
+				if client != nil {
+					value.client = client
+				} else {
+					delete(ClientPool, key)
+				}
+			}
+			println(key)
+		}
+		time.Sleep(time.Minute)
+	}
 
 }
