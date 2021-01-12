@@ -1,4 +1,4 @@
-package lru
+package Cache
 
 import "container/list"
 
