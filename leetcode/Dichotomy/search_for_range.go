@@ -28,5 +28,6 @@ func search_for_range(sum []int, target int) []int {
 			start++
 		}
 	}
+
 	return result
 }
