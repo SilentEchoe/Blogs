@@ -6,7 +6,8 @@ import (
 
 func main() {
 	var matrix = [][]int{
-		{1}, {3},
+		{1, 2},
+		{3, 4},
 	}
 	var target = 3
 	var isexist = searchMatrix(matrix, target)
