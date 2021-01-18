@@ -33,3 +33,7 @@ func searchMatrix(matrix [][]int, target int) bool {
 
 	return false
 }
+
+func searchMartrixTwo(matrix [][]int, target int) bool {
+	return true
+}
