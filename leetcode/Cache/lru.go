@@ -1,0 +1,50 @@
+package main
+
+//维护一个队列，如果某条记录被访问了，则移动到队尾，那么队首则是最近最少访问的数据，淘汰该条记录
+import "fmt"
+
+type Cachelist struct {
+	data interface{}
+	last *Cachelist
+	next *Cachelist
+}
+
+func main() {
+	var c = NewCachelist()
+
+	c.SetCache(1)
+	c.SetCache(2)
+	c.SetCache(2)
+	c.Traverse()
+}
+
+func NewCachelist() *Cachelist {
+	return &Cachelist{
+		data: nil,
+		last: nil,
+		next: nil,
+	}
+}
+
+func (c *Cachelist) SetCache(i interface{}) {
+	n := NewCachelist()
+	n.data = i
+
+	point := c
+	for point.next != nil {
+		point = point.next
+	}
+	point.next = n
+	n.last = point
+
+}
+
+//遍历链表
+func (head *Cachelist) Traverse() {
+	point := head.next
+	for nil != point {
+		fmt.Println(point.data)
+		point = point.next
+	}
+	fmt.Println("--------done----------")
+}
