@@ -14,7 +14,13 @@ func main() {
 
 	c.SetCache(1)
 	c.SetCache(2)
-	c.SetCache(2)
+	c.SetCache(3)
+	c.SetCache(4)
+	c.SetCache(5)
+	c.SetCache(6)
+	c.SetCache(7)
+	c.SetCache(8)
+	c.MoveLastNode(3)
 	c.Traverse()
 }
 
@@ -29,7 +35,6 @@ func NewCachelist() *Cachelist {
 func (c *Cachelist) SetCache(i interface{}) {
 	n := NewCachelist()
 	n.data = i
-
 	point := c
 	for point.next != nil {
 		point = point.next
@@ -40,11 +45,38 @@ func (c *Cachelist) SetCache(i interface{}) {
 }
 
 //遍历链表
-func (head *Cachelist) Traverse() {
-	point := head.next
+func (c *Cachelist) Traverse() {
+	point := c.next
 	for nil != point {
 		fmt.Println(point.data)
 		point = point.next
 	}
 	fmt.Println("--------done----------")
+}
+
+//查到最后一个结点
+func (c *Cachelist) lastNode() *Cachelist {
+	point := c
+	for point.next != nil {
+		point = point.next
+	}
+	return point
+}
+
+// 将某个结点移动到最后
+func (c *Cachelist) MoveLastNode(i interface{}) {
+	point := c
+	for point.next != nil {
+		if point.data == i {
+			break
+		}
+		point = point.next
+	}
+	point.last.next = point.next
+	point.next.last = point.last
+
+	var p = c.lastNode()
+	point.next = nil
+	point.last = p
+	p.next = point
 }
