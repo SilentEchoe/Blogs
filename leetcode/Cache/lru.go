@@ -11,7 +11,6 @@ type Cachelist struct {
 
 func main() {
 	var c = NewCachelist()
-
 	c.SetCache(1)
 	c.SetCache(2)
 	c.SetCache(3)
@@ -21,6 +20,7 @@ func main() {
 	c.SetCache(7)
 	c.SetCache(8)
 	c.MoveLastNode(3)
+	c.RemovefirstNode()
 	c.Traverse()
 }
 
@@ -79,4 +79,12 @@ func (c *Cachelist) MoveLastNode(i interface{}) {
 	point.next = nil
 	point.last = p
 	p.next = point
+}
+
+// 移除第一个node
+func (c *Cachelist) RemovefirstNode() {
+	if c.next != nil {
+		c.next.last = nil
+		c.next = c.next.next
+	}
 }
