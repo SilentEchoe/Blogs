@@ -24,12 +24,10 @@ func main() {
 	c.Traverse()
 }
 
+// new 会初始化一个指针类型的结构体，初始化的值为零值
 func NewCachelist() *Cachelist {
-	return &Cachelist{
-		data: nil,
-		last: nil,
-		next: nil,
-	}
+	return new(Cachelist)
+
 }
 
 func (c *Cachelist) SetCache(i interface{}) {
