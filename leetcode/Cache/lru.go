@@ -11,14 +11,11 @@ type Cachelist struct {
 
 func main() {
 	var c = NewCachelist()
-	c.SetCache(1)
-	c.SetCache(2)
-	c.SetCache(3)
-	c.SetCache(4)
-	c.SetCache(5)
-	c.SetCache(6)
-	c.SetCache(7)
-	c.SetCache(8)
+
+	for i := 0; i < 10; i++ {
+		c.SetCache(i)
+	}
+
 	c.MoveLastNode(3)
 	c.RemovefirstNode()
 	c.Traverse()

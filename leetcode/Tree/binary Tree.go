@@ -77,3 +77,34 @@ func divideAndConquer(root *TreeNode) int {
 	}
 	return right + 1
 }
+
+// 先序遍历
+func PreOrder(node *TreeNode) {
+	if node == nil {
+		return
+	}
+
+	println(node.Val)
+	PreOrder(node.Left)
+	PreOrder(node.Right)
+}
+
+// 后序遍历
+func PostOrder(node *TreeNode) {
+	if node == nil {
+		return
+	}
+	PreOrder(node.Left)
+	PreOrder(node.Right)
+	println(node.Val)
+}
+
+// 中序遍历
+func MidOrder(node *TreeNode) {
+	if node == nil {
+		return
+	}
+	PreOrder(node.Left)
+	println(node.Val)
+	PreOrder(node.Right)
+}
