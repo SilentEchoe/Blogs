@@ -36,6 +36,7 @@ func main() {
 		Right: &tree20,
 	}
 
+	levelOrderBottom(&tree3)
 	//var i = maxDepth(&tree3)
 	//println(i)
 
@@ -107,4 +108,13 @@ func MidOrder(node *TreeNode) {
 	PreOrder(node.Left)
 	println(node.Val)
 	PreOrder(node.Right)
+}
+
+func levelOrderBottom(root *TreeNode) [][]int {
+	var res [][]int
+	if root != nil {
+
+	}
+
+	return res
 }
