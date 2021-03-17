@@ -6,32 +6,87 @@ type TreeNodes struct {
 	right *TreeNodes
 }
 
+//
+//               4
+//             /   \
+//            2     7
+//           / \   / \
+//          1   3 6   9
+
 func main() {
-	treeNodethree := &TreeNodes{
-		3,
+
+	treeNodeSix := &TreeNodes{
+		6,
 		nil,
 		nil,
 	}
 
-	treeNodeTwo := &TreeNodes{
-		2,
+	treeNodeNine := &TreeNodes{
+		9,
 		nil,
 		nil,
 	}
 
 	treeNodeOne := &TreeNodes{
 		1,
-		treeNodeTwo,
+		nil,
+		nil,
+	}
+
+	treeNodethree := &TreeNodes{
+		3,
+		nil,
+		nil,
+	}
+
+	treeNodeSeven := &TreeNodes{
+		7,
+		treeNodeSix,
+		treeNodeNine,
+	}
+
+	treeNodeTwo := &TreeNodes{
+		2,
+		treeNodeOne,
 		treeNodethree,
 	}
 
-	treeCount := count(treeNodeOne)
+	// 根结点
+	treeNodeFrou := &TreeNodes{
+		4,
+		treeNodeTwo,
+		treeNodeSeven,
+	}
+
+	treeCount := count(treeNodeFrou)
 	println(treeCount)
-	//invertTree(treeNodeOne)
+	newTree := invertTree(treeNodeFrou)
+
+	newone := newTree
+	for {
+		if newone == nil {
+			break
+		}
+		println(newone.value)
+		newone = newone.left
+	}
+
 }
 
 // 翻转二叉树
-func invertTree(root *TreeNodes) {
+func invertTree(root *TreeNodes) *TreeNodes {
+	if root == nil {
+		return nil
+	}
+
+	var tmp = root.left
+	root.left = root.right
+	root.right = tmp
+
+	invertTree(root.left)
+	invertTree(root.right)
+
+	return root
 
 }
 
