@@ -12,10 +12,17 @@ type TreeNodes struct {
 //            2     7
 //           / \   / \
 //          1   3 6   9
-
+//         / \
+//        8   8
 var quequ = []int{}
 
 func main() {
+
+	treeNodenight := &TreeNodes{
+		8,
+		nil,
+		nil,
+	}
 
 	treeNodeSix := &TreeNodes{
 		6,
@@ -31,8 +38,8 @@ func main() {
 
 	treeNodeOne := &TreeNodes{
 		1,
-		nil,
-		nil,
+		treeNodenight,
+		treeNodenight,
 	}
 
 	treeNodethree := &TreeNodes{
@@ -73,10 +80,12 @@ func main() {
 	//	newone = newone.left
 	//}
 
-	binaryTreeNnfold(treeNodeFrou)
-	for _, v := range quequ {
-		println(v)
-	}
+	//binaryTreeNnfold(treeNodeFrou)
+	//for _, v := range quequ {
+	//	println(v)
+	//}
+
+	println(TreeCount(treeNodeFrou))
 }
 
 // 翻转二叉树
@@ -102,6 +111,19 @@ func count(root *TreeNodes) int {
 		return 0
 	}
 	return 1 + count(root.left) + count(root.right)
+}
+
+func TreeCount(root *TreeNodes) int {
+	if root == nil {
+		return 0
+	}
+
+	leftCount := 1 + TreeCount(root.left)
+	rightCount := 1 + TreeCount(root.right)
+	if leftCount > rightCount {
+		return leftCount
+	}
+	return rightCount
 }
 
 // 展开二叉树成一条链表
