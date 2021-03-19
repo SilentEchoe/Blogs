@@ -6,12 +6,12 @@ type TreeNodes struct {
 	right *TreeNodes
 }
 
-//
-//               4
-//             /   \
-//            2     7
-//           / \   / \
-//          1   3 6   9
+//											对称二叉树
+//               4								1
+//             /   \						  /   \
+//            2     7						2		2
+//           / \   / \					  /   \   /   \
+//          1   3 6   9					3	   4 3		4
 //         / \
 //        8   8
 var quequ = []int{}
@@ -66,6 +66,36 @@ func main() {
 		treeNodeTwo,
 		treeNodeSeven,
 	}
+
+	treeNodesThree := &TreeNodes{
+		3,
+		nil,
+		nil,
+	}
+
+	treeNodesFrou := &TreeNodes{
+		4,
+		nil,
+		nil,
+	}
+
+	treeNodesTwoLeft := &TreeNodes{
+		2,
+		treeNodesThree,
+		treeNodesFrou,
+	}
+	treeNodesTwoRight := &TreeNodes{
+		2,
+		treeNodesFrou,
+		treeNodesThree,
+	}
+
+	treeNodesOne := &TreeNodes{
+		1,
+		treeNodesTwoLeft,
+		treeNodesTwoRight,
+	}
+	println(isSymmetric(treeNodesOne))
 
 	//treeCount := count(treeNodeFrou)
 	//println(treeCount)
@@ -134,4 +164,28 @@ func binaryTreeNnfold(root *TreeNodes) {
 	quequ = append(quequ, root.value)
 	binaryTreeNnfold(root.left)
 	binaryTreeNnfold(root.right)
+}
+
+// 判断是否为平衡二叉树
+func isSymmetric(root *TreeNodes) bool {
+	if root == nil {
+		return true
+	}
+
+	return NewisSymmetric(root.left, root.right)
+}
+
+// 判断是否为平衡二叉树
+func NewisSymmetric(node1 *TreeNodes, node2 *TreeNodes) bool {
+	// 如果都为空，代表为最底层结点
+	if node1 == nil && node2 == nil {
+		return true
+	}
+	if node1 == nil || node2 == nil {
+		return false
+	}
+	if node1.value == node2.value {
+		return true
+	}
+	return NewisSymmetric(node1.left, node2.right) && NewisSymmetric(node1.right, node2.left)
 }
