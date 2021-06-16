@@ -116,6 +116,9 @@ func main() {
 	//}
 
 	println(TreeCount(treeNodeFrou))
+
+	nums := []int{3, 2, 1, 6, 0, 5}
+	constructMaximumBinaryTree(nums)
 }
 
 // 翻转二叉树
@@ -188,4 +191,33 @@ func NewisSymmetric(node1 *TreeNodes, node2 *TreeNodes) bool {
 		return true
 	}
 	return NewisSymmetric(node1.left, node2.right) && NewisSymmetric(node1.right, node2.left)
+}
+
+func constructMaximumBinaryTree(nums []int) *TreeNodes {
+	maxNumIndex := 0
+	maxNum := 0
+	for index, value := range nums {
+		if value > maxNum {
+			maxNumIndex = index
+			maxNum = value
+		}
+	}
+	rootNode := &TreeNodes{
+		value: maxNum,
+		left:  nil,
+		right: nil,
+	}
+	leftnums := nums[:maxNumIndex]
+	for leftValue := range leftnums {
+		leftNode := &TreeNodes{
+			value: leftValue,
+			left:  nil,
+			right: nil,
+		}
+
+		rootNode.left = leftNode
+	}
+
+	println(maxNumIndex)
+	return nil
 }
