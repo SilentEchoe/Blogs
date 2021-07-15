@@ -6,20 +6,13 @@ import (
 )
 
 func main() {
-	ch := make(chan int, 0)
-
-	//var wg sync.WaitGroup
-	//wg.Add(2)
+	ch := make(chan int, 10)
 	go producer(ch)
-	//go consume(ch)
-
 	for c := range ch {
 		fmt.Println(c)
 	}
+	time.Sleep(2000)
 
-	time.Sleep(15000)
-
-	//wg.Wait()
 }
 
 func producer(c chan int) {
@@ -29,11 +22,4 @@ func producer(c chan int) {
 		c <- i
 	}
 	close(c)
-}
-
-func consume(c chan int) {
-	for {
-		num := <-c //从c中接收数据，并赋值给num
-		fmt.Println("消费任务 ", num)
-	}
 }

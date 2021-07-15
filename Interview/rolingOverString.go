@@ -3,7 +3,6 @@ package main
 import "fmt"
 
 func main() {
-
 	fmt.Println(RolingOver("123456789"))
 }
 
