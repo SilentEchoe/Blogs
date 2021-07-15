@@ -1,6 +1,8 @@
 /*
  关于 Map 在线程中,如何达成线程安全的代码测试
 	1.使用 sync.map
+	2.使用互斥锁
+	3.使用读写锁
 */
 package main
 
@@ -15,7 +17,8 @@ var wg sync.WaitGroup
 func main() {
 
 	wg.Add(1)
-	go mapToAdd()
+	go mapAdd1()
+	go mapAdd2()
 
 	wg.Wait()
 	sm.Range(func(k, v interface{}) bool {
@@ -27,7 +30,7 @@ func main() {
 	})
 }
 
-func mapToAdd() {
+func mapAdd1() {
 
 	sm.Store(1, "a")
 	sm.Store(2, "b")
@@ -41,4 +44,16 @@ func mapToAdd() {
 
 	defer wg.Done()
 
+}
+
+func mapAdd2() {
+	if vv, ok := sm.LoadOrStore(4, "e"); ok {
+		fmt.Println(vv)
+	}
+	if vv, ok := sm.LoadOrStore(5, "f"); ok {
+		fmt.Println(vv)
+	}
+	if vv, ok := sm.LoadOrStore(6, "g"); ok {
+		fmt.Println(vv)
+	}
 }
