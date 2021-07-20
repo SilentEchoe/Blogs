@@ -9,27 +9,42 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 )
 
 var sm sync.Map
+var rw sync.RWMutex
 var wg sync.WaitGroup
 
 func main() {
 
-	wg.Add(1)
-	go mapAdd1()
-	go mapAdd2()
+	// 方案一
+	//wg.Add(1)
+	//go mapAdd1()
+	//go mapAdd2()
+	//wg.Wait()
+	//sm.Range(func(k, v interface{}) bool {
+	//	fmt.Print(k)
+	//	fmt.Print(":")
+	//	fmt.Print(v)
+	//	fmt.Println()
+	//	return true
+	//})
 
-	wg.Wait()
-	sm.Range(func(k, v interface{}) bool {
-		fmt.Print(k)
-		fmt.Print(":")
-		fmt.Print(v)
-		fmt.Println()
-		return true
-	})
+	// 方案二
+
+	// 互斥锁共享变量
+	mutualMap := make(map[int]string)
+
+	go mapWork1(mutualMap)
+	go mapWork2(mutualMap)
+	time.Sleep(2000)
+	for k, v := range mutualMap {
+		fmt.Println(k, v)
+	}
 }
 
+// 方案1 使用 sync.map
 func mapAdd1() {
 
 	sm.Store(1, "a")
@@ -56,4 +71,18 @@ func mapAdd2() {
 	if vv, ok := sm.LoadOrStore(6, "g"); ok {
 		fmt.Println(vv)
 	}
+}
+
+// 方案2 使用互斥锁
+func mapWork1(mutualMap map[int]string) {
+	rw.Lock()
+	defer rw.Unlock()
+	mutualMap[1] = "a"
+}
+
+func mapWork2(mutualMap map[int]string) {
+	rw.Lock()
+	defer rw.Unlock()
+	mutualMap[1] = "b"
+	mutualMap[2] = "c"
 }
