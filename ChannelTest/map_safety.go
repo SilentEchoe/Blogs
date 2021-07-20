@@ -32,16 +32,23 @@ func main() {
 	//})
 
 	// 方案二
+	//// 互斥锁共享变量
+	//mutualMap := make(map[int]string)
+	//go mapWork1(mutualMap)
+	//go mapWork2(mutualMap)
+	//time.Sleep(2000)
+	//for k, v := range mutualMap {
+	//	fmt.Println(k, v)
+	//}
 
-	// 互斥锁共享变量
+	// 方案三
 	mutualMap := make(map[int]string)
+	go mapRwWork3(mutualMap)
+	go mapRwWork2(mutualMap)
 
-	go mapWork1(mutualMap)
-	go mapWork2(mutualMap)
 	time.Sleep(2000)
-	for k, v := range mutualMap {
-		fmt.Println(k, v)
-	}
+	go mapRwWork1(mutualMap)
+	time.Sleep(3000)
 }
 
 // 方案1 使用 sync.map
@@ -85,4 +92,33 @@ func mapWork2(mutualMap map[int]string) {
 	defer rw.Unlock()
 	mutualMap[1] = "b"
 	mutualMap[2] = "c"
+}
+
+// 方案3 使用读写锁
+func mapRwWork1(m map[int]string) {
+	// 读锁
+
+	fmt.Println("读锁")
+	rw.RLock()
+	defer rw.RUnlock()
+
+	for k, v := range m {
+		fmt.Println(k, v)
+	}
+}
+
+func mapRwWork2(m map[int]string) {
+	fmt.Println("写锁2")
+	rw.Lock()
+	defer rw.Unlock()
+	m[1] = "a"
+	m[2] = "b"
+}
+
+func mapRwWork3(m map[int]string) {
+	fmt.Println("写锁3")
+	rw.Lock()
+	defer rw.Unlock()
+	m[3] = "c"
+	m[4] = "d"
 }
