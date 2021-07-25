@@ -48,9 +48,7 @@ func deleteDuplicatesTwo(head *ListNode) *ListNode {
 		// 全部删除完再移动到下一个元素
 		for current.Next != nil && current.Val == current.Next.Val {
 			current = current.Next.Next
-			return current
 		}
-		current = current.Next
 	}
 	return head
 }
