@@ -3,6 +3,7 @@
 	1.使用 sync.map
 	2.使用互斥锁
 	3.使用读写锁
+	4.锁会降低性能,如果要使用锁,尽量减少锁的粒度和锁持有的时间 分片加锁 https://github.com/orcaman/concurrent-map
 */
 package main
 
