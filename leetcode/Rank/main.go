@@ -51,6 +51,46 @@ func Quicksort (arry []int)  []int {
 	return myres
 }
 
+// 快速排序模板 第二种
+
+func Quicksort2(nums []int) []int {
+	quickSort(nums,0,len(nums) -1 )
+	return nums
+}
+
+func quickSort(nums []int,start,end int)  {
+	if start < end {
+		// 分治
+		pivot := partition(nums,start,end)
+		quickSort(nums,0,pivot -1)
+		quickSort(nums,pivot+1,end)
+	}
+}
+
+// 分区
+
+func partition(nums []int,start,end int) int {
+	p := nums[end]
+	i := start
+
+	for j:= start;j < end;j++ {
+		if nums[j] < p {
+			swap(nums,i,j)
+			i++
+		}
+	}
+	swap(nums,i,end)
+	return i
+}
+
+func swap(nums []int,i,j int)  {
+	t:= nums[i]
+	nums[i] = nums[j]
+	nums[j] = t
+}
+
+
+
 // 输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有奇数位于数组的前半部分，所有偶数位于数组的后半部分。
 /*
 输入：nums = [1,2,3,4]
