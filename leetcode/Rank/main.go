@@ -81,3 +81,4 @@ func exchange(arry []int) []int {
 	myres := append(append(low,mid...),hight...)
 	return myres
 }
+
