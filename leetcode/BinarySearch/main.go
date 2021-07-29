@@ -5,8 +5,9 @@ import "fmt"
 func main() {
 	nums := []int{-1, 0, 3, 5, 9, 9, 12}
 	fmt.Println(search(nums, 9))
-
 	fmt.Println(searchFirstBadVersion(5))
+	numTwos := []int{1, 2}
+	fmt.Println("寻找峰值", findPeakElement(numTwos))
 }
 
 func search(nums []int, target int) int {
@@ -61,4 +62,22 @@ func isBadVersion(version int) bool {
 		return true
 	}
 	return false
+}
+
+//输入：nums = [1,2,3,1]
+//输出：2
+//解释：3 是峰值元素，你的函数应该返回其索引 2。
+
+func findPeakElement(nums []int) int {
+	left := 0
+	right := len(nums) - 1
+	for left < right {
+		mid := left + (right-left)/2
+		if nums[mid] > nums[mid+1] {
+			right = mid
+		} else {
+			left = mid + 1
+		}
+	}
+	return left
 }
