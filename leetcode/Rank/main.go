@@ -85,7 +85,6 @@ func quickSort(nums []int, start, end int) {
 }
 
 // 分区
-
 func partition(nums []int, start, end int) int {
 	p := nums[end]
 	i := start
