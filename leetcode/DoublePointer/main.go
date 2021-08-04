@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"sort"
+	"strings"
 )
 
 func main() {
@@ -14,6 +16,8 @@ func main() {
 
 	str := []byte{'h', 'e', 'l', 'l', 'o'}
 	reverseString(str)
+
+	reverseWords("Let's take LeetCode contest")
 }
 
 //输入：nums = [-4,-1,0,3,10]
@@ -86,11 +90,26 @@ func moveZeroes(nums []int) {
 //输入：["h","e","l","l","o"]
 //输出：["o","l","l","e","h"]
 
-func reverseString(s []byte) {
+func reverseString(s []byte) string {
 
 	for left, right := 0, len(s)-1; left < right; left++ {
 		s[left], s[right] = s[right], s[left]
 		right--
 	}
-	fmt.Println(string(s))
+	return string(s)
+}
+
+func reverseWords(s string) string {
+	string_slice := strings.Split(s, " ")
+	var buffer bytes.Buffer
+	for _, v := range string_slice {
+		var data []byte = []byte(v)
+		newString := reverseString(data)
+		buffer.WriteString(newString)
+		buffer.WriteString(" ")
+	}
+	s = buffer.String()
+	s = strings.TrimRight(s, ",")
+
+	return s
 }
