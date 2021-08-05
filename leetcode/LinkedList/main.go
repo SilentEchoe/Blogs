@@ -22,9 +22,9 @@ func main() {
 		Val:  1,
 		Next: nodeTwo,
 	}
-	fmt.Println(*deleteDuplicatesTwo(nodeHead))
+	//fmt.Println(*deleteDuplicatesTwo(nodeHead))
 
-	//middleNode(nodeHead)
+	middleNode(nodeHead)
 }
 
 /*
@@ -60,7 +60,7 @@ func deleteDuplicatesTwo(head *ListNode) *ListNode {
 //返回的结点值为 3 。 (测评系统对该结点序列化表述是 [3,4,5])。
 //注意，我们返回了一个 ListNode 类型的对象 ans，这样：
 //ans.val = 3, ans.next.val = 4, ans.next.next.val = 5, 以及 ans.next.next.next = NULL.
-
+// 解题思路 快慢指针
 func middleNode(head *ListNode) *ListNode {
 	current := head
 	count := 0
