@@ -8,11 +8,16 @@ import (
 func main() {
 	ch := make(chan int, 10)
 	go producer(ch)
-	for c := range ch {
-		fmt.Println(c)
-	}
+	go consumption(ch)
 	time.Sleep(2000)
 
+}
+
+func consumption(c chan int) {
+	select {
+	case <-c:
+		fmt.Println(<-c)
+	}
 }
 
 func producer(c chan int) {
