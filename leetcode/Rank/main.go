@@ -1,8 +1,6 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
 	arry := []int{1, 3, 4, 123, 56, 7, 2, 1, 9}
@@ -25,6 +23,25 @@ func bubbleSort(arry []int) []int {
 
 		}
 	}
+	return arry
+}
+
+// 选择排序
+func selectionSort(arry []int) []int {
+	var len = len(arry)
+	for i := 0; i < len-1; i++ {
+		min := i
+
+		// 从i右侧的所有元素中找出当前最小值所在的下标
+		for j := 0; j < len-1; j++ {
+			if arry[j] < arry[min] {
+				min = j
+			}
+		}
+		arry[i], arry[min] = arry[min], arry[i]
+
+	}
+
 	return arry
 }
 
@@ -69,7 +86,6 @@ func quickSort(nums []int, start, end int) {
 }
 
 // 分区
-
 func partition(nums []int, start, end int) int {
 	p := nums[end]
 	i := start
@@ -119,24 +135,4 @@ func exchange(arry []int) []int {
 	low, hight = exchange(low), exchange(hight)
 	myres := append(append(low, mid...), hight...)
 	return myres
-}
-
-// 选择排序
-func selectionSort(arr []int) []int {
-	len := len(arr)
-	if len <= 1 {
-		return arr
-	}
-	for i := 0; i < len; i++ {
-		mid := i
-
-		for j := len - 1; j > i; j-- {
-			if arr[j] < arr[mid] {
-				mid = j
-			}
-
-		}
-		arr[i], arr[mid] = arr[mid], arr[i]
-	}
-	return arr
 }

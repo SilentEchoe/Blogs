@@ -6,10 +6,18 @@ import (
 )
 
 func main() {
+
 	ch := make(chan int, 10)
 	go producer(ch)
 	go consumption(ch)
 	time.Sleep(2000)
+
+	//ch := make(chan int, 10)
+	//go producer(ch)
+	//for c := range ch {
+	//	fmt.Println(c)
+	//}
+	//time.Sleep(2000)
 
 }
 
