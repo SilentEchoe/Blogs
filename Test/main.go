@@ -2,11 +2,24 @@ package main
 
 import "fmt"
 
+type GameBase interface {
+	OnInit()
+	OnBegin()
+}
+
+type LOL struct {
+}
+
+func (l LOL) OnInit() {
+	fmt.Println("LOL OnInit")
+}
+
+func (l LOL) OnBegin() {
+	fmt.Println("LOL OnBegin")
+}
+
 func main() {
-	intOne := []int{1, 2, 3, 4, 5}
-	//intTwo := make([]int, 10, 10)
-	//
-	//copy(intTwo, intOne[:])
-	fmt.Println(intOne[:1])
-	//fmt.Println(intTwo)
+	var gameBase GameBase
+	gameBase = new(LOL)
+	gameBase.OnInit()
 }
