@@ -2,9 +2,15 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 func main() {
+
+	ch := make(chan int, 10)
+	go producer(ch)
+	go consumption(ch)
+	time.Sleep(2000)
 
 	//ch := make(chan int, 10)
 	//go producer(ch)
@@ -13,6 +19,13 @@ func main() {
 	//}
 	//time.Sleep(2000)
 
+}
+
+func consumption(c chan int) {
+	select {
+	case <-c:
+		fmt.Println(<-c)
+	}
 }
 
 func producer(c chan int) {

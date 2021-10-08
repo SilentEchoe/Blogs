@@ -16,5 +16,6 @@
         <method importPath="golang.org/x/crypto/ssh" receiver="*Session" name="Close" />
       </methods>
     </inspection_tool>
+    <inspection_tool class="LanguageDetectionInspection" enabled="false" level="WARNING" enabled_by_default="false" />
   </profile>
 </component>

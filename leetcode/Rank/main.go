@@ -7,6 +7,7 @@ func main() {
 	fmt.Println("冒泡排序：", bubbleSort(arry))
 	fmt.Println("快速排序：", Quicksort(arry))
 	fmt.Println("奇数偶数排序：", exchange(arry))
+	fmt.Println("选择排序：", selectionSort(arry))
 }
 
 // 冒泡排序
