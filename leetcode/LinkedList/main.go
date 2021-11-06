@@ -39,6 +39,39 @@ func main() {
 	removeNthFromEnd(nodeHead, 2)
 }
 
+/* 合并两个有序链表
+ */
+
+func mergeTwoLists(node1 *ListNode, node2 *ListNode) *ListNode {
+	// 虚拟头节点
+	var dummy = &ListNode{}
+	p := dummy
+	var p1 = node1
+	var p2 = node2
+
+	for p1 != nil && p2 != nil {
+		// 比较 p1 和 p2 两个指针
+		if p1.Val > p2.Val {
+			p.Next = p2
+			p2 = p2.Next
+		} else {
+			p.Next = p1
+			p1 = p1.Next
+		}
+
+		p = p.Next
+	}
+
+	if p1 != nil {
+		p.Next = p1
+	}
+
+	if p2 != nil {
+		p.Next = p2
+	}
+	return dummy.Next
+}
+
 /*
 单向链表
 存在一个按升序排列的链表，给你这个链表的头节点 head ，请你删除所有重复的元素，使每个元素 只出现一次 。
