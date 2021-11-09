@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type ListNode struct {
 	Val  int
@@ -69,6 +71,43 @@ func mergeTwoLists(node1 *ListNode, node2 *ListNode) *ListNode {
 	if p2 != nil {
 		p.Next = p2
 	}
+	return dummy.Next
+}
+
+// 合并 K 个有序链表
+func mergeKLists(nodes []ListNode) *ListNode {
+	if len(nodes) == 0 {
+		return nil
+	}
+
+	// 虚拟头结点
+	var dummy = &ListNode{}
+	_ = dummy
+	// 使用 优先级队列（二叉堆） 把链表结点放入一个最小堆
+
+	return nil
+}
+
+// 单链表的倒数第K个结点
+// 可以用快慢指针
+func findFormEnd(head *ListNode, k int) *ListNode {
+	var p1 = head
+	for i := 0; i < k; i++ {
+		p1 = p1.Next
+	}
+	var p2 = head
+	for p1 != nil {
+		p2 = p2.Next
+		p1 = p1.Next
+	}
+	return p2
+}
+
+func removeNthFormEnd(head *ListNode, n int) *ListNode {
+	var dummy = &ListNode{}
+	dummy.Next = head
+	var x = findFormEnd(dummy, n+1)
+	x.Next = x.Next.Next
 	return dummy.Next
 }
 
