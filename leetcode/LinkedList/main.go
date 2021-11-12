@@ -1,9 +1,5 @@
 package main
 
-import (
-	"fmt"
-)
-
 type ListNode struct {
 	Val  int
 	Next *ListNode
@@ -89,7 +85,7 @@ func mergeKLists(nodes []ListNode) *ListNode {
 }
 
 // 单链表的倒数第K个结点
-// 可以用快慢指针
+// 感觉可以用快慢指针,但是应该有更好的办法
 func findFormEnd(head *ListNode, k int) *ListNode {
 	var p1 = head
 	for i := 0; i < k; i++ {
@@ -103,8 +99,8 @@ func findFormEnd(head *ListNode, k int) *ListNode {
 	return p2
 }
 
-func removeNthFormEnd(head *ListNode, n int) *ListNode {
-	var dummy = &ListNode{}
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+	var dummy = &ListNode{Val: -1}
 	dummy.Next = head
 	var x = findFormEnd(dummy, n+1)
 	x.Next = x.Next.Next
@@ -139,6 +135,7 @@ func deleteDuplicatesTwo(head *ListNode) *ListNode {
 	return head
 }
 
+// 单链表的中点
 //输入：[1,2,3,4,5]
 //输出：此列表中的结点 3 (序列化形式：[3,4,5])
 //返回的结点值为 3 。 (测评系统对该结点序列化表述是 [3,4,5])。
@@ -147,33 +144,26 @@ func deleteDuplicatesTwo(head *ListNode) *ListNode {
 // 解题思路 快慢指针
 //fast/slow 刚开始均指向链表头节点，然后每次快节点走两步，慢指针走一步，直至快指针指向 null，此时慢节点刚好来到链表的下中节点。
 func middleNode(head *ListNode) *ListNode {
-	current := head
-	count := 0
-	for current != nil {
-		count++
-		// 全部删除完再移动到下一个元素
-		for current.Next != nil && current.Val == current.Next.Val {
-			current.Next = current.Next.Next
-		}
-		current = current.Next
+	var slow = head
+	var fast = head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
 	}
-	fmt.Println(count)
-	return current
+	return slow
 }
 
-//给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
-func removeNthFromEnd(head *ListNode, n int) *ListNode {
-	current := head
-	count := 1
-	for current != nil {
-		count++
+// 判断链表是否包含环
+func hasCycle(head *ListNode) bool {
+	var slow = head
+	var fast = head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
 
-		if count == n {
-			current.Next = current.Next.Next
+		if slow == fast {
+			return true
 		}
-
-		current = current.Next
 	}
-	fmt.Println("判断结点:", count)
-	return current
+	return false
 }
