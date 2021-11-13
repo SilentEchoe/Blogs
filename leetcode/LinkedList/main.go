@@ -167,3 +167,7 @@ func hasCycle(head *ListNode) bool {
 	}
 	return false
 }
+
+func reorderList(head *ListNode) {
+
+}
