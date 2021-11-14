@@ -168,6 +168,43 @@ func hasCycle(head *ListNode) bool {
 	return false
 }
 
-func reorderList(head *ListNode) {
+// 翻转链表
+// 将第一个放在最后面
+func reverseList(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
 
+	var node = reverseList(head.Next)
+	head.Next.Next = head
+	head.Next = nil
+	return node
+}
+
+// 求两条链表的相交节点
+// a1-> a2 -> c1 ->c2
+// b1-> b2 -> b3 -> c1 ->c2
+
+// 相交链表后
+// a1-> a2 -> c1 -> c2 -> b1 -> b2 -> b3 -> c1
+// b1-> b2 -> b3 -> c1 -> c2 -> a1 -> a2 -> c1
+// 这里能看到通过 链表A 和链表B的相交,能同时达到交点 C1
+func getIntersectionNode(node1 *ListNode, node2 *ListNode) *ListNode {
+	var p1 = node1
+	var p2 = node2
+	for p1 != p2 {
+		if p1 == nil {
+			p1 = node2
+		} else {
+			p1 = p1.Next
+		}
+
+		if p2 == nil {
+			p2 = node1
+		} else {
+			p2 = p2.Next
+		}
+
+	}
+	return p1
 }
