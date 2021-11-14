@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 type ListNode struct {
 	Val  int
 	Next *ListNode
@@ -30,11 +34,12 @@ func main() {
 		Val:  1,
 		Next: nodeTwo,
 	}
-	//fmt.Println(*deleteDuplicatesTwo(nodeHead))
+	var p = removeElements(nodeHead, 3)
 
-	middleNode(nodeHead)
-
-	removeNthFromEnd(nodeHead, 2)
+	for p != nil {
+		fmt.Println("新链表：", p.Val)
+		p = p.Next
+	}
 }
 
 /* 合并两个有序链表
@@ -207,4 +212,18 @@ func getIntersectionNode(node1 *ListNode, node2 *ListNode) *ListNode {
 
 	}
 	return p1
+}
+
+// 给你一个链表的头节点 head 和一个整数 val ，请你删除链表中所有满足 Node.val == val 的节点，并返回 新的头节点 。
+func removeElements(head *ListNode, val int) *ListNode {
+	// 创建一个虚拟结点
+	dummyHead := &ListNode{Next: head}
+	for tmp := dummyHead; tmp.Next != nil; {
+		if tmp.Next.Val == val {
+			tmp.Next = tmp.Next.Next
+		} else {
+			tmp = tmp.Next
+		}
+	}
+	return dummyHead
 }
