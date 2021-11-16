@@ -1,8 +1,6 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type ListNode struct {
 	Val  int
@@ -34,11 +32,11 @@ func main() {
 		Val:  1,
 		Next: nodeTwo,
 	}
-	var p = removeElements(nodeHead, 3)
 
-	for p != nil {
-		fmt.Println("新链表：", p.Val)
-		p = p.Next
+	var head = reverseBetween(nodeHead, 2, 4)
+	for head != nil {
+		fmt.Println(head.Val)
+		head = head.Next
 	}
 }
 
@@ -226,4 +224,24 @@ func removeElements(head *ListNode, val int) *ListNode {
 		}
 	}
 	return dummyHead
+}
+
+// 翻转链表II
+//给你单链表的头指针 head 和两个整数 left 和 right ，其中 left <= right 。请你反转从位置 left 到位置 right 的链表节点，返回 反转后的链表 。
+//
+func reverseBetween(head *ListNode, left int, right int) *ListNode {
+	// 思路:先保存 left 前面的 head
+	// 然后保存 right 后面的
+	// 中间部分变成一个单独的链表，然后直接进行反转
+	for i := 0; i < left; i++ {
+		head = head.Next
+	}
+	var head1 = head
+
+	for i := 0; i < right; i++ {
+		head1 = head1.Next
+	}
+	right1 := &ListNode{Next: head1}
+	head1.Next = right1.Next
+	return head1
 }
