@@ -233,15 +233,22 @@ func reverseBetween(head *ListNode, left int, right int) *ListNode {
 	// 思路:先保存 left 前面的 head
 	// 然后保存 right 后面的
 	// 中间部分变成一个单独的链表，然后直接进行反转
-	for i := 0; i < left; i++ {
+
+	var head1 = head
+	for i := 1; i < left; i++ {
 		head = head.Next
 	}
-	var head1 = head
 
-	for i := 0; i < right; i++ {
+	for i := 0; i < right-left; i++ {
 		head1 = head1.Next
 	}
-	right1 := &ListNode{Next: head1}
-	head1.Next = right1.Next
-	return head1
+
+	return head1.Next
+
+	//for i := 0; i < right; i++ {
+	//	head1 = head1.Next
+	//}
+	//right1 := &ListNode{Next: head1}
+	//head1.Next = right1.Next
+	//return head1
 }
