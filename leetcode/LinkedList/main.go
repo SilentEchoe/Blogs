@@ -1,9 +1,5 @@
 package main
 
-import (
-	"fmt"
-)
-
 type ListNode struct {
 	Val  int
 	Next *ListNode
@@ -35,11 +31,7 @@ func main() {
 		Next: nodeTwo,
 	}
 
-	var head = reverseBetween(nodeHead, 2, 4)
-	for head != nil {
-		fmt.Println(head.Val)
-		head = head.Next
-	}
+	reverse(nodeHead)
 }
 
 /* 合并两个有序链表
