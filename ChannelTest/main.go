@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"time"
 )
 
 // 如果 chan 中还有数据,那么从这个 chan 接收数据的时候就不会阻塞
@@ -17,6 +19,21 @@ func main() {
 	go consumers(ch, done)
 	<-done
 	//time.Sleep(10 * time.Second)
+
+	// 借助 context.WithCancel 上下文
+	date := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	ctx, cancel := context.WithCancel(context.Background())
+	resultChan := make(chan bool)
+
+	go SearchTarget(ctx, date, 7, resultChan)
+	go SearchTarget(ctx, date, 9, resultChan)
+	select {
+	case <-resultChan:
+		fmt.Println("Find item")
+		// 通知上下文
+		cancel()
+	}
+
 }
 
 func producers(ch chan int, done chan bool) {
@@ -39,4 +56,21 @@ func consumers(ch chan int, done chan bool) {
 		}
 	}
 
+}
+
+func SearchTarget(ctx context.Context, data []int, target int, resultChan chan bool) {
+	for _, v := range data {
+
+		// 监听上下文是否取消任务
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+		time.Sleep(1 * time.Second)
+		if v == target {
+			resultChan <- true
+			return
+		}
+	}
 }
