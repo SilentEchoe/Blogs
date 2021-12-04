@@ -282,3 +282,25 @@ func reverse(head *ListNode) *ListNode {
 	head.Next = nil
 	return last
 }
+
+var successor = &ListNode{}
+
+func reverseN(head *ListNode, n int) *ListNode {
+	if n == 1 {
+		successor = head.Next
+		return head
+	}
+
+	var last = reverseN(head.Next, n-1)
+	head.Next.Next = head
+	head.Next = successor
+	return last
+}
+
+func NewReverseBetween(head *ListNode, n int, m int) *ListNode {
+	if m == 1 {
+		return reverseN(head, n)
+	}
+	head.Next = reverseBetween(head.Next, m-1, n-1)
+	return head
+}
