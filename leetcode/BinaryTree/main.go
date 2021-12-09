@@ -195,3 +195,23 @@ func increasingBST(root *TreeNode) *TreeNode {
 
 	return root
 }
+
+// 构造最大二叉树
+func constructMaximumBinaryTree(nums []int) *TreeNode {
+	// 找到数组中最大的值
+	if len(nums) == 0 {
+		return nil
+	}
+	max := -1
+	index := 0
+	for i := 0; i < len(nums); i++ {
+		if nums[i] > max {
+			max = nums[i]
+		}
+		index = i
+	}
+	root := &TreeNode{Val: max}
+	root.Left = constructMaximumBinaryTree(nums[0 : index-1])
+	root.Right = constructMaximumBinaryTree(nums[index+1 : len(nums)-1])
+	return root
+}
