@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"crypto/md5"
+	"fmt"
+)
 
 // 只要涉及递归，都可以抽象成二叉树的问题
 // 写递归算法的关键是要明确函数的「定义」是什么，然后相信这个定义，利用这个定义推导最终结果，绝不要跳入递归的细节。
@@ -214,4 +217,29 @@ func constructMaximumBinaryTree(nums []int) *TreeNode {
 	root.Left = constructMaximumBinaryTree(nums[0 : index-1])
 	root.Right = constructMaximumBinaryTree(nums[index+1 : len(nums)-1])
 	return root
+}
+
+// 寻找重复的子树
+// 可以通过字符串拼接来序列化二叉树
+var treeMap = make(map[string]interface{})
+
+func findDuplicateSubtrees(root *TreeNode) string {
+	if root == nil {
+		return "#"
+	}
+	var left = findDuplicateSubtrees(root.Left)
+	var right = findDuplicateSubtrees(root.Right)
+	var subtree = left + "," + right + "," + string(rune(root.Val))
+	var hax = rHaxi(subtree)
+	if treeMap[hax] == nil {
+		treeMap[hax] = subtree
+	}
+	return subtree
+}
+
+func rHaxi(body string) string {
+	Md5Inst := md5.New()
+	Md5Inst.Write([]byte(body))
+	Result := Md5Inst.Sum([]byte(""))
+	return string(Result)
 }
