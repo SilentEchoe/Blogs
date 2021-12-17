@@ -243,3 +243,4 @@ func rHaxi(body string) string {
 	Result := Md5Inst.Sum([]byte(""))
 	return string(Result)
 }
+
