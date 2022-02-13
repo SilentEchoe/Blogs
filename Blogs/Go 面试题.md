@@ -1,0 +1,383 @@
+---
+title: Go 面试题
+date: 2021-7-20 22:23:00
+tags: [Go,面试]
+category: Go
+---
+
+## 切片的初始化
+
+切片的初始化包括三种：
+
+**使用下标** arr[0:3] or slice[0:3]
+
+它是所有方法中最底层的一种，使用下表初始化切片不会复制原数组或原切片中的数据，只会创建一个指向原数组的切片结构体，**所以修改新切片的数据也会修改原切片。**
+
+```go
+ func main() {
+	arr := [...]int{1, 2, 3}
+	arrOne := arr[0:3]
+	arr[1] = 4
+	fmt.Println(arrOne)
+}
+
+$ [1 4 3]
+```
+
+
+
+**字面量** slice := []int{1,2,3}  
+
+使用字面量，大部分工作会在编译期间完成。
+
+
+
+**关键字** slice := make([]int,10,10)
+
+使用 make 关键字时，很多工作需要运行时的参与，调用方必须向 make 函数传入切片的大小及可选容量，这是为了确保
+
+1.切片的大小和容量是否足够小
+
+2.切片是否发生了逃逸，最终在堆中初始化。
+
+如果切片非常大，运行时会直接在堆上初始化，如果切片不会发生逃逸并且非常小，例如小于等于4个元素，则直接在栈上或静态存储区创建数组。
+
+> 大于32 KB 的对象会在堆中初始化。
+
+
+
+## **Go 语言中 new 和 make 的区别**
+
+new 和 make 都是 分配内存的原语。new 只分配内存但并不初始化内存，而 make 用于 slice , map 和 channel 的初始化。
+
+slice , map , channel 类型属于引用类型，go 会给引用类型初始化为 nil , 所以 make 不仅可以开辟一个内存，还能给找个内存的类型初始化其零值。
+
+make 只能用来分配及初始化类型为 slice, map , channel 的数据。new 可以分配任意类型的数据。
+
+make 返回的还是引用类型本身；而 new 返回的是指向类型的指针。
+
+
+
+## **数组和切片的区别**
+
+数组类型的值的长度必须在声明的时候给定，并且之后不会再改变。
+
+切片可以自动扩容，我们可以将切片理解成一片连续的内存空间加上长度与容量的标识。
+
+**切片引入了一个抽象层，提供了对数组中部分连续的片段引用，**
+
+
+
+## **数组相比切片有什么优势**
+
+**可比较**：数组是固定长度，它们之间是可以比较的，数组是**值对象**。切片不可以直接比较，也不能用于判断。数组可以作为 map 的 **键**（key）, 而切片不行。
+
+**编译安全**：数组可以提供更高的编译时安全，可以在编译时检查索引范围。
+
+**规划内存布局**：更好控制内存布局，因为不能直接在带有切片的结构中分配空间，所以可以使用数组来解决。
+
+**访问速度**：其访问（单个）数组元素比访问切片元素更高效，时间复杂度是 O (1)
+
+更多细节：https://eddycjy.com/posts/go/go-array-slice/
+
+
+
+## 切片会输出什么结果？
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var data = make([]int, 3, 3)
+	doWork(data)
+	fmt.Println(data)
+}
+
+func doWork(data []int) {
+	data = append(data, 1)
+	data[0] = 1
+}
+```
+
+这里要注意两个点：
+
+1.Go 语言函数传值，**无论是传递基本类型，结构体还是指针，都会对传递的参数进行拷贝。**
+
+2.切片的扩容机制
+
+这里可以先看一下切片的数据结构:
+
+```go
+type SliceHeader struct {
+	Data uintptr
+	Len  int
+	Cap  int
+}
+```
+
+从切片的数据结构可以看出，Data 是一个内置的指针类型，可直接更改引用地址的参数。所以虽然函数使用值传递，但是在函数内部执行 date[0] = 1 ，外部的切片数据也会发生变化。
+
+但是 Len 和 Cap 是 int 类型，这代表，函数内部更改不会影响到函数外的数据源。
+
+回到题目本身，data 初始化后是 [0,0,0] 值传递到 doWork 函数后进行扩容，数据发生变化 data 为 [0,0,0,0] 后修改切片的第一个元素 [1,0,0,0]，但是这是在 doWork 函数中内的数据变化，并不会影响到 main 函数中 data 的值。
+
+切片的扩容是为切片分配新的内存空间并复制原切片中元素的过程。如果切片中的元素不是指针类型，那么会将原数组内存中的内容复制到新申请的内容中，这将最终会返回一个新切片，并覆盖原切片。
+
+> 所以在使用 append 函数对切片进行扩容后，需要一个变量去接受它的新切片。
+
+
+
+> **遇到大切片扩容或复制的时候，可能会引发大规模的内存复制，一定要减少类似的操作以避免影响程序的性能。**
+
+
+
+
+
+## **Map的线程安全**
+
+Go 内建的 map 对象不是线程安全的，并发读写的时候运行时会有检查，遇到并发问题就会导致 panic 。
+
+解决 Map 的线程安全有多个方案：1.互斥锁 2.读写锁 [3.Sync.Map](http://3.Sync.Map) 4.分片加锁
+
+前两个方案不用过多赘述，可以重点谈论一下后两个方案。
+
+Go 内建的 map 类型不是线程安全的，而 [Sync.Map](http://sync.Map) 并不是来替换内建的 map 类型的，它只能被应用在一些特殊场景内
+
+1.只会增长的缓存系统中，一个 key 只写入一次而被读很多次。
+
+2.多个 goroutine 为不相交的键读，写 和 重写键值对。
+
+优点：
+
+1.空间换时间。通过冗余的两个数据结构（只读的 read 字段，可写的 dirty ）,来减少加锁对性能的影响。对只读字段（read）的操作不需要加锁。
+
+2.优先从 read 字段读取，更新，删除，因为对read字段的读取不需要锁。
+
+3.动态调整。miss 次数过多，将 dirty 数据提升为read，避免总是从 dirty 中加锁读取。
+
+4.double-checking。加锁之后还要再检查 read 字段，确定真的不存在才操作 dirty 字段。
+
+5.延迟删除。删除一个键值只是打标记，只有在提升dirty 字段为 read 字段的时候才清理删除的数据。
+
+**分片加锁 可看**：https://github.com/orcaman/concurrent-map
+
+
+
+## 字符串
+
+```go
+type StringHeader struct {
+	Data uintptr
+	Len  int
+}
+
+type SliceHeader struct {
+	Data uintptr
+	Len  int
+	Cap  int
+}
+```
+
+字符串 与 切片的结构体相比，字符串只少了一个表示容量的 Cap 字段。在谈论切片的时候我们提到过一个代码例子，稍微更改代码示例后
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var data = "123"
+	doWork(data)
+	fmt.Println(data)
+}
+
+func doWork(data string) {
+	data = "99"
+
+}
+```
+
+这段代码并不会按照切片代码逻辑执行，不会输出 “99”，而是依然输出 “123”。这是因为 **字符串虽然和切片的结构体高度相似，但是字符串是一个只读的切片类型。所有在字符串上的写入操作都是通过拷贝实现的。**
+
+**这种不可变的特性可以保证我们不会引用到意外发生改变的值，而因为 Go 语言的字符串可以作为哈希的键，所以如果哈希的键是可变的，不仅会增加哈希实现的复杂性，还可能会影响哈希的比较。**
+
+
+
+## **接口**
+
+接口的本质是引入一个新的中间层，调用方通过接口与具体实现分离，解除上下游的耦合，上层模块不需要依赖下层的具体模块，只需要依赖一个约定好的接口。
+
+Go 语言中的接口有两种表达形式，一种是正常的接口类型，另外一种不包含任何方法的接口在实现时，使用了特殊的类型。
+
+> interface{} 类型不是任意类型。如果将类型转换成了 interface{} 类型，变量在运行期间的类型也会发生变化，获取变量类型时会得到 interface{}
+
+
+
+**Go 语言的接口类型不是任意类型，它很有可能向方法传入参数之后，变量的赋值，类型转换时，发生隐式的类型转换。**
+
+Go 1.18 支持泛型后，Go interface 的意义已经彻底被改变了。**旧接口定义了方法集合，现接口定义了类型集合。**
+
+interface 的定义也扩展了。先前，接口定义只能包含方法元素（method element），现在的接口除了方法元素外，还可以包含类型元素。
+
+
+
+**interface 包含的元素类型必须是底层类型，而且不能是接口类型。**
+
+```go
+type MyInt int
+
+type IO interface {
+	~MyInt // 错误，不能这样使用，只能是底层类型
+}
+```
+
+
+
+**联合（union） 类型元素不能是类型参数**
+
+```go
+// 错误 interface 里面的 K 是类型参数
+func I1 [K any, V interface { K }](){
+}
+
+// 错误, interface{ nt | K }中K 是类型参数
+func I2[K any, V interface{ int | K }]() {
+}
+```
+
+
+
+**联合类型元素的非接口元素必须是两两不相交**
+
+比如 int | string 的交集是空集
+
+
+
+**联合类型元素如果包含多余一个元素，不能包含非空方法的接口类型，也不能是 comparable 或者嵌入 comparable**
+
+```go
+// 编译没问题，只包含一个元素
+func I9[K interface{ io.Reader }]() {
+}
+
+// 错误!不能编译。因为包含了两个元素，而且无论是`io.Reader`还是`io.Writer`都包含方法
+func I10[K interface{ io.Reader | io.Writer }]() {
+}
+
+// 编译正常，因为这是正常的接口，没有联合元素
+func I11[K interface {
+	io.Reader
+	io.Writer
+}]() {
+}
+
+// 错误! 联合类型多于一个元素，并且io.Reader包含方法
+func I12[K interface{ io.Reader | int }]() {
+}
+
+// 错误! 不能编译.因为联合元素大于一个，并且不能是comparable
+func I13[K comparable | int]() {
+}
+
+// 错误! 不能编译.因为联合元素大于一个，并且元素不能嵌入comparable
+func I14[K interface{ comparable } | int]() {
+}
+```
+
+
+
+## **反射**
+
+Go 语言中反射的第一法则：**我们能将 Go 语言的 interface{} 变量转换成反射对象。因为函数的调用都是值传递，所以变量类型在底层函数调用时进行类型转换。所以会从基本类型转换到 interface{}**
+
+第二法则：我们可以从反射对象获取 interface{} 变量。
+
+第三法则：我们得到的反射对象跟原对象没有任何关系，那么直接修改反射对象无法改变原变量，程序为了防止错误就会崩溃。
+
+
+
+## Select
+
+同时有多个 case 就绪时 select 会**随机**选择一个 case 执行其中的代码，这是为了避免按照顺序执行，后面的条件永远得不到执行，引入随机性是为了避免饥饿问题发生。 
+
+
+
+## **panic 和 recover 关键字**
+
+panic 只会触发当前 Goroutine 的 defer
+
+recover 只有在 defer 中调用才会生效
+
+panic 允许在 defer 中嵌套多次调用
+
+
+
+## **defer**
+
+使用 defer 最常见的场景是在函数调用结束后完成一些收尾工作，例如在 defer 中回滚数据库的事务。
+
+**执行顺序**
+
+一个函数中，多个 defer 的执行顺序为 “后进先出”，但是这里要注意，如果函数中包含 return ，会先执行 return ，再执行 defer 。如果函数中包含 **panic** 函数，那么会先执行 defer 函数，最后再执行 panic 函数。
+
+**defer声明时会先计算确定参数的值，defer推迟执行的仅是其函数体。**
+
+
+
+## **Channel**
+
+先从 Channel 读取数据的 Goroutine 会先接收到数据
+
+先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利
+
+Channel 在运行时使用 runtime.hchan 结构体：
+
+```go
+type hchan struct {
+	qcount   uint   // Channel 中的元素个数
+	dataqsiz uint   // Channel 中的循环队列的长度
+	buf      unsafe.Pointer  // Channel 的缓冲区数据指针
+	elemsize uint16 // Channel 能够手法的元素大小  
+	closed   uint32
+	elemtype *_type // Channel 能够手法的元素类型
+	sendx    uint   // Channel 的发送操作处理到的位置       
+	recvx    uint   // Channel 的接收操作处理到的位置
+	recvq    waitq  // 存储当前 Channel 由于缓冲区空间不足而阻塞的 Goroutine 列表
+	sendq    waitq
+
+	lock mutex
+}
+
+type waitq struct {
+	first *sudog
+	last  *sudog
+}
+```
+
+Channel 是一个用于同步和通信的有锁队列。
+
+> 向一个已经关闭的 Channel 发送数据时，会报告错误并中止程序。 向一个已经关闭的 Channel （无缓存）读数据时，会读取到零值。 向一个已经关闭的 Channel （有缓存） 读取数据时，会读取通道里面的剩余值。剩余值读取完后会读到零值。
+
+
+
+**Goroutine 的泄露**
+
+如果启动了一个 goroutine ，但是没有符合预期地退出，直到程序结束，此 goroutine 才退出，这种情况叫做 goroutine 泄露。
+
+一般泄露是因为 Channel 操作阻塞导致整个 goroutine 一直阻塞等待或 goroutine 里有死循环。
+
+
+
+> 共享资源的并发访问使用传统并发原语 复杂的任务编排和消息传递使用 Channel 消息通知机制使用 Channel，除非只想 signal 一个 goroutine，才使用 Cond 简单等待所有任务的完成用 WaitGroup ，也有 Channel 的推崇者用 Channel，都可以使用 需要和 Select 语句结合，使用 Channel 需要和超时配合时，使用 Channel 和 Context
+
+
+
+## 学习资料 
+
+《Go 并发编程实战》
+
+《Go语言高性能编程》
+
+《Go 语言设计与实现》
