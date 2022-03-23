@@ -28,7 +28,8 @@ type IdentityServer struct {
 	Driver *archetype
 }
 
-// 获取插件的信息
+// GetPluginIno 获取插件名称和版本
+// 版本号只能是 1.1.1 不能是 v1.1.1 格式
 func (ids *IdentityServer) GetPluginIno(_ context.Context, _ *csi.GetPluginCapabilitiesRequest) (*csi.GetPluginInfoResponse, error) {
 	if ids.Driver.name == "" {
 		return nil, status.Error(codes.Unavailable, "Driver name not configured")
@@ -44,10 +45,13 @@ func (ids *IdentityServer) GetPluginIno(_ context.Context, _ *csi.GetPluginCapab
 	}, nil
 }
 
+// Probe 接口用来做健康检测
+// TODO 应该需要做一部分的逻辑判活
 func (ids *IdentityServer) Probe(_ context.Context, _ *csi.ProbeRequest) (*csi.ProbeResponse, error) {
 	return &csi.ProbeResponse{}, nil
 }
 
+// GetPluginCapabilities
 func (ids *IdentityServer) GetPluginCapabilities(_ context.Context, _ *csi.GetPluginCapabilitiesRequest) (*csi.GetPluginCapabilitiesResponse, error) {
 	logrus.Infof("Using default capabilities")
 	return &csi.GetPluginCapabilitiesResponse{
