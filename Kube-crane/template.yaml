@@ -1,0 +1,17 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: crane
+  namespace: vela-system
+spec:
+  components:
+    - name: crane
+      type: helm
+      properties:
+        repoType: git
+        url: https://github.com/gocrane/crane
+        chart: ./charts/crane/v0.3.0
+        git:
+          branch: master
+        values:
+          featureGates: PreDownloadImageForInPlaceUpdate=true

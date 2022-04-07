@@ -1,0 +1,19 @@
+name: crane
+version: 1.0.0
+description: Example adddon.
+icon: https://github.com/gocrane/crane/blob/main/docs/images/crane.png
+url: https://github.com/gocrane/crane
+
+tags:
+  - only_example
+
+deployTo:
+  runtimeCluster: false
+
+dependencies:
+  - name: common
+
+needNamespace:
+  - crane
+
+invisible: false
