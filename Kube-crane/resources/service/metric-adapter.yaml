@@ -1,0 +1,45 @@
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"metric-adapter","namespace":"crane-system"},"spec":{"ports":[{"name":"https","port":443,"targetPort":6443},{"name":"http","port":80,"targetPort":8080}],"selector":{"app":"metric-adapter"}}}
+    meta.helm.sh/release-name: crane
+    meta.helm.sh/release-namespace: crane-system
+  creationTimestamp: "2022-04-07T03:25:20Z"
+  labels:
+    app.kubernetes.io/instance: crane
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: crane
+    app.kubernetes.io/version: v0.3.0
+    helm.sh/chart: crane-0.3.0
+  name: metric-adapter
+  namespace: crane-system
+  resourceVersion: "4795"
+  uid: 04547416-6d5e-4509-b07f-a7166664d52d
+spec:
+  clusterIP: 10.108.134.197
+  clusterIPs:
+    - 10.108.134.197
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: 6443
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: metric-adapter
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

@@ -1,0 +1,43 @@
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: prometheus
+    meta.helm.sh/release-namespace: crane-system
+    prometheus.io/scrape: "true"
+  creationTimestamp: "2022-04-07T03:23:42Z"
+  labels:
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/part-of: kube-state-metrics
+    app.kubernetes.io/version: 2.4.1
+    helm.sh/chart: kube-state-metrics-4.7.0
+  name: prometheus-kube-state-metrics
+  namespace: crane-system
+  resourceVersion: "4008"
+  uid: 948ae7c1-12b1-42fa-94d8-de4af49e3597
+spec:
+  clusterIP: 10.107.198.201
+  clusterIPs:
+    - 10.107.198.201
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: kube-state-metrics
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
