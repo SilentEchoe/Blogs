@@ -5,22 +5,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    deployment.kubernetes.io/revision: "1"
-    meta.helm.sh/release-name: grafana
-    meta.helm.sh/release-namespace: crane-system
-  creationTimestamp: "2022-04-07T03:23:54Z"
-  generation: 1
-  labels:
-    app.kubernetes.io/instance: grafana
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: grafana
-    app.kubernetes.io/version: 8.4.2
-    helm.sh/chart: grafana-6.25.1
   name: grafana
   namespace: crane-system
   resourceVersion: "4194"
-  uid: 94624487-b1d2-4767-9b01-8766f3748924
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -36,11 +23,6 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      annotations:
-        checksum/config: fc9b0d16bccffdb30e8106319fe9efc8b774df1c1c2521729b7ad7c12528d4d7
-        checksum/dashboards-json-config: 382183fa923163452bfc1536a05ae7dd0afdbf74aeecea4e6dda8a58fa27108c
-        checksum/sc-dashboard-provider-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
-        checksum/secret: d90f0b7ffe62c1a331206daeb66b57086cb133ed08e1d8bd2af0843365218d53
       creationTimestamp: null
       labels:
         app.kubernetes.io/instance: grafana
@@ -160,22 +142,3 @@ spec:
           name: dashboards-default
         - emptyDir: {}
           name: storage
-status:
-  availableReplicas: 1
-  conditions:
-    - lastTransitionTime: "2022-04-07T03:24:04Z"
-      lastUpdateTime: "2022-04-07T03:24:04Z"
-      message: Deployment has minimum availability.
-      reason: MinimumReplicasAvailable
-      status: "True"
-      type: Available
-    - lastTransitionTime: "2022-04-07T03:23:54Z"
-      lastUpdateTime: "2022-04-07T03:24:04Z"
-      message: ReplicaSet "grafana-6bfdb887b4" has successfully progressed.
-      reason: NewReplicaSetAvailable
-      status: "True"
-      type: Progressing
-  observedGeneration: 1
-  readyReplicas: 1
-  replicas: 1
-  updatedReplicas: 1

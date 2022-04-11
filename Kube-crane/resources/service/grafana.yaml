@@ -5,24 +5,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    meta.helm.sh/release-name: grafana
-    meta.helm.sh/release-namespace: crane-system
-  creationTimestamp: "2022-04-07T03:23:54Z"
-  labels:
-    app.kubernetes.io/instance: grafana
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: grafana
-    app.kubernetes.io/version: 8.4.2
-    helm.sh/chart: grafana-6.25.1
   name: grafana
   namespace: crane-system
   resourceVersion: "4129"
-  uid: eb2e2ce3-f81e-4615-8098-55e7eb6e5106
 spec:
-  clusterIP: 10.103.78.6
-  clusterIPs:
-    - 10.103.78.6
   ipFamilies:
     - IPv4
   ipFamilyPolicy: SingleStack
@@ -36,5 +22,3 @@ spec:
     app.kubernetes.io/name: grafana
   sessionAffinity: None
   type: ClusterIP
-status:
-  loadBalancer: {}

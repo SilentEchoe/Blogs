@@ -7,11 +7,8 @@ url: https://fluxcd.io
 tags:
   - only_Crane_test
 
-deployTo:
-  control_plane: true
-  #表示插件是否安装到子集群当中，当该字段被设置为 true，应用中的资源会被下发到子集群当中。
-  runtime_cluster: true
-# dependencies: 表示所依赖的其他插件，启用时 KubeVela 会自动启用它所依赖的插件
+needNamespace:
+  - crane-system
 
 # 下列参数表示依赖 fluxcd
 dependencies:

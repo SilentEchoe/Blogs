@@ -1,0 +1,11 @@
+name: my-redis
+version: 1.0.0
+description: Example adddon.
+icon: icon/niu.jpeg
+url: example.com
+
+tags:
+  - only_example
+
+deployTo:
+  runtimeCluster: false

@@ -5,22 +5,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    meta.helm.sh/release-name: prometheus
-    meta.helm.sh/release-namespace: crane-system
-    prometheus.io/scrape: "true"
-  creationTimestamp: "2022-04-07T03:23:42Z"
-  labels:
-    app: prometheus
-    app.kubernetes.io/managed-by: Helm
-    chart: prometheus-15.8.0
-    component: node-exporter
-    heritage: Helm
-    release: prometheus
   name: prometheus-node-exporter
   namespace: crane-system
   resourceVersion: "4000"
-  uid: b008f6d8-ddad-4ab1-a04e-5784a55b584f
 spec:
   clusterIP: None
   clusterIPs:
@@ -39,5 +26,3 @@ spec:
     release: prometheus
   sessionAffinity: None
   type: ClusterIP
-status:
-  loadBalancer: {}
