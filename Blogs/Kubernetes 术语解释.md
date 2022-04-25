@@ -95,6 +95,20 @@ Kubernetes Service 定义了外界访问一组特定的 Pod 的方式。Service 
 
 **Kubernetes 运行容器（Pod）与访问容器 （Pod）这两项任务分别由 Controller 和 Service 执行。**
 
+在 kubernetes 中，Service 是分布式集群架构的核心，一个 Service 对象拥有如下关键特征：
+
+拥有一个唯一指定的名字（比如 my-mysql-server）
+
+拥有一个虚拟IP（Cluster IP, Service IP 或 VIP） 和端口号
+
+能够提供某种远程服务能力
+
+被映射到了提供这种服务能力的一组容器应用上。
+
+Kubernetes 能让我们通过 Service （虚拟 Cluster IP + Service Port） 连接到指定的 Service 上。有了 Kubernetes 内建的透明负载均衡和故障回复机制，无论某个服务是否异常而部署到其他机器上，都不会影响到我们对服务的正常调用。
+
+Service 一旦创建就不再变化，这意味着它的 IP 地址不会频繁发生变化。
+
 
 
 ### Cluster

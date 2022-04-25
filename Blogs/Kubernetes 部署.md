@@ -7,160 +7,107 @@ category: Kubernetes
 
 
 
-## Docker 安装
+## Ubuntu 20.04 部署 Kubernetes
 
-```bash
-sudo apt-get update
-sudo apt-get install docker.io
-```
+### 安装组件
 
+```shell
+apt-get update && apt-get install -y \
+apt-transport-https ca-certificates curl software-properties-common gnupg2
 
+# 先安装ssh
+sudo  apt-get install   openssh-server
+sudo /etc/init.d/ssh start
+sudo ufw allow ssh
 
-## K8s 安装
+# Add Docker’s official GPG key:
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 
-```bash
-# 使得 apt 支持 ssl 传输
-apt-get update && apt-get install -y apt-transport-https
-# 下载 gpg 密钥
-curl <https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg> | apt-key add - 
-# 添加 k8s 镜像源
-cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
-deb <https://mirrors.aliyun.com/kubernetes/apt/> kubernetes-xenial main
+#禁止交换内存
+sudo swapoff  -a
+sed -ri 's/.*swap.*/#&/' /etc/fstab
+
+#安装 docker
+sudo apt install docker.io
+sudo systemctl enable docker
+sudo systemctl status docker
+sudo systemctl start docker
+
+# Set up the Docker daemon
+cat > /etc/docker/daemon.json <<EOF
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
 EOF
-# 更新源列表
-apt-get update
-# 下载 kubectl，kubeadm以及 kubelet
-apt-get install -y kubelet kubeadm kubectl
+
+mkdir -p /etc/systemd/system/docker.service.d
+systemctl daemon-reload
+systemctl restart docker
+
+
+# 安装 Kubernetes 必要组件
+sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+curl -s https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | sudo apt-key add -
+
+sudo tee /etc/apt/sources.list.d/kubernetes.list <<EOF 
+deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
+EOF
+
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+sudo systemctl enable kubelet && sudo systemctl start kubelet
+
+#关闭防火墙
+systemctl stop firewalld
+systemctl disable firewalld
+
+# master 节点安装
+kubeadm init   --image-repository=registry.aliyuncs.com/google_containers  --apiserver-advertise-address=master_ipadree   --pod-network-cidr=10.244.0.0/16  --service-cidr=10.244.0.0/12
+
+#安装好以后,看一下状态
+kubectl get ns
+kubectl get nodes
+kubectl get pods --all-namespaces
 ```
 
 
 
-## 关闭Swap
+### 可能出现问题
 
-```bash
-$ vim /etc/fstab
-# UUID=9224d95f-cd87-4b56-b249-3dc7de4491d3 none            swap    sw              0       0
-```
+```shell
+#问题一：8080端口未开
+#解决方案：
+echo "export KUBECONFIG=/etc/kubernetes/admin.conf" >> ~/.bash_profile
+source ~/.bash_profile
 
+#问题二：
+[kubelet-check] The HTTP call equal to 'curl -sSL http://localhost:10248/healthz' failed with error: Get "http://localhost:10248/healthz": dial tcp [::1]:10248: connect: connection refused.
+#解决方案：
+vim /usr/lib/systemd/system/docker.service
+ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd
 
+sudo systemctl daemon-reload
+sudo systemctl restart docker
 
-## Kubeadm 使用阿里云拉取需要的镜像
-
-```bash
-kubeadm config images pull --image-repository=registry.aliyuncs.com/goole_containers
-```
-
-PS:这里拉取 coredns 会有问题，所以直接拉取官方的镜像。
-
-```bash
-docker pull coredns/coredns:1.8.0
-```
-
-然后修改镜像的tag
-
-```bash
-sudo docker tag 296a6d5035e2 registry.aliyuncs.com/google_containers/coredns/coredns:V1.8.0
-```
-
-先查看 kubeadm 需要的镜像
-
-```bash
-kubeadm config images list
-```
-
-**PS：可以先从阿里云等国内源拉取需要的镜像，然后更改Tag。**
-
-
-
-## Kubeadm 初始化
-
-```bash
-kubeadm init --apiserver-advertise-address 192.168.56.105 --pod-network-cidr=10.244.0.0/16
-```
-
-配置 Kubectl
-
-```bash
-su - username
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
-
-echo "source <(kubectl completion bash)" >> ~/.bashrc
-```
-
-
-
-### The Connection to the server [localhost:8080](http://localhost:8080) was refused did you specify the right host or port?
-
+#问题三：
+node  Failed to get imageFs info: non-existent label "docker-images"
 解决方案：
+重启一下 k8s
 
-Kubernetes master 没有与本机绑定，集群初始化的时候没有绑定，此时设置在本机的环境变量可解决
-
-```bash
-sudo su
-
-echo "export KUBECONFIG=/etc/kubernetes/admin.conf" >> /etc/profile
-
-soure /etc/profile
-```
-
-
-
-## 安装Pod 网络
-
-```bash
-kubectl apply -f <https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml>
-
-# 无外网可使用以下命令
-kubectl apply -f [<https://github.com/flannel-io/flannel/blob/master/Documentation/kube-flannel.yml>](<https://github.com/flannel-io/flannel/blob/master/Documentation/kube-flannel.yml>)
-```
-
-
-
-## 添加子节点
-
-```bash
-#在master 节点上查询Token
-kubeadm token list 
-
-#Token 默认存在24小时，如果不存在可以自己创建一个新token
-#kubeadm token create
-
-#添加节点
-kubeadm join --token sq10bo.yklylpvoavkbg9om Ip:6443
-```
-
-可能遇见问题：
-
-discovery.bootstrapToken: Invalid value: "": using token-based discovery without caCertHashes can be unsafe. Set unsafeSkipCAVerification to continue
-
+#问题五
+The connection to the server 10.0.2.15:6443 was refused - did you specify the right host or port?
 解决方案：
+sudo -i
+swapoff -a
+exit
+strace -eopenat kubectl version
 
-如果出现以下错误，说明需要进行ca校验可以使用--discovery-token-unsafe-skip-ca-verification参数忽略校验
-
-```bash
-kubeadm join --token tokenId Ip:6443 --discovery-token-unsafe-skip-ca-verification
-```
-
-遇见问题
-
-```bash
-[ERROR Port-10250]: Port 10250 is in use
-        [ERROR DirAvailable--etc-kubernetes-manifests]: /etc/kubernetes/manifests is not empty
-        [ERROR FileAvailable--etc-kubernetes-pki-ca.crt]: /etc/kubernetes/pki/ca.crt already exists
-        [ERROR FileAvailable--etc-kubernetes-kubelet.conf]: /etc/kubernetes/kubelet.conf already exists
-```
-
-解决办法：
-
-使用虚拟机时，子节点加入集群时，可能会因为本身克隆的Master节点的镜像，照成HostName 一致，所以需要更改HostName
-
-```bash
-#修改以下两个文件，然后重启虚拟机
-vi /etc/hostname
-vi /etc/hosts
-kubeadm reset
 ```
 
 
