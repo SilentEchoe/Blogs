@@ -28,7 +28,7 @@ func main() {
 	fmt.Println(listBuckets)
 
 	// 创建一个叫 mybucket 的存储桶。
-	bucketName := "demo2"
+	bucketName := "mybucket"
 	location := ""
 
 	err = minioClient.MakeBucket(bucketName, location)
