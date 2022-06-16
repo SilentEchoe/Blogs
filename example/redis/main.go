@@ -12,7 +12,8 @@ var ctx = context.Background()
 
 func ExampleClient(wr http.ResponseWriter, r *http.Request) {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:30686",
+		Addr: "redis.default:6379",
+		//Addr:     "10.3.70.149:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
@@ -36,6 +37,8 @@ func ExampleClient(wr http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Println("key2", val2)
 	}
+
+	wr.Write([]byte("hello"))
 	// Output: key value
 	// key2 does not exist
 }

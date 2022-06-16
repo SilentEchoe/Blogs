@@ -1,3 +1,1 @@
-kubectl run alpine --rm -it --image=alpine /bin/sh
-
-
+kubectl run busybox --rm -it --image=busybox:1.28.3 /bin/sh

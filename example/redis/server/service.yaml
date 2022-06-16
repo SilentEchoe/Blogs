@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: backendtest
+  name: backendtest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backendtest
+  template:
+    metadata:
+      labels:
+        app: backendtest
+    spec:
+      containers:
+        - image: docker.io/871779972/servicetest:v0.1
+          name: backendtest
+          ports:
+            - containerPort: 8081
+              name: backendtest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: backendtest
+  name: backendtest
+spec:
+  type: NodePort
+  ports:
+    - name: "backend-service-test"
+      port: 8081
+      targetPort: 8081
+  selector:
+    app: backendtest
