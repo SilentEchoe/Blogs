@@ -9,7 +9,7 @@ import (
 
 func hello(wr http.ResponseWriter, r *http.Request) {
 
-	resp, err := http.Get("service-test.default.svc.cluster.local:8080")
+	resp, err := http.Get("http://192.168.31.252:31850/backend")
 	if err != nil {
 		fmt.Println(err)
 		return
