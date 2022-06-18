@@ -2,8 +2,8 @@ FROM ubuntu:14.04
 
 WORKDIR /workspace
 
-ADD service /workspace/service
+ADD client /workspace/client
 
-#CMD [ "./service" ]
+CMD [ "./client" ]
 
 EXPOSE 8081

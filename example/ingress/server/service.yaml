@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: service-test
+  name: service-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-test
+  template:
+    metadata:
+      labels:
+        app: service-test
+    spec:
+      containers:
+        - image: docker.io/871779972/service-test:v0.1
+          name: service-test
+          ports:
+            - containerPort: 8080
+              name: service-test
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: service-test
+  name: service-test
+spec:
+  type: NodePort
+  ports:
+    - name: "service-test"
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: service-test
