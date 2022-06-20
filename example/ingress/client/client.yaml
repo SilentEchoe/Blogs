@@ -15,7 +15,7 @@ spec:
         app: client-test
     spec:
       containers:
-        - image: docker.io/871779972/client-test:v0.6
+        - image: docker.io/871779972/client-test:v0.8
           name: client-test
           ports:
             - containerPort: 8081
