@@ -1,4 +1,4 @@
-package Realalgorithm
+package realalgorithm
 
 import "fmt"
 
