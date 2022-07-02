@@ -69,3 +69,20 @@ func (c *Cache) RemoveOldest() {
 	}
 
 }
+
+func (c *Cache) Add(key string, value Value) {
+	if ele, ok := c.cache[key]; ok {
+		c.ll.MoveToFront(ele)
+		kv := ele.Value.(*entry)
+		c.nbytes += int64(value.Len()) - int64(kv.value.Len())
+		kv.value = value
+	} else {
+		// 如果不存在就添加
+		ele := c.ll.PushFront(&entry{key, value})
+		c.cache[key] = ele
+		c.nbytes += int64(len(key)) + int64(value.Len())
+	}
+	for c.maxBytes != 0 && c.maxBytes < c.nbytes {
+		c.RemoveOldest()
+	}
+}
