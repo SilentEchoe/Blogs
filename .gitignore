@@ -20,15 +20,6 @@ gin-bin
 node_modules
 bower_components
 
-#website
-zadig-portal/dist
-zadig-portal/node_modules/
-zadig-portal/dist/
-zadig-portal/npm-debug.log
-zadig-portal/test/unit/coverage
-zadig-portal/test/e2e/reports
-zadig-portal/selenium-debug.log
-zadig-portal/yarn-error.log
 
 #Go doc website
 godoc-proxy/website/node_modules/
