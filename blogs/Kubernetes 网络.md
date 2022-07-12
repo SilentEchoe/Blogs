@@ -113,6 +113,96 @@ Linux 内核本身就支持的一种网络虚拟化技术。VXLAN 的覆盖网�
 
 
 
+**CNI 网络插件**
+
+Kubernetes 通过 CNI 接口，维护一个单独的网桥来代替 docker0，这个网桥的名字叫做：CNI 网桥，它在宿主机上的设备名称默认为：cni0
+
+在Kubernetes 环境中，它的工作方式和VXLAN 一样，只是 docker0 网桥被替换成了CNI 网桥而已。Kubernetes 为 Flannel 分配的子网范围是 10.244.0.0/16 ，在做集群初始化的时候，经常可以看到：
+
+```bash
+kubeadm init --pod-network-cidr=10.244.0.0/16
+```
+
+CNI 网桥只是接管所有 CNI 插件负责的，即 Kubernetes 创建的 Pod，如果使用docker run 命令启动容器，是不归 CNI 网桥所纳管的。那么Docker 还是会把这个容器连接到 docker0 网桥上。
+
+这是因为：一方面 Kubernetes 项目并没有使用 Docker 的网络模型（CNM），所以它并不希望，也不具备配置 docker0 网桥的能力。另一方与 Kubernetes 配置Pod 有关，也就是 Infra 容器的 Network Namespace 密切相关。
+
+**CNI 的设计思想就是 Kubernetes 启动 infra 容器之后就可以直接调用CNI 网络插件，为这个 Infra 容器的 Network Namespace 配置符合预期的网络栈。**
+
+
+
+**CNI 插件工作原理**
+
+当 kubelet 组件需要创建 Pod 的时候，它第一个创建的一定是 Infra 容器。所以在这一步，dockershim 就会先调用 Docker API 创建并启动 Infra 容器，紧接着执行一个叫作 SetUpPod 的方法。这个方法的作用就是：为 CNI 插件准备参数，然后调用 CNI 插件为 Infra 容器配置网络。
+
+CNI 执行三种插件：
+
+1.Main 插件，用于创建具体网络设备的二进制文件。比如 bridge（网桥设备）、ipvlan、loopback（lo 设备）、macvlan、ptp（Veth Pair 设备），以及 vlan。
+
+2.IPAM（IP Address Management）插件，它是负责分配 IP 地址的二进制文件。比如，dhcp，这个文件会向 DHCP 服务器发起请求；host-local，则会使用预先配置的 IP 地址段来进行分配。
+
+3.CNI 社区维护的内置 CNI 插件。比如：flannel，就是专门为 Flannel 项目提供的 CNI 插件
+
+
+
+Flannel 的 host-gw 模式
+
+当Flannel 使用该模式后，flanneld 会在宿主机上创建一条规则：
+
+```bash
+$ ip route
+...
+10.244.1.0/24 via 10.168.0.3 dev eth0
+```
+
+上述信息包含：
+
+目的IP地址属于 10.244.1.0/24 网段的IP包，这是经由本机 eth0 设备发出去，并且它的下一跳地址为：10.168.0.3
+
+> 下一跳指的是主机经过路由设备X的中转，那么设备X的IP地址就应该配置为主机A的下一跳地址。
+
+host-gw 模式的工作原理，其实就是将每个 Flannel 子网的“下一跳”，设置成该子网对应的宿主机的IP地址。这意味着，宿主机被当作“网关”。
+
+Flannel host-gw 模式必须要求集群宿主机是二层连通的。
+
+
+
+**Calico**
+
+相同的，Calico 也会在每台宿主机上，添加一个类似的路由规则。不过不同于 Flannel 通过 Etcd 和宿主机上的 flanneId 来维护路由信息，它使用 BGP 来自动在整个集群中分发路由信息。
+
+**BGP Border Gateway Protocol 边界网关协议**
+
+它是一个Linux 内核原生就支持，专门用在大规模数据中心里维护不同的“自治系统”之间路由信息的，无中心的路由协议。它跟普通路由器不同之处在于：它的路由表里拥有其他自治系统里的主机路由信息。
+
+可以这么理解，每个边界网关上在后台运行一个逻辑：将自己的路由表信息通过 TCP 传递给其他的边界网关；对收到的数据进行分析筛选后，将需要的信息添加到自己的路由表里。
+
+
+
+**Kubernetes 中 Service 是如何工作的？**
+
+Service 是由 kube-proxy 组件加上 iptables 来共同实现的。当一个 Service 被提交给 Kubernetes 那么 kube-proxy 可以通过 Service 的 Informer 知道有一条新的 Service 对象添加，它会在宿主机上创建一条 iptables 规则。
+
+这条规则内容相当于为这个 Service 设置了一个固定的入口地址，但是这个只是 iptables 规则上的配置，并不是真正的网络设备。
+
+当流量进入规则后，会发现这不是一条规则，而是一组**随机模式**的iptables链。而规则中的链指向的是 Service 代理的 Pod。所以这一组规则其实就是 Service 实现负载均衡的位置。
+
+DNAT 规则的作用：就是在 PREROUTING 检查点之前，也就是在路由之前，将流入 IP 包的目的地址和端口，改成–to-destination 所指定的新的目的地址和端口。可以看到，这个目的地址和端口，正是被代理 Pod 的 IP 地址和端口。
+
+访问 Service VIP 的 IP 包经过上述 iptables 处理之后，就已经变成了访问具体某一个后端 Pod 的 IP 包了。不难理解，这些 Endpoints 对应的 iptables 规则，正是 kube-proxy 通过监听 Pod 的变化事件，在宿主机上生成并维护的。
+
+
+
+**Kubernetes Ingress**
+
+由于每个 Service 都要有一个负载均衡服务，所以这个做法实际上既浪费成本又高。作为用户，我其实更希望看到 Kubernetes 为我内置一个全局的负载均衡器。然后，通过我访问的 URL，把请求转发给不同的后端 Service。
+
+这种全局的、为了代理不同后端 Service 而设置的负载均衡服务，就是 Kubernetes 里的 Ingress 服务。
+
+一个 Nginx Ingress Controller 为你提供的服务，其实是一个可以根据 Ingress 对象和被代理后端 Service 的变化，来自动进行更新的 Nginx 负载均衡器。
+
+
+
 ## 学习资料
 
 《深入剖析Kubernetes》
