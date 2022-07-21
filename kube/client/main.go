@@ -10,16 +10,19 @@ import (
 )
 
 func main() {
-
+	// config 可以从指定的文件中获取，例如：clientcmd.RecommendedHomeFile 从 home 文件中
+	// 如果不传递参数，它会从classname 中获取
 	config, err := clientcmd.BuildConfigFromFlags("", clientcmd.RecommendedHomeFile)
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
 	}
+
 	config.GroupVersion = &v1.SchemeGroupVersion
 	config.NegotiatedSerializer = scheme.Codecs
 	config.APIPath = "/api"
 
+	// client
 	restClient, err := rest.RESTClientFor(config)
 	if err != nil {
 		fmt.Println(err)
