@@ -1,0 +1,9 @@
+FROM nginx:1.16.0
+
+WORKDIR /dex
+
+COPY ["dist/","/usr/share/nginx/dex"]
+
+ADD dex-nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 8082
