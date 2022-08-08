@@ -48,6 +48,7 @@ func mergeTwoLists(node1 *ListNode, node2 *ListNode) *ListNode {
 
 	for p1 != nil && p2 != nil {
 		// 比较 p1 和 p2 两个指针
+		// 将值较小的节点接到 P 指针
 		if p1.Val > p2.Val {
 			p.Next = p2
 			p2 = p2.Next
@@ -67,6 +68,41 @@ func mergeTwoLists(node1 *ListNode, node2 *ListNode) *ListNode {
 		p.Next = p2
 	}
 	return dummy.Next
+}
+
+// 单链表的分隔
+// head = [1,4,3,2,5,2] , x =3
+// [1,2,2,4,3,5]
+// 应该保留两个分区中每个节点的初始位置
+// 思路：将原链表一分为二，分成两个小链表，一个链表中的元素大小都小于X,另外一个大于等于X
+
+func partition(node *ListNode, x int) *ListNode {
+	// 存放小于x 的链表
+	dummyone := &ListNode{}
+	// 存放大于
+	dummy := &ListNode{}
+
+	p1 := dummyone
+	p2 := dummy
+	p := node
+	for p != nil {
+		// 大于 x，存 p2
+		if p.Val >= x {
+			p2.Next = p
+			p2 = p2.Next
+		} else {
+			p1.Next = p
+			p1 = p2.Next
+		}
+
+		temp := &ListNode{}
+		p.Next = nil
+		p = temp
+	}
+
+	// 拼两个链表
+	p1.Next = dummy.Next
+	return dummyone.Next
 }
 
 // 合并 K 个有序链表

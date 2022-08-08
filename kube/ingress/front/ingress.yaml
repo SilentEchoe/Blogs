@@ -11,6 +11,7 @@ spec:
           - path: /
             pathType: Prefix
             backend:
+               name: dex-env-dev
                service:
                 name: dex-svc
                 port:
