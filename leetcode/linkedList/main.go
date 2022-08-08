@@ -203,6 +203,34 @@ func hasCycle(head *ListNode) bool {
 	return false
 }
 
+// 如果链表中包含环，如何计算环的起点
+func detectCycle(node *ListNode) *ListNode {
+	fast := &ListNode{}
+	slow := &ListNode{}
+	fast = node
+	slow = node
+	for fast != nil && fast.Next != nil {
+		fast = fast.Next.Next
+		slow = slow.Next
+		if fast == slow {
+			break
+		}
+	}
+
+	if fast == nil || fast.Next == nil {
+		return nil
+	}
+
+	// 重新指向头节点
+	slow = node
+
+	for slow != fast {
+		fast = fast.Next
+		slow = slow.Next
+	}
+	return slow
+}
+
 // 翻转链表
 // 将第一个放在最后面
 func reverseList(head *ListNode) *ListNode {
