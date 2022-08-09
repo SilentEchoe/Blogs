@@ -1,5 +1,7 @@
 package main
 
+//只要数组有序，就应该想到双指针技巧
+
 func main() {
 
 }
@@ -24,3 +26,63 @@ func removeDuplicates(nums []int) int {
 	}
 	return slow + 1
 }
+
+// 移除元素
+func removeElement(nums []int, val int) []int {
+	if len(nums) == 0 {
+		return nil
+	}
+
+	slow := 0
+	fast := 0
+
+	for fast < len(nums) {
+		if nums[fast] != val {
+			nums[slow] = nums[fast]
+			slow++
+		}
+		fast++
+	}
+	return nums
+}
+
+// 左右指针(二分查找法示例
+func binarySearch(nums []int, target int) int {
+	// 一左一右两个指针相向而行
+	left := 0
+	right := len(nums) - 1
+	for left <= right {
+		// 中线
+		mid := (right + left) / 2
+		if nums[mid] == target {
+			// 如果查到了直接返回
+			return mid
+		} else if nums[mid] < target {
+			left = mid + 1
+		} else if nums[mid] > target {
+			right = mid - 1
+		}
+	}
+	return -1
+}
+
+// 两数之和
+// 使用二分查找来解决
+func twoSum(nums []int, target int) (int, int) {
+	left := 0
+	right := len(nums) - 1
+	for left <= right {
+		sum := nums[left] + nums[right]
+		if sum == target {
+			return left + 1, right + 1
+		} else if sum < target {
+			left++
+		} else if sum > target {
+			right--
+		}
+	}
+	return -1, -1
+}
+
+// 最长回文子串
+// 回文子串问题则是让左右指针从中心向两端扩展
