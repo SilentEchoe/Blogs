@@ -1,5 +1,6 @@
 package main
 
+// 如果我想正序打印链表中的 val 值，可以在前序遍历位置写代码；反之，如果想倒序遍历链表，就可以在后序遍历位置操作
 // 递归函数要有 base case
 // 链表
 
@@ -364,10 +365,7 @@ func reverseKGroup(head *ListNode, k int) *ListNode {
 	if head == nil {
 		return nil
 	}
-	var a *ListNode = &ListNode{}
-	var b *ListNode = &ListNode{}
-	a = head
-	b = head
+	a, b := head, head
 
 	for i := 0; i < k; i++ {
 		// 不足 K 个，不需要反转
@@ -405,13 +403,8 @@ func reverseByA(a *ListNode) *ListNode {
 
 // 反转区间[a,b) 的元素,注意是左闭右开
 func reverseByGroup(a *ListNode, b *ListNode) *ListNode {
-	pre := &ListNode{}
-	cur := &ListNode{}
-	nxt := &ListNode{}
 
-	pre = nil
-	cur = a
-	nxt = b
+	var pre, cur, nxt *ListNode = nil, a, a
 
 	for cur != b {
 		nxt = cur.Next
@@ -420,6 +413,5 @@ func reverseByGroup(a *ListNode, b *ListNode) *ListNode {
 		cur = nxt
 	}
 	// 返回反转后的头结点
-
 	return pre
 }
