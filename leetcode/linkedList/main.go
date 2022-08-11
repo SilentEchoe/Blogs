@@ -1,5 +1,6 @@
 package main
 
+// 递归函数要有 base case
 // 链表
 
 type ListNode struct {
@@ -103,20 +104,6 @@ func partition(node *ListNode, x int) *ListNode {
 	// 拼两个链表
 	p1.Next = dummy.Next
 	return dummyone.Next
-}
-
-// 合并 K 个有序链表
-func mergeKLists(nodes []ListNode) *ListNode {
-	if len(nodes) == 0 {
-		return nil
-	}
-
-	// 虚拟头结点
-	var dummy = &ListNode{}
-	_ = dummy
-	// 使用 优先级队列（二叉堆） 把链表结点放入一个最小堆
-
-	return nil
 }
 
 // 单链表的倒数第K个结点
@@ -231,7 +218,7 @@ func detectCycle(node *ListNode) *ListNode {
 	return slow
 }
 
-// 翻转链表
+// 翻转链表（递归
 // 将第一个放在最后面
 func reverseList(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
@@ -351,12 +338,13 @@ func reverse(head *ListNode) *ListNode {
 
 var successor = &ListNode{}
 
+// 反转链表前 N 个节点
 func reverseN(head *ListNode, n int) *ListNode {
 	if n == 1 {
 		successor = head.Next
 		return head
 	}
-
+	// 以 head.next 为起点，需要反转前  n - 1 个节点
 	var last = reverseN(head.Next, n-1)
 	head.Next.Next = head
 	head.Next = successor
@@ -369,4 +357,69 @@ func NewReverseBetween(head *ListNode, n int, m int) *ListNode {
 	}
 	head.Next = reverseBetween(head.Next, m-1, n-1)
 	return head
+}
+
+// K 个一组反转链表(迭代
+func reverseKGroup(head *ListNode, k int) *ListNode {
+	if head == nil {
+		return nil
+	}
+	var a *ListNode = &ListNode{}
+	var b *ListNode = &ListNode{}
+	a = head
+	b = head
+
+	for i := 0; i < k; i++ {
+		// 不足 K 个，不需要反转
+		if b == nil {
+			return head
+		}
+		b = b.Next
+	}
+
+	var newHead = reverseByGroup(a, b)
+	a.Next = reverseKGroup(b, k)
+	return newHead
+}
+
+// 反转A为节点的链表
+func reverseByA(a *ListNode) *ListNode {
+	pre := &ListNode{}
+	cur := &ListNode{}
+	nxt := &ListNode{}
+
+	pre = nil
+	cur = a
+	nxt = a
+
+	for cur != nil {
+		nxt = cur.Next
+		// 结点反转
+		cur.Next = pre
+		pre = cur
+		cur = nxt
+	}
+	// 返回反转后的头节点
+	return pre
+}
+
+// 反转区间[a,b) 的元素,注意是左闭右开
+func reverseByGroup(a *ListNode, b *ListNode) *ListNode {
+	pre := &ListNode{}
+	cur := &ListNode{}
+	nxt := &ListNode{}
+
+	pre = nil
+	cur = a
+	nxt = b
+
+	for cur != b {
+		nxt = cur.Next
+		cur.Next = pre
+		pre = cur
+		cur = nxt
+	}
+	// 返回反转后的头结点
+
+	return pre
 }
