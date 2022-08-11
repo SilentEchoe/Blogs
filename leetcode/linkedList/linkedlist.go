@@ -7,6 +7,10 @@ type listNode struct {
 	Next *listNode
 }
 
+type head struct {
+	headNode *listNode
+}
+
 func main() {
 	nodeFive := &listNode{
 		Val:  5,
@@ -33,10 +37,13 @@ func main() {
 		Next: nodeTwo,
 	}
 
-	nodeHead.addAtHead(6)
-	var index = nodeHead.get(1)
+	head := &head{headNode: nodeHead}
+
+	head.addAtHead(6)
+
+	var index = head.headNode.get(1)
 	fmt.Println(index)
-	fmt.Println(index)
+
 }
 
 // 获取链表中的第 index 个节点的值。如果索引无效，返回 -1
@@ -54,29 +61,7 @@ func (head *listNode) get(index int) int {
 }
 
 //在链表的第一个元素之前添加一个值为 val 的节点。插入后，新节点将成为链表的第一个节点。
-func (head *listNode) addAtHead(v int) {
-	var newHead = &listNode{Val: v, Next: nil}
-	current := head
-	for current != nil {
-		if current.Next == nil {
-			break
-		}
-		current = current.Next
-	}
-
-	current.Next = newHead
-	Reverse(current)
-	Reverse(current)
-	head = current
-
-}
-
-func Reverse(head *listNode) *listNode {
-	if head.Next == nil {
-		return head
-	}
-	last := Reverse(head.Next)
-	head.Next.Next = head
-	head.Next = nil
-	return last
+func (head *head) addAtHead(v int) {
+	var newHead = &listNode{Val: v, Next: head.headNode}
+	head.headNode = newHead
 }
