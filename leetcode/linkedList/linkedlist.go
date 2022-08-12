@@ -65,3 +65,13 @@ func (head *head) addAtHead(v int) {
 	var newHead = &listNode{Val: v, Next: head.headNode}
 	head.headNode = newHead
 }
+
+// 将值为 val 的节点追加到链表的最后一个元素
+func (head *head) addAtTail(v int) {
+	curr := head.headNode
+	var newHead = &listNode{Val: v, Next: nil}
+	for curr.Next != nil {
+		curr = curr.Next
+	}
+	curr.Next = newHead
+}
