@@ -22,10 +22,17 @@ spec:
               properties:
                 userID:
                   type: integer
+                  # 指定范围
+                  minimum: 1
+                  maximum: 65535
                 email:
                   type: string
                 password:
                   type: string
+                groups:
+                  type: array
+                  items:
+                    type: string
 
   # Namespaced或Cluster
   # Namespaced或Cluster

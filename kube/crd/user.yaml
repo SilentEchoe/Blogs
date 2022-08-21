@@ -7,3 +7,6 @@ spec:
   userID: 1
   email: k8s@ilinux.io
   password: ikubernetes
+  groups:
+    - superusers
+    - adminstrators
