@@ -20,12 +20,13 @@ spec:
             spec:
               type: object
               properties:
-                cronSpec:
-                  type: string
-                image:
-                  type: string
-                replicas:
+                userID:
                   type: integer
+                email:
+                  type: string
+                password:
+                  type: string
+
   # Namespaced或Cluster
   # Namespaced或Cluster
   scope: Namespaced
