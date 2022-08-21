@@ -1,0 +1,40 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  # 名称必须符合下面的格式：<plural>.<group>
+  name: users.auth.ilinux.io
+spec:
+  # REST API使用的组名称：/apis/<group>/<version>
+  group: auth.ilinux.io
+  # REST API使用的版本号：/apis/<group>/<version>
+  versions:
+    - name: v1
+      # 可以通过 served 来开关每个 version
+      served: true
+      # 有且仅有一个 version 开启存储
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                cronSpec:
+                  type: string
+                image:
+                  type: string
+                replicas:
+                  type: integer
+  # Namespaced或Cluster
+  # Namespaced或Cluster
+  scope: Namespaced
+  names:
+    plural: users
+    # CLI中使用的单数名称
+    singular: user
+    # CamelCased格式的单数类型。在清单文件中使用
+    kind: User
+    # CLI中使用的资源简称
+    shortNames:
+     - u
