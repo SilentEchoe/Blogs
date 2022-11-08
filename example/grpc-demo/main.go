@@ -21,6 +21,9 @@ func main() {
 	pmStr := toJson(pm)
 	fmt.Println(pmStr)
 
+	pm3 := &firstpb.PersonMessage{}
+	_ = fromJson(pmStr, pm3)
+	fmt.Println("pb struct :", pm3)
 }
 
 func toJson(pb proto.Message) string {
@@ -31,6 +34,14 @@ func toJson(pb proto.Message) string {
 	}
 
 	return str
+}
+
+func fromJson(in string, pb proto.Message) error {
+	err := jsonpb.UnmarshalString(in, pb)
+	if err != nil {
+		log.Fatalln("读取Json时发生错误", err.Error())
+	}
+	return nil
 }
 
 func NewPersonMessage() *firstpb.PersonMessage {
