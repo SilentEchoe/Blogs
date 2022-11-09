@@ -1,0 +1,6 @@
+p, alice, /users, GET
+p, bob, /users, POST
+p, admin, /users, GET
+p, admin, /users, POST
+p, admin, /users, DELETE
+g, alice, admin
