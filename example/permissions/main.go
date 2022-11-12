@@ -1,82 +1,61 @@
 package main
 
 import (
-	gorm_mysql "LearningNotes-Go/example/permissions/initialize"
 	"github.com/casbin/casbin/v2"
-	gormadapter "github.com/casbin/gorm-adapter/v3"
-	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
-	"gorm.io/gorm"
+	xormadapter "github.com/casbin/xorm-adapter/v2"
+	_ "gorm.io/driver/mysql"
+	_ "gorm.io/gorm"
 	"log"
-	"net/http"
 )
 
-var (
-	GVA_DB *gorm.DB
-	e      *casbin.Enforcer
-	err    error
-)
+type CasbinRule struct {
+	ID    uint   `gorm:"primaryKey;autoIncrement"`
+	Ptype string `gorm:"size:512;uniqueIndex:unique_index"`
+	V0    string `gorm:"size:512;uniqueIndex:unique_index"`
+	V1    string `gorm:"size:512;uniqueIndex:unique_index"`
+	V2    string `gorm:"size:512;uniqueIndex:unique_index"`
+	V3    string `gorm:"size:512;uniqueIndex:unique_index"`
+	V4    string `gorm:"size:512;uniqueIndex:unique_index"`
+	V5    string `gorm:"size:512;uniqueIndex:unique_index"`
+}
 
 func main() {
-	GVA_DB = gorm_mysql.GormMysql()
-	if GVA_DB == nil {
-		log.Fatalln("错误")
-	}
+	// Increase the column size to 512.
 
-	Casbin()
+	a, _ := xormadapter.NewAdapter("mysql", "root:root@tcp(localhost:3306)/")
 
-	r := gin.Default()
+	e, _ := casbin.NewEnforcer("model.conf", a)
 
-	r.GET("/users", func(ctx *gin.Context) {
-		sub := ctx.Query("username")
-		obj := ctx.Request.URL.Path
-		act := ctx.Request.Method
-		checkPermission(ctx, sub, obj, act)
-	})
-	r.POST("/users", func(ctx *gin.Context) {
-		sub := ctx.Query("username")
-		obj := ctx.Request.URL.Path
-		act := ctx.Request.Method
-		checkPermission(ctx, sub, obj, act)
-	})
-
-	// 程序结束前关闭数据库连接
-	db, _ := GVA_DB.DB()
-	defer db.Close()
-
-	r.Run()
-
-}
-
-func Casbin() {
-	a, err := gormadapter.NewAdapterByDB(GVA_DB)
-	if a == nil || err != nil {
-		log.Fatalln("连接数据库失败:", err)
-	}
-	e, err = casbin.NewEnforcer("model.conf", a)
-
-	if err != nil {
-		log.Fatalln("casbin 认证失败:", err)
-	}
-
+	// Load the policy from DB.
 	e.LoadPolicy()
-	//e.AddPolicy("alice", "/users", "DELETE")
-	e.SavePolicy()
-}
 
-func checkPermission(ctx *gin.Context, sub, obj, act string) {
-	logrus.Infof("sub = %s obj = %s act = %s", sub, obj, act)
+	// Check the permission.
+	e.Enforce("alice", "data1", "read")
+
+	// Modify the policy.
+	// e.AddPolicy(...)
+	// e.RemovePolicy(...)
+
+	// Save the policy back to DB.
+	e.SavePolicy()
+
+	sub := "alice"  // 想要访问资源的用户
+	obj := "/users" // 将要被访问的资源
+	act := "GET"    // 用户对资源实施的操作
+
 	ok, err := e.Enforce(sub, obj, act)
+
 	if err != nil {
-		logrus.Print("enforce failed %s", err.Error())
-		ctx.String(http.StatusInternalServerError, "内部服务器错误")
-		return
+		// 处理错误
+		log.Fatalln("错误:", err)
 	}
-	if !ok {
-		logrus.Println("权限验证不通过")
-		ctx.String(http.StatusOK, "权限验证不通过")
-		return
+
+	if ok == true {
+		// 允许 alice 读取 data1
+		log.Println("验证成功")
+	} else {
+		// 拒绝请求，抛出异常
+		log.Println("验证失败，拒绝请求")
 	}
-	logrus.Println("权限验证通过")
-	ctx.String(http.StatusOK, "权限验证通过")
+
 }

@@ -22,5 +22,5 @@ func GormMysql() *gorm.DB {
 }
 
 func Dsn() string {
-	return "root" + ":" + "DCone2020!" + "@tcp(" + "localhost" + ":" + "3306" + ")/" + "casbin"
+	return "root" + ":" + "root" + "@tcp(" + "localhost" + ":" + "3306" + ")/" + "casbin"
 }
