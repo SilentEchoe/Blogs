@@ -14,15 +14,14 @@ type CasbinRule struct {
 	V0    string `gorm:"size:512;uniqueIndex:unique_index"`
 	V1    string `gorm:"size:512;uniqueIndex:unique_index"`
 	V2    string `gorm:"size:512;uniqueIndex:unique_index"`
-	V3    string `gorm:"size:512;uniqueIndex:unique_index"`
-	V4    string `gorm:"size:512;uniqueIndex:unique_index"`
-	V5    string `gorm:"size:512;uniqueIndex:unique_index"`
 }
 
 func main() {
 	// Increase the column size to 512.
 
-	a, _ := xormadapter.NewAdapter("mysql", "root:root@tcp(localhost:3306)/")
+	//a, _ := xormadapter.NewAdapter("mysql", "root:root@tcp(localhost:3306)/")
+
+	a, _ := xormadapter.NewAdapter("postgres", "dbname=sonar user=sonar password=sonar host=127.0.0.1 port=5432 sslmode=disable", true)
 
 	e, _ := casbin.NewEnforcer("model.conf", a)
 
