@@ -29,18 +29,6 @@ func (s *square) getType() string {
 	return "Square"
 }
 
-type circle struct {
-	radius int
-}
-
-func (c *circle) accept(v visitor) {
-	v.visitForCircle(c)
-}
-
-func (c *circle) getType() string {
-	return "Circle"
-}
-
 type rectangle struct {
 	l int
 	b int
@@ -56,7 +44,7 @@ func (t *rectangle) getType() string {
 
 type visitor interface {
 	visitForSquare(*square)
-	visitForCircle(*circle)
+
 	visitForrectangle(*rectangle)
 }
 
@@ -67,11 +55,6 @@ type areaCalculator struct {
 func (a *areaCalculator) visitForSquare(s *square) {
 	//Calculate area for square. After calculating the area assign in to the area instance variable
 	fmt.Println("Calculating area for square")
-}
-
-func (a *areaCalculator) visitForCircle(s *circle) {
-	//Calculate are for circle. After calculating the area assign in to the area instance variable
-	fmt.Println("Calculating area for circle")
 }
 
 func (a *areaCalculator) visitForrectangle(s *rectangle) {
@@ -89,11 +72,6 @@ func (a *middleCoordinates) visitForSquare(s *square) {
 	fmt.Println("Calculating middle point coordinates for square")
 }
 
-func (a *middleCoordinates) visitForCircle(c *circle) {
-	//Calculate middle point coordinates for square. After calculating the area assign in to the x and y instance variable.
-	fmt.Println("Calculating middle point coordinates for circle")
-}
-
 func (a *middleCoordinates) visitForrectangle(t *rectangle) {
 	//Calculate middle point coordinates for square. After calculating the area assign in to the x and y instance variable.
 	fmt.Println("Calculating middle point coordinates for rectangle")
@@ -101,16 +79,16 @@ func (a *middleCoordinates) visitForrectangle(t *rectangle) {
 
 func main() {
 	square := &square{side: 2}
-	circle := &circle{radius: 3}
+
 	rectangle := &rectangle{l: 2, b: 3}
 	areaCalculator := &areaCalculator{}
 	square.accept(areaCalculator)
-	circle.accept(areaCalculator)
+
 	rectangle.accept(areaCalculator)
 
 	fmt.Println()
 	middleCoordinates := &middleCoordinates{}
 	square.accept(middleCoordinates)
-	circle.accept(middleCoordinates)
+
 	rectangle.accept(middleCoordinates)
 }
