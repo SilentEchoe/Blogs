@@ -1,24 +1,54 @@
+/*
+	数组算法题
+
+双指针技巧：主要分为两类，左右指针和快慢指针
+左右指针就是两个相向或者相背而行。
+快慢指针就是两个指针同向而行，一快一慢。
+*/
 package main
 
-//只要数组有序，就应该想到双指针技巧
-
 func main() {
-
+	numbers := []int{2, 7, 11, 15}
+	target := 9
+	twoSum(numbers, target)
 }
 
-// 快慢指针技巧
-// 删除有序数组中的重复项
-// 快指针走前面，找到一个不重复的元素就赋值给 slow 让 slow 前进一步（因为是有序数组
+// Code.167 两数之和-输入有序数组
+// nubers := []int{2, 7, 11, 15}
+// target := 9
+// 题解：使用双指针技巧，类似于二分查找法
+func twoSum(numbers []int, target int) []int {
+	left := 0
+	right := len(numbers) - 1
+
+	for left < right {
+		var sum = numbers[left] + numbers[right]
+		if sum == target {
+			return []int{left + 1, right + 1}
+		} else if sum < target {
+			// 如果sum比target小，左指针++
+			left++
+		} else if sum > target {
+			// 如果sum比target大，右指针向左偏移，所以--
+			right--
+		}
+	}
+	return []int{-1, -1}
+}
+
+// Code.26 删除有序数组中重复的项
+// 输入：nums = [0,0,1,1,1,2,2,3,3,4]
+// 输出：5, nums = [0,1,2,3,4]
+// 题解：使用快慢指针
 func removeDuplicates(nums []int) int {
 	if len(nums) == 0 {
 		return 0
 	}
+
 	slow := 0
 	fast := 0
-
 	for fast < len(nums) {
 		if nums[fast] != nums[slow] {
-			// 慢指针走一步
 			slow++
 			nums[slow] = nums[fast]
 		}
@@ -26,63 +56,3 @@ func removeDuplicates(nums []int) int {
 	}
 	return slow + 1
 }
-
-// 移除元素
-func removeElement(nums []int, val int) []int {
-	if len(nums) == 0 {
-		return nil
-	}
-
-	slow := 0
-	fast := 0
-
-	for fast < len(nums) {
-		if nums[fast] != val {
-			nums[slow] = nums[fast]
-			slow++
-		}
-		fast++
-	}
-	return nums
-}
-
-// 左右指针(二分查找法示例
-func binarySearch(nums []int, target int) int {
-	// 一左一右两个指针相向而行
-	left := 0
-	right := len(nums) - 1
-	for left <= right {
-		// 中线
-		mid := (right + left) / 2
-		if nums[mid] == target {
-			// 如果查到了直接返回
-			return mid
-		} else if nums[mid] < target {
-			left = mid + 1
-		} else if nums[mid] > target {
-			right = mid - 1
-		}
-	}
-	return -1
-}
-
-// 两数之和
-// 使用二分查找来解决
-func twoSum(nums []int, target int) (int, int) {
-	left := 0
-	right := len(nums) - 1
-	for left <= right {
-		sum := nums[left] + nums[right]
-		if sum == target {
-			return left + 1, right + 1
-		} else if sum < target {
-			left++
-		} else if sum > target {
-			right--
-		}
-	}
-	return -1, -1
-}
-
-// 最长回文子串
-// 回文子串问题则是让左右指针从中心向两端扩展
