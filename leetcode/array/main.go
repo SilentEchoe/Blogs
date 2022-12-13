@@ -7,13 +7,18 @@
 
 找回文串技巧：从中心向两端扩展的双指针技巧
 如果回文串的长度为奇数，则它有一个中心字符；如果长度为偶数，则有两个中心字符串
+
+数组前缀和：
+使用一个新的数组 preSum，然后用preSum[i] 记录 num[0...i-1]的累计加
 */
 package main
 
 import "fmt"
 
 func main() {
-	palindrome("123321", 0, 6)
+	NumArray([]int{3, 5, 2, -2, 4, 1})
+	sum := sumRange(0, 3)
+	fmt.Println(sum)
 }
 
 // Code.167 两数之和-输入有序数组
@@ -148,4 +153,18 @@ func logestPalindrome(s string) string {
 
 	}
 	return res
+}
+
+// 数组前缀和：
+// 使用一个新的数组 preSum，然后用preSum[i] 记录 num[0...i-1]的累计加
+var preSum = make([]int, 10)
+
+func NumArray(nums []int) {
+	for i := 1; i < len(nums)+1; i++ {
+		preSum[i] = preSum[i-1] + nums[i-1]
+	}
+}
+
+func sumRange(left int, right int) int {
+	return preSum[right+1-preSum[left]]
 }
