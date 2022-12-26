@@ -168,3 +168,28 @@ func NumArray(nums []int) {
 func sumRange(left int, right int) int {
 	return preSum[right+1-preSum[left]]
 }
+
+// 二维矩阵中的前缀和
+// 定义 preSum[i][j] 记录 matrix 中子矩阵 [0,0,i-1,j-1] 的元素和
+
+var preSumMatrix = make([][]int, 10)
+
+func NumMatrix(matrix [][]int) {
+	m := len(matrix)
+	n := len(matrix[0])
+	if m == 0 || n == 0 {
+		return
+	}
+
+	for i := 1; i <= m; i++ {
+		for j := 1; j <= n; j++ {
+			preSumMatrix[i][j] = preSumMatrix[i-1][j] + preSumMatrix[i][j-1] + matrix[i-1][j-1] - preSumMatrix[i-1][j-1]
+		}
+	}
+
+}
+
+// 计算子矩阵 [x1,y1.x2,y2]
+func sumRegion(x1 int, y1 int, x2 int, y2 int) int {
+	return preSumMatrix[x2+1][y2+1] - preSumMatrix[x1][y2+1] - preSumMatrix[x2+1][y1] + preSumMatrix[x1][y1]
+}
