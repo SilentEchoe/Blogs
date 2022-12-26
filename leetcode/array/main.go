@@ -10,6 +10,9 @@
 
 数组前缀和：
 使用一个新的数组 preSum，然后用preSum[i] 记录 num[0...i-1]的累计加
+
+差分数组：
+和前缀和思想非常类似，差分数组的主要适用场景是频繁对原始数组对某个区间对元素进行增减
 */
 package main
 
@@ -171,7 +174,6 @@ func sumRange(left int, right int) int {
 
 // 二维矩阵中的前缀和
 // 定义 preSum[i][j] 记录 matrix 中子矩阵 [0,0,i-1,j-1] 的元素和
-
 var preSumMatrix = make([][]int, 10)
 
 func NumMatrix(matrix [][]int) {
@@ -192,4 +194,37 @@ func NumMatrix(matrix [][]int) {
 // 计算子矩阵 [x1,y1.x2,y2]
 func sumRegion(x1 int, y1 int, x2 int, y2 int) int {
 	return preSumMatrix[x2+1][y2+1] - preSumMatrix[x1][y2+1] - preSumMatrix[x2+1][y1] + preSumMatrix[x1][y1]
+}
+
+// [差分数组]技巧
+// 差分数组的主要使用场景是频繁对原始数组对某个区间的元素进行增减
+
+var diff []int
+
+// 构造差分数组
+
+func Difference(nums []int) {
+	if len(nums) == 0 {
+		return
+	}
+	diff[0] = nums[0]
+	for i := 0; i < len(nums); i++ {
+		diff[i] = nums[i] - nums[i-1]
+	}
+}
+
+func increment(i int, j int, val int) {
+	diff[i] += val
+	if j+1 < len(diff) {
+		diff[j+1] -= val
+	}
+}
+
+func result() []int {
+	var res []int
+	res[0] = diff[0]
+	for i := 0; i < len(diff); i++ {
+		res[i] = res[i-1] + diff[i]
+	}
+	return res
 }
