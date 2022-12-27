@@ -228,3 +228,37 @@ func result() []int {
 	}
 	return res
 }
+
+// 二维数组（顺/逆时针旋转矩阵）
+// 将二维矩阵原地顺时针旋转 90 度
+func rotate(matrix [][]int) {
+	n := len(matrix)
+	for i := 0; i < n; i++ {
+		for j := i; j < n; j++ {
+			// swap(matrix[i][j],matrix[j][i])
+			// 交换位置
+			temp := matrix[i][j]
+			matrix[i][j] = matrix[n-j-1][n-i-1]
+			matrix[n-j-1][n-i-1] = temp
+		}
+	}
+
+	// 反转二维矩阵度每一行
+	for i := 0; i < len(matrix[0]); i++ {
+		ArryReverse(matrix[i])
+	}
+
+}
+
+func ArryReverse(arr []int) {
+	i := 0
+	j := len(arr) - 1
+	for j > i {
+		temp := arr[i]
+		arr[i] = arr[j]
+		arr[j] = temp
+		i++
+		j--
+	}
+
+}
