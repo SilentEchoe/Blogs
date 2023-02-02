@@ -1,17 +1,20 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 func main() {
-	var rec = "12=13"
-	k, v, ok := strings.Cut(rec, "=")
-	if !ok {
-		fmt.Println("解析失败")
+	// Go 1.7 增加从slice(切片)到数组指针转换到功能
+	// Go 2.0可以直接从切片转换成数组
+	s := make([]byte, 2, 4)
+	s[0] = 100
 
-	}
-	fmt.Println(k)
-	fmt.Println(v)
+	s1 := (*[1]byte)(s[1:]) // &s1[0] == &s[1]
+	s2 := (*[2]byte)(s)     // &s2[0] == &s[0]
+	fmt.Printf("%T, %v, %p, %p\n", s1, s1[0], &s1[0], &s[1])
+	fmt.Printf("%T, %v, %v, %p\n", s2, s2[0], &s2[0], s)
+	// a1数组里元素的地址和s1指向的数组的元素地址不一样，a2同理
+	a1 := *s1
+	a2 := *s2
+	fmt.Printf("%T, %v, %p, %p\n", a1, a1[0], &a1[0], &s1[0])
+	fmt.Printf("%T, %v, %p, %p\n", a2, a2[0], &a2[1], &s2[1])
 }
