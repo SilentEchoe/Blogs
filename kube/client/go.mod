@@ -1,6 +1,6 @@
 module LearningNotes-Go/kube/client
 
-go 1.18
+go 1.16
 
 require (
 	k8s.io/api v0.26.1
