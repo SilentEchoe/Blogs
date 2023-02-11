@@ -15,7 +15,7 @@ Kubernetes 中，有一组内置的 Controller 在主节点中的 controller-man
 
 
 
-### **Controller-runtime **
+### Controller-runtime
 
 **Controller-runtime** 是一个用于开发 Kubernetes Controller 的库，包含了各种Controller 常用的模块。而 Kubebuilder 渲染出的框架使用的就是 Controller-runtime, 在了解怎么使用 Kubebuilder 进行开发前，先对 Controller-runtime 进行一些了解，这会更好帮助我们开发 Controller
 
@@ -31,12 +31,11 @@ Controller-runtime 的整体架构图
 
 
 
-
 **Builder 阶段**
 
 `Builder` 用于生成 Controller 或 Webhook，通过链式调用可以组装出所需的 Controller ,一般情况下会先创建出一个 Manager 然后再创建 Controller :
 
-![image-20230209152617781](/Users/kai/Library/Application Support/typora-user-images/image-20230209152617781.png)
+[![pSh9dyt.png](https://s1.ax1x.com/2023/02/10/pSh9dyt.png)](https://imgse.com/i/pSh9dyt)
 
 在Kubebuilder 中，组装 Controller 的函数是 `SetupWithManager`
 
@@ -118,6 +117,10 @@ type EventHandler interface {
 - `OnlyMetadate`用于告诉Controller，只缓存Watch对象的Metadata数据，提升性能。
 
 
+
+#### **Manager**
+
+Manager提供了Controller的依赖并控制Controller的运行,Manager对Controller提供的许多依赖都包含在 `Cluster`中
 
 
 
