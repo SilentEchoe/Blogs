@@ -247,11 +247,11 @@ cd $GOPATH/src/projectName
 #使用 demo.kubebuilder.io 域，所有的 API 组将是<group>.demo.kubebuilder.io.
 
 #创建项目
-kubebuilder init --domain demo.kubebuilder.io --owner kai
+kubebuilder init --domain demo.kubebuilder.io 
 
 #创建API(APP)
 #gourp（资源组）
-kubebuilder create api --group webapp --version v1 --kind Demo
+kubebuilder create api --group demoApp --version v1 --kind Demo
 
 #更改Crd后需要输入命令生成
 make manifests generate
@@ -267,12 +267,6 @@ make install
 cd $GOPATH/src/projectName
 make run
 ```
-
-![image-20230206150437195](/Users/kai/Library/Application Support/typora-user-images/image-20230206150437195.png)
-
-
-
-
 
 
 
