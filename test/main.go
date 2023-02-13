@@ -1,20 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
+
+const token = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwidWlkIjoiZjkzN2JiMzctYmFmNC0xMWVjLWJkYWYtY2E0ZWM0MTdkNTBlIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYWRtaW4iLCJmZWRlcmF0ZWRfY2xhaW1zIjp7ImNvbm5lY3Rvcl9pZCI6InN5c3RlbSIsInVzZXJfaWQiOiJhZG1pbiJ9LCJzaWQiOiIiLCJsb2dpbl90eXBlIjoiIiwiYXVkIjpudWxsLCJleHAiOjE2NzUzMDM1MDd9.f4_acDc3daMofLh1Rp0o1DsEzIUwN6R63lGRvsQhCqo`
 
 func main() {
-	// Go 1.7 增加从slice(切片)到数组指针转换到功能
-	// Go 2.0可以直接从切片转换成数组
-	s := make([]byte, 2, 4)
-	s[0] = 100
+	url := "http://10.3.70.149:30001/"
+	//startDate := time.Now().ParseDuration("-24h") - time.Hour
+	d, _ := time.ParseDuration("-24h")
+	startDate := time.Now().Add(d).Unix()
+	endDate := time.Now().Unix()
 
-	s1 := (*[1]byte)(s[1:]) // &s1[0] == &s[1]
-	s2 := (*[2]byte)(s)     // &s2[0] == &s[0]
-	fmt.Printf("%T, %v, %p, %p\n", s1, s1[0], &s1[0], &s[1])
-	fmt.Printf("%T, %v, %v, %p\n", s2, s2[0], &s2[0], s)
-	// a1数组里元素的地址和s1指向的数组的元素地址不一样，a2同理
-	a1 := *s1
-	a2 := *s2
-	fmt.Printf("%T, %v, %p, %p\n", a1, a1[0], &a1[0], &s1[0])
-	fmt.Printf("%T, %v, %p, %p\n", a2, a2[0], &a2[1], &s2[1])
+	//url := "/api/aslan/stat/dashboard/build?startDate=%s&endDate=%s"
+	//fmt.Sprintf(url,)
+	url = fmt.Sprintf(url+"/api/aslan/stat/dashboard/build?startDate=%d&endDate=%d", startDate, endDate)
+	fmt.Println("%s", url)
 }
