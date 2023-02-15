@@ -7,6 +7,8 @@ category: Kubernetes
 
 Client-go是与kube-apiserver通信的clients的具体实现。
 
+[![pS7DEOx.jpg](https://s1.ax1x.com/2023/02/15/pS7DEOx.jpg)](https://imgse.com/i/pS7DEOx)
+
 ### WorkQueue 源码分析
 
 WorkQueue 一般使用延时队列实现,在`Resource Event Handlers`中完成将对象的key放入WorkQueue的过程，然后在自己的逻辑代码里从WorkQueue中消费这些key。
