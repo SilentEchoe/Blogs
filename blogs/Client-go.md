@@ -146,6 +146,125 @@ func (q *Type) Get() (item interface{}, shutdown bool) {
 
 
 
+#### 延迟队列
+
+延迟队列在普通队列的基础上,新增了`AddAfter`函数
+
+```go
+type delayingType struct {
+	Interface					
+	clock clock.Clock  //计时器
+	stopCh chan struct{}
+	stopOnce sync.Once
+
+	// heartbeat ensures we wait no more than maxWait before firing
+	heartbeat clock.Ticker
+
+	// waitingForAddCh is a buffered channel that feeds waitingForAdd
+	waitingForAddCh chan *waitFor  //传递 waitfor的channel,默认大小为1000
+
+	// metrics counts the number of retries
+	metrics retryMetrics
+}
+
+type DelayingInterface interface {
+	Interface
+	// AddAfter adds an item to the workqueue after the indicated duration has passed
+	AddAfter(item interface{}, duration time.Duration)
+}
+```
+
+延迟队列,主要使用`waitingLoop`实现延迟功能：
+
+循环分为两部分：
+
+1.从堆（优先队列,waitingForQueue）中拿一个数据,添加到通用队列中的逻辑
+
+2.通过`waitingForAddCh`拿到新的元素,然后通过判断时间,再将它放入到堆中。
+
+```
+func (q *delayingType) waitingLoop() {
+	defer utilruntime.HandleCrash()
+
+	// Make a placeholder channel to use when there are no items in our list
+	never := make(<-chan time.Time)
+
+	// 创建一个计时器
+	var nextReadyAtTimer clock.Timer
+
+  // 初始化一个优先级队列
+	waitingForQueue := &waitForPriorityQueue{}
+	heap.Init(waitingForQueue)
+
+	waitingEntryByData := map[t]*waitFor{}
+
+	for {
+		if q.Interface.ShuttingDown() {
+			return
+		}
+
+		now := q.clock.Now()
+
+		// Add ready entries
+		// 从堆中取出数据,判断时间是否已到达预定时间
+		// 如果没有到,就进入下次循环
+		for waitingForQueue.Len() > 0 {
+			entry := waitingForQueue.Peek().(*waitFor)
+			if entry.readyAt.After(now) {
+				break
+			}
+
+			entry = heap.Pop(waitingForQueue).(*waitFor)
+			q.Add(entry.data)
+			delete(waitingEntryByData, entry.data)
+		}
+
+		// Set up a wait for the first item's readyAt (if one exists)
+		nextReadyAt := never
+		if waitingForQueue.Len() > 0 {
+			if nextReadyAtTimer != nil {
+				nextReadyAtTimer.Stop()
+			}
+			entry := waitingForQueue.Peek().(*waitFor)
+			nextReadyAtTimer = q.clock.NewTimer(entry.readyAt.Sub(now))
+			nextReadyAt = nextReadyAtTimer.C()
+		}
+
+		select {
+		case <-q.stopCh:
+			return
+
+		case <-q.heartbeat.C():
+			// continue the loop, which will add ready items
+
+		case <-nextReadyAt:
+			// continue the loop, which will add ready items
+
+		case waitEntry := <-q.waitingForAddCh:
+			if waitEntry.readyAt.After(q.clock.Now()) {
+				insert(waitingForQueue, waitingEntryByData, waitEntry)
+			} else {
+				q.Add(waitEntry.data)
+			}
+
+			drained := false
+			for !drained {
+				select {
+				case waitEntry := <-q.waitingForAddCh:
+					if waitEntry.readyAt.After(q.clock.Now()) {
+						insert(waitingForQueue, waitingEntryByData, waitEntry)
+					} else {
+						q.Add(waitEntry.data)
+					}
+				default:
+					drained = true
+				}
+			}
+		}
+	}
+}
+```
+
 
 
 Resource Event Handlers 会完成将对象的 key 放入到 WorkQueue的过程,我们可以在自己的逻辑代码里从 WorkQueue 中消费这些 Key。延迟队列实现了 item的延迟入队效果,内部是一个"优先级队列",用了"最小堆"（有序完全二叉树）,所以"在requeueAfter中指定一个凋谐过程1分钟后重试"的实现原理也就清晰了。

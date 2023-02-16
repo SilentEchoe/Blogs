@@ -56,9 +56,9 @@ comments: true
 
 答案是可行的。
 
-在面向搜索编程的基础下,  我在Xamarin 社区找到一篇[问答](https://forums.xamarin.com/discussion/35226/signalr-for-xamarin-mac),  从这篇文章可知,  有人成功地在Xamarin Mac 项目中使用了 SignalR。
+在面向搜索编程的基础下,  在Xamarin 社区找到一篇[问答](https://forums.xamarin.com/discussion/35226/signalr-for-xamarin-mac), 从这篇文章可知,有人成功地在Xamarin Mac 项目中使用了 SignalR。
 
-虽然他并未给出具体实现的细节,  但是依旧给我极大的鼓舞。
+虽然他并未给出具体实现的细节,但是依旧给我极大的鼓舞。
 
 至少目前行进的方向是可行的。
 
