@@ -265,6 +265,34 @@ func (q *delayingType) waitingLoop() {
 }
 ```
 
+`AddAfter`函数的作用是在指定的延迟时长到达之后,在 work queue中新增一个元素
+
+```go
+// AddAfter adds the given item to the work queue after the given delay
+func (q *delayingType) AddAfter(item interface{}, duration time.Duration) {
+	// don't add if we're already shutting down
+	if q.ShuttingDown() {
+		return
+	}
+
+	q.metrics.retry()
+
+	// immediately add things with no delay
+	if duration <= 0 {
+		q.Add(item)
+		return
+	}
+
+	select {
+	case <-q.stopCh:
+		// unblock if ShutDown() is called
+	case q.waitingForAddCh <- &waitFor{data: item, readyAt: q.clock.Now().Add(duration)}:
+	}
+}
+```
+
+
+
 
 
 Resource Event Handlers 会完成将对象的 key 放入到 WorkQueue的过程,我们可以在自己的逻辑代码里从 WorkQueue 中消费这些 Key。延迟队列实现了 item的延迟入队效果,内部是一个"优先级队列",用了"最小堆"（有序完全二叉树）,所以"在requeueAfter中指定一个凋谐过程1分钟后重试"的实现原理也就清晰了。
