@@ -15,6 +15,14 @@ Informer: 从DeltaFIFO 中弹出(pop)相应对象,然后通过 Indexer将对象�
 
 Indexer: 提供一个对象根据一定条件检索能力,典型的实现是通过 namespace/name 来构造key,通过 Thread Safe Store 来存储对象
 
+WorkQueque: 使用延迟队列实现,在Resource Event Handlers中会完成将对象的key放入WorkQueue的过程,然后在自己的逻辑代码里消费这些key
+
+ClientSet: 提供资源的CURD能力,能与apiserver交互
+
+Resource Event Handlers: 在Resource Event Handlers中添加一些简单的过滤功能，能判断哪些对象需要加入到WorkQueque中处理,对于需要加到WorkQueque中的对象,就提取其key然后入队
+
+Worker: 指业务代码处理过程,可以直接收到WorkQueque中的任务,可以通过Indexer从本地缓存检索对象,通过ClientSet实现对象的增删改查逻辑
+
 
 
 ### WorkQueue 源码分析
@@ -296,8 +304,6 @@ func (q *delayingType) AddAfter(item interface{}, duration time.Duration) {
 #### 限速队列
 
 限速器的目的：根据相应的算法获取元素的延迟时间,然后利用延迟队列来控制队列的速度
-
-
 
 ```go
 // RateLimitingInterface is an interface that rate limits items being added to the queue.
