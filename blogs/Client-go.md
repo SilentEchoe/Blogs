@@ -297,13 +297,48 @@ func (q *delayingType) AddAfter(item interface{}, duration time.Duration) {
 
 限速器的目的：根据相应的算法获取元素的延迟时间,然后利用延迟队列来控制队列的速度
 
+
+
+```go
+// RateLimitingInterface is an interface that rate limits items being added to the queue.
+type RateLimitingInterface interface {
+	DelayingInterface //内嵌延迟队列
+
+	// AddRateLimited adds an item to the workqueue after the rate limiter says it's ok
+	AddRateLimited(item interface{})  //使用限速方式往队列中加入一个元素
+
+	// Forget indicates that an item is finished being retried.  Doesn't matter whether it's for perm failing
+	// or for success, we'll stop the rate limiter from tracking it.  This only clears the `rateLimiter`, you
+	// still have to call `Done` on the queue.
+	Forget(item interface{})  //标识一个元素结束重试
+
+	// NumRequeues returns back how many times the item was requeued
+	NumRequeues(item interface{}) int //标识这个元素被处理了多少次
+}
+
+// 限速器的定义
+type RateLimiter interface {
+	// When gets an item and gets to decide how long that item should wait
+	When(item interface{}) time.Duration
+	// Forget indicates that an item is finished being retried.  Doesn't matter whether it's for failing
+	// or for success, we'll stop tracking it
+	Forget(item interface{})
+	// NumRequeues returns back how many failures the item has had
+	NumRequeues(item interface{}) int
+}
 ```
 
-```
+`RateLimiter`接口存在五个实现:
 
+BucketRateLimiter: 使用Go语言标准库 "golfing.org/x/time/rate.Limiter"包实现,BucketRateLimiter实例化的时候,会设置令牌桶相关参数,比如设置令牌桶里面最多有100个令桶,每秒发放10个令牌
 
+ItemExponentialFailureRateLimiter: 失败次数越多,限速越长,而且是呈指数级增长的一种限速器
 
+ItemFastSlowRateLimiter: 快慢限速器,快慢指的是定义一个阈值,达到阈值之前快速重试,超过了就满满重试
 
+MaxOfRateLimiter: 通过维护多个限速器列表,返回其中最严格的一个延迟
+
+WithMaxWaitRateLimiter: 在其他限速器上包装一个最大延迟的属性,如果到了最大延时,则直接返回
 
 Resource Event Handlers 会完成将对象的 key 放入到 WorkQueue的过程,我们可以在自己的逻辑代码里从 WorkQueue 中消费这些 Key。延迟队列实现了 item的延迟入队效果,内部是一个"优先级队列",用了"最小堆"（有序完全二叉树）,所以"在requeueAfter中指定一个凋谐过程1分钟后重试"的实现原理也就清晰了。
 
