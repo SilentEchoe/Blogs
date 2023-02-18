@@ -293,6 +293,16 @@ func (q *delayingType) AddAfter(item interface{}, duration time.Duration) {
 
 
 
+#### 限速队列
+
+限速器的目的：根据相应的算法获取元素的延迟时间,然后利用延迟队列来控制队列的速度
+
+```
+
+```
+
+
+
 
 
 Resource Event Handlers 会完成将对象的 key 放入到 WorkQueue的过程,我们可以在自己的逻辑代码里从 WorkQueue 中消费这些 Key。延迟队列实现了 item的延迟入队效果,内部是一个"优先级队列",用了"最小堆"（有序完全二叉树）,所以"在requeueAfter中指定一个凋谐过程1分钟后重试"的实现原理也就清晰了。
