@@ -350,9 +350,275 @@ Resource Event Handlers 会完成将对象的 key 放入到 WorkQueue的过程,�
 
 
 
+### DeltaFIFO 源码分析
+
+DeltaFIFO 是一个生产者-消费者的队列,生产者是Reflector,消费者是Pop函数。
+
+DeltaFIFO 的数据来源为 Reflector，通过 Pop 操作消费数据，消费的数据一方面存储到 Indexer 中，另一方面可以通过 Informer 的 handler 进行处理，Informer 的 handler 处理的数据需要与存储在 Indexer 中的数据匹配。需要注意的是，Pop 的单位是一个 Deltas，而不是 Delta。
+
+```go
+type Queue interface {
+	Store
+	Pop(PopProcessFunc) (interface{}, error)
+	AddIfNotPresent(interface{}) error
+	HasSynced() bool
+	Close()
+}
+
+type Store interface {
+	Add(obj interface{}) error
+	Update(obj interface{}) error
+	Delete(obj interface{}) error
+	List() []interface{}
+	ListKeys() []string
+	Get(obj interface{}) (item interface{}, exists bool, err error)
+	GetByKey(key string) (item interface{}, exists bool, err error)
+	Replace([]interface{}, string) error
+	Resync() error
+}
+
+type Delta struct {
+	Type   DeltaType
+	Object interface{}
+}
+
+type Deltas []Delta
+
+
+type DeltaFIFO struct {
+	lock sync.RWMutex
+	cond sync.Cond
+	items map[string]Deltas
+	queue []string
+	populated bool
+	initialPopulationCount int
+	keyFunc KeyFunc
+	knownObjects KeyListerGetter
+	closed bool
+	emitDeltaTypeReplaced bool
+}
+
+// DeltaType 是一个字符串类型,对应的是Added描述一个Delta类型
+type DeltaType string
+
+// Change type definition
+const (
+	Added   DeltaType = "Added"
+	Updated DeltaType = "Updated"
+	Deleted DeltaType = "Deleted"
+	Replaced DeltaType = "Replaced"
+	Sync DeltaType = "Sync"
+)
+```
+
+DetlaFIFO 同时实现了 Queue 和 Store 接口，使用 Deltas 保存了对象状态的变更信息(如Pod的删除或添加)，Deltas 缓存了针对相同对象的多个状态变更信息,如 Pod 的 Deltas[0]可能更新了标签，Deltas[1]可能删除了该 Pod。最老的状态变更信息为 Oldest()，最新的状态变更信息为 Newest()，使用中，获取 DeltaFIFO 中对象的 key 以及获取 DeltaFIFO 都以最新状态为准。
+
+[^DeltaFIFO结构图如下]: 图来源于《Kubernetes Operator 开发进阶》
+
+
+
+<div align="center">
+    	<img src="https://s1.ax1x.com/2023/02/19/pSO9kKf.png">  
+</div>
+
+#### 核心函数
+
+store接口中的`Add() Update()`等函数都会调用`queueActionLocked`函数
+
+`queueActionLocked`函数的作用主要是构建一个Delta添加到[]Deltas中,其中包含一个去重判断,如果已经存在,则只更新items map中对应这个key的[]Deltas
+
+```go
+func (f *DeltaFIFO) queueActionLocked(actionType DeltaType, obj interface{}) error {
+	id, err := f.KeyOf(obj)
+	if err != nil {
+		return KeyError{obj, err}
+	}
+	oldDeltas := f.items[id]
+	newDeltas := append(oldDeltas, Delta{actionType, obj})
+	newDeltas = dedupDeltas(newDeltas)
+
+	if len(newDeltas) > 0 {
+		if _, exists := f.items[id]; !exists {
+			f.queue = append(f.queue, id)
+		}
+		f.items[id] = newDeltas
+		f.cond.Broadcast()
+	} else {
+		// This never happens, because dedupDeltas never returns an empty list
+		// when given a non-empty list (as it is here).
+		// If somehow it happens anyway, deal with it but complain.
+		if oldDeltas == nil {
+			klog.Errorf("Impossible dedupDeltas for id=%q: oldDeltas=%#+v, obj=%#+v; ignoring", id, oldDeltas, obj)
+			return nil
+		}
+		klog.Errorf("Impossible dedupDeltas for id=%q: oldDeltas=%#+v, obj=%#+v; breaking invariant by storing empty Deltas", id, oldDeltas, obj)
+		f.items[id] = newDeltas
+		return fmt.Errorf("Impossible dedupDeltas for id=%q: oldDeltas=%#+v, obj=%#+v; broke DeltaFIFO invariant by storing empty Deltas", id, oldDeltas, obj)
+	}
+	return nil
+}
+```
+
+
+
+`Pop` 函数会按照元素的添加或更新顺序有序返回一个元素(Deltas),在队列为空时会阻塞。Pop过程中会先从队列中删除一个元素后返回,如果处理失败了,需要通过 AddIfNotPresent函数将这个元素重新加回到队列汇总。
+
+Pop的参数是 Type PopProcessFunc func(interface{}) error 类型的process,在Pop函数中,直接将队列中第一个元素出队,然后丢给process处理,如果处理失败会重新入队,但是这个 Deltas 和对应的错误信息会被返回
+
+```
+func (f *DeltaFIFO) Pop(process PopProcessFunc) (interface{}, error) {
+	f.lock.Lock()
+	defer f.lock.Unlock()
+	for {
+		for len(f.queue) == 0 {
+			// When the queue is empty, invocation of Pop() is blocked until new item is enqueued.
+			// When Close() is called, the f.closed is set and the condition is broadcasted.
+			// Which causes this loop to continue and return from the Pop().
+			if f.closed {
+				return nil, ErrFIFOClosed
+			}
+
+			f.cond.Wait()
+		}
+		isInInitialList := !f.hasSynced_locked()
+		id := f.queue[0]
+		f.queue = f.queue[1:]
+		depth := len(f.queue)
+		if f.initialPopulationCount > 0 {
+			f.initialPopulationCount--
+		}
+		item, ok := f.items[id]
+		if !ok {
+			// This should never happen
+			klog.Errorf("Inconceivable! %q was in f.queue but not f.items; ignoring.", id)
+			continue
+		}
+		delete(f.items, id)
+		// Only log traces if the queue depth is greater than 10 and it takes more than
+		// 100 milliseconds to process one item from the queue.
+		// Queue depth never goes high because processing an item is locking the queue,
+		// and new items can't be added until processing finish.
+		// https://github.com/kubernetes/kubernetes/issues/103789
+		if depth > 10 {
+			trace := utiltrace.New("DeltaFIFO Pop Process",
+				utiltrace.Field{Key: "ID", Value: id},
+				utiltrace.Field{Key: "Depth", Value: depth},
+				utiltrace.Field{Key: "Reason", Value: "slow event handlers blocking the queue"})
+			defer trace.LogIfLong(100 * time.Millisecond)
+		}
+		err := process(item, isInInitialList)
+		if e, ok := err.(ErrRequeue); ok {
+			f.addIfNotPresent(id, item)
+			err = e.Err
+		}
+		// Don't need to copyDeltas here, because we're transferring
+		// ownership to the caller.
+		return item, err
+	}
+}
+
+```
+
+
+
+`Replace` 主要做了两件事:
+
+1.给传入的对象列表添加一个 Sync/Replace DeltaType的Delta
+
+2.执行一些与删除相关的程序逻辑
+
+```go
+func (f *DeltaFIFO) Replace(list []interface{}, _ string) error {
+	f.lock.Lock()
+	defer f.lock.Unlock()
+	keys := make(sets.String, len(list))
+
+	// keep backwards compat for old clients
+	action := Sync
+	if f.emitDeltaTypeReplaced {
+		action = Replaced
+	}
+
+	// Add Sync/Replaced action for each new item.
+	for _, item := range list {
+		key, err := f.KeyOf(item)
+		if err != nil {
+			return KeyError{item, err}
+		}
+		keys.Insert(key)
+		if err := f.queueActionLocked(action, item); err != nil {
+			return fmt.Errorf("couldn't enqueue object: %v", err)
+		}
+	}
+
+	if f.knownObjects == nil {
+		// Do deletion detection against our own list.
+		queuedDeletions := 0
+		for k, oldItem := range f.items {
+			if keys.Has(k) {
+				continue
+			}
+			// Delete pre-existing items not in the new list.
+			// This could happen if watch deletion event was missed while
+			// disconnected from apiserver.
+			var deletedObj interface{}
+			if n := oldItem.Newest(); n != nil {
+				deletedObj = n.Object
+			}
+			queuedDeletions++
+			if err := f.queueActionLocked(Deleted, DeletedFinalStateUnknown{k, deletedObj}); err != nil {
+				return err
+			}
+		}
+
+		if !f.populated {
+			f.populated = true
+			// While there shouldn't be any queued deletions in the initial
+			// population of the queue, it's better to be on the safe side.
+			f.initialPopulationCount = keys.Len() + queuedDeletions
+		}
+
+		return nil
+	}
+
+	// Detect deletions not already in the queue.
+	knownKeys := f.knownObjects.ListKeys()
+	queuedDeletions := 0
+	for _, k := range knownKeys {
+		if keys.Has(k) {
+			continue
+		}
+
+		deletedObj, exists, err := f.knownObjects.GetByKey(k)
+		if err != nil {
+			deletedObj = nil
+			klog.Errorf("Unexpected error %v during lookup of key %v, placing DeleteFinalStateUnknown marker without object", err, k)
+		} else if !exists {
+			deletedObj = nil
+			klog.Infof("Key %v does not exist in known objects store, placing DeleteFinalStateUnknown marker without object", k)
+		}
+		queuedDeletions++
+		if err := f.queueActionLocked(Deleted, DeletedFinalStateUnknown{k, deletedObj}); err != nil {
+			return err
+		}
+	}
+
+	if !f.populated {
+		f.populated = true
+		f.initialPopulationCount = keys.Len() + queuedDeletions
+	}
+
+	return nil
+}
+```
+
+
+
 
 
 ### 学习资料
 
 《Kubernetes Operator 开发进阶》
+
+[DeltaFIFO](https://www.qikqiak.com/k8strain/k8s-code/client-go/deltafifo/)
 
