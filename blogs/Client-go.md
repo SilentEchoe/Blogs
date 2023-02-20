@@ -614,6 +614,35 @@ func (f *DeltaFIFO) Replace(list []interface{}, _ string) error {
 
 
 
+### Indexer 和 ThreadSafeStore
+
+Index 主要为对象提供根据一定条件进行检索的能力,比如通过namespace/name来构造key,通过ThreadSafeStore来存储对象。Index 主要依赖ThreadSafeStore的实现,是client-go 提供的一种缓存机制,通过检索本地缓存可以有效降低apiserver的压力。
+
+Indexer主要在Store接口的基础上拓展了对象的检索功能,而ThreadSafeStore才是Indexer的核心逻辑
+
+```
+type ThreadSafeStore interface {
+	Add(key string, obj interface{})
+	Update(key string, obj interface{})
+	Delete(key string)
+	Get(key string) (item interface{}, exists bool)
+	List() []interface{}
+	ListKeys() []string
+	Replace(map[string]interface{}, string)
+	Index(indexName string, obj interface{}) ([]interface{}, error)
+	IndexKeys(indexName, indexedValue string) ([]string, error)
+	ListIndexFuncValues(name string) []string
+	ByIndex(indexName, indexedValue string) ([]interface{}, error)
+	GetIndexers() Indexers
+
+	// AddIndexers adds more indexers to this store.  If you call this after you already have data
+	// in the store, the results are undefined.
+	AddIndexers(newIndexers Indexers) error
+	// Resync is a no-op and is deprecated
+	Resync() error
+}
+```
+
 
 
 ### 学习资料
