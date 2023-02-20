@@ -1,0 +1,5 @@
+rule:
+  home:
+    get_app: /api/v1/home/app
+    get_defaultApp: /api/v1/home/defaultApp
+    get_log: /api/v1/home/log
