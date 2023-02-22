@@ -7,7 +7,11 @@ category: Kubernetes
 
 Client-go是与kube-apiserver通信的clients的具体实现。
 
-[![pS7DEOx.jpg](https://s1.ax1x.com/2023/02/15/pS7DEOx.jpg)](https://imgse.com/i/pS7DEOx)
+<div align="center">
+    	<img src="https://s1.ax1x.com/2023/02/15/pS7DEOx.jpg">  
+</div>
+
+
 
 Reflector: 从apiserver 监听（watch）特定类型的资源,拿到变更通知后,将其放入 DeltaFIFO 队列中
 
