@@ -679,7 +679,7 @@ type Indices map[string]Index
 
 
 
-
+Indexers 中保存的是 Index函数map,字符串namesapce作为key,IndexFunc 类型的实现`MetaNamespaceIndexFunc`函数作为value。通过namespace来检索时,借助IndexFunc可以拿到对应的计算Index的函数,然后调用这个函数把对象传入进去
 
 
 
