@@ -645,7 +645,45 @@ type ThreadSafeStore interface {
 	// Resync is a no-op and is deprecated
 	Resync() error
 }
+
+// threadSafeMap 对应的实现 ThreadSafeStore
+type threadSafeMap struct {
+	lock  sync.RWMutex
+	items map[string]interface{}
+
+	// index implements the indexing functionality
+	index *storeIndex
+}
 ```
+
+
+
+storeIndex 主要由以下数据结构组成：
+
+```go
+type Index map[string]sets.String
+
+// Indexers maps a name to an IndexFunc
+type Indexers map[string]IndexFunc
+
+// Indices maps a name to an Index
+type Indices map[string]Index
+```
+
+
+
+下图为数据结构关系图（来源于《Kubernetes Operator 开发进阶》）：
+
+<div align="center">
+    	<img src="https://s1.ax1x.com/2023/02/23/pSxt4ns.png"> 
+
+
+
+
+
+
+
+
 
 
 
