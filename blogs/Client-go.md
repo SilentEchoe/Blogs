@@ -620,9 +620,13 @@ func (f *DeltaFIFO) Replace(list []interface{}, _ string) error {
 
 ### Indexer 和 ThreadSafeStore
 
-Index 主要为对象提供根据一定条件进行检索的能力,比如通过namespace/name来构造key,通过ThreadSafeStore来存储对象。Index 主要依赖ThreadSafeStore的实现,是client-go 提供的一种缓存机制,通过检索本地缓存可以有效降低apiserver的压力。
+Indexer是Client-go用来存储资源对象并自带索引功能的本地存储,Reflector从DeltaFIFO中将消费出来的资源对象存储至Indexer。而且Indexer中的数据与Etcd集群中的数据保持完全一致。
+
+Index主要为对象提供根据一定条件进行检索的能力,比如通过namespace/name来构造key,通过ThreadSafeStore来存储对象。Index主要依赖ThreadSafeStore的实现,是client-go 提供的一种缓存机制,通过检索本地缓存可以有效降低apiserver的压力。
 
 Indexer主要在Store接口的基础上拓展了对象的检索功能,而ThreadSafeStore才是Indexer的核心逻辑
+
+#### 数据结构
 
 ```
 type ThreadSafeStore interface {
@@ -679,9 +683,93 @@ type Indices map[string]Index
 
 
 
-Indexers 中保存的是 Index函数map,字符串namesapce作为key,IndexFunc 类型的实现`MetaNamespaceIndexFunc`函数作为value。通过namespace来检索时,借助IndexFunc可以拿到对应的计算Index的函数,然后调用这个函数把对象传入进去
+Indexers 中保存的是 Index函数map,字符串namesapce作为key,IndexFunc 类型的实现`MetaNamespaceIndexFunc`函数作为value。通过namespace来检索时,借助IndexFunc可以拿到对应的计算Index的函数,然后调用这个函数把对象传入进去,就可以计算出这个对象对应的key,就是具体的namespace值,比如上图中的"default"或"system"。通过key一层一层向下找,最终找到对应的对象信息。
+
+#### 核心方法
+
+接口定义`Add,Update`等方法,比如Add方法就是直接调用Update,Update和Delete函数都会调用`updateIndices`函数
+
+```
+func (c *threadSafeMap) Add(key string, obj interface{}) {
+	c.Update(key, obj)
+}
+
+func (c *threadSafeMap) Update(key string, obj interface{}) {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	oldObject := c.items[key]
+	c.items[key] = obj
+	c.index.updateIndices(oldObject, obj, key)
+}
+
+func (c *threadSafeMap) Delete(key string) {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	if obj, exists := c.items[key]; exists {
+		c.index.updateIndices(obj, nil, key)
+		delete(c.items, key)
+	}
+}
+
+func (c *threadSafeMap) Get(key string) (item interface{}, exists bool) {
+	c.lock.RLock()
+	defer c.lock.RUnlock()
+	item, exists = c.items[key]
+	return item, exists
+}
+```
 
 
+
+`updateIndices`函数对于Create只提供newObj,对于Update需要同时提供oldObj和newObj,对于Delete只需要提供oldObj
+
+```
+func (i *storeIndex) updateIndices(oldObj interface{}, newObj interface{}, key string) {
+	var oldIndexValues, indexValues []string
+	var err error
+	for name, indexFunc := range i.indexers {
+	// oldObj是否存在,如果不存在就置空,如果存在则取出相应值 
+		if oldObj != nil {
+			oldIndexValues, err = indexFunc(oldObj) 
+		} else {
+			oldIndexValues = oldIndexValues[:0]
+		}
+		if err != nil {
+			panic(fmt.Errorf("unable to calculate an index entry for key %q on index %q: %v", key, name, err))
+		}
+ 	// 和上面判断oldObj是否存在的逻辑一样
+		if newObj != nil {
+			indexValues, err = indexFunc(newObj)
+		} else {
+			indexValues = indexValues[:0]
+		}
+		if err != nil {
+			panic(fmt.Errorf("unable to calculate an index entry for key %q on index %q: %v", key, name, err))
+		}
+   
+    // 拿到一个index
+		index := i.indices[name]
+		if index == nil {
+			index = Index{}
+			i.indices[name] = index
+		}
+
+		if len(indexValues) == 1 && len(oldIndexValues) == 1 && indexValues[0] == oldIndexValues[0] {
+			// We optimize for the most common case where indexFunc returns a single value which has not been changed
+			continue
+		}
+    // 删除oldIndex
+		for _, value := range oldIndexValues {
+			i.deleteKeyFromIndex(key, value, index)
+		}
+		
+		// 添加一个新的index
+		for _, value := range indexValues {
+			i.addKeyToIndex(key, value, index)
+		}
+	}
+}
+```
 
 
 
