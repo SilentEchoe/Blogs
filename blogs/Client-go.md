@@ -773,11 +773,19 @@ func (i *storeIndex) updateIndices(oldObj interface{}, newObj interface{}, key s
 
 
 
+### Reflector
+
+Reflector 用于监控(Watch)制定的Kubernetes资源,当监控的资源发生变化时,触发相应的变更事件,例如Added事件,Updated事件等,将其资源对象存放到本地缓存DeltaFIFO中。
+
+#### ListAndWatch
+
 
 
 ### 学习资料
 
 《Kubernetes Operator 开发进阶》
+
+《Kubernetes源码剖析》
 
 [DeltaFIFO](https://www.qikqiak.com/k8strain/k8s-code/client-go/deltafifo/)
 
