@@ -777,7 +777,16 @@ func (i *storeIndex) updateIndices(oldObj interface{}, newObj interface{}, key s
 
 Reflector 用于监控(Watch)制定的Kubernetes资源,当监控的资源发生变化时,触发相应的变更事件,例如Added事件,Updated事件等,将其资源对象存放到本地缓存DeltaFIFO中。
 
-#### ListAndWatch
+#### ListerWatcher
+
+ListerWatcher是Reflector的主要能力提供者,通过一种叫作 ListAndWatch 的方法，把 APIServer 中的 API 对象缓存在了本地，并负责更新和维护这个缓存。ListAndWatch通过 APIServer 的 LIST API“获取”所有最新版本的 API 对象；然后，再通过 WATCH API 来“监听”所有这些 API 对象的变化；
+
+List-watch主要分为两部分:List调用API展示资源列表,watch监听资源变更事件,基于HTTP长链接实现。
+
+> Watch 通过Chunked transfer enconding(分块传输编码)在Http长链接接受 apiserver发来的资源变更事件。
+> HTTP 分块传输编码允许服务器为动态生成的内容维持 HTTP持久链接。使用分块传输编码，数据分解成一系列数据块，并以一个或者多个块发送，这样服务器可以发送数据而不需要预先知道发送内容的总大小。
+
+
 
 
 
