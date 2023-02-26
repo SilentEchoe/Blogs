@@ -679,7 +679,9 @@ type Indices map[string]Index
 下图为数据结构关系图（来源于《Kubernetes Operator 开发进阶》）：
 
 <div align="center">
-    	<img src="https://s1.ax1x.com/2023/02/23/pSxt4ns.png"> 
+    	<img src="https://s1.ax1x.com/2023/02/23/pSxt4ns.png">    
+ </div>
+
 
 
 
@@ -786,7 +788,109 @@ List-watch主要分为两部分:List调用API展示资源列表,watch监听资�
 > Watch 通过Chunked transfer enconding(分块传输编码)在Http长链接接受 apiserver发来的资源变更事件。
 > HTTP 分块传输编码允许服务器为动态生成的内容维持 HTTP持久链接。使用分块传输编码，数据分解成一系列数据块，并以一个或者多个块发送，这样服务器可以发送数据而不需要预先知道发送内容的总大小。
 
+#### 核心方法
 
+`Reflector.ListAndWatch`方法是Reflector的核心逻辑之一
+
+ListAndWatch方法是先列出特定资源的所有对象,然后获取其资源版,使用这个资源版本开始监听的流程。监听到新版本资源后,将其加入DeltaFIFO的动作是在 watchHandler方法中具体实现。
+
+在此之前list(列选)到到最新元素会通过syncWith方法添加一个Sync类型的DeltaType到DeltaFIFO中,所以list操作本身也会触发后面调谐逻辑。
+
+```go
+func (r *Reflector) ListAndWatch(stopCh <-chan struct{}) error {
+	klog.V(3).Infof("Listing and watching %v from %s", r.typeDescription, r.name)
+  //获取资源列表
+	err := r.list(stopCh)
+	if err != nil {
+		return err
+	}
+
+	resyncerrc := make(chan error, 1)
+	cancelCh := make(chan struct{})
+	defer close(cancelCh)
+	go func() {
+		resyncCh, cleanup := r.resyncChan()
+		defer func() {
+      //调用完最后一个，然后清理资源
+			cleanup() 
+		}()
+		for {
+			select {
+			case <-resyncCh:
+			case <-stopCh:
+				return
+			case <-cancelCh:
+				return
+			}
+			if r.ShouldResync == nil || r.ShouldResync() {
+				klog.V(4).Infof("%s: forcing resync", r.name)
+				if err := r.store.Resync(); err != nil {
+					resyncerrc <- err
+					return
+				}
+			}
+			cleanup()
+			resyncCh, cleanup = r.resyncChan()
+		}
+	}()
+
+  //截止时间后重试
+	retry := NewRetryWithDeadline(r.MaxInternalErrorRetryDuration, time.Minute, apierrors.IsInternalError, r.clock)
+	for {
+		// 给stopCh一个停止循环的机会，即使在continue语句进一步错误的情况下
+		select {
+		case <-stopCh:
+			return nil
+		default:
+		}
+
+		timeoutSeconds := int64(minWatchTimeout.Seconds() * (rand.Float64() + 1.0))
+		options := metav1.ListOptions{
+			ResourceVersion: r.LastSyncResourceVersion(),
+		  //避免死循环，设置一个超时时间
+			TimeoutSeconds: &timeoutSeconds,
+      //通过启动AllowWatchBookmarks选项,减少负载
+			AllowWatchBookmarks: true,
+		}
+
+		
+		start := r.clock.Now()
+		w, err := r.listerWatcher.Watch(options)
+		if err != nil {
+			//如果错误,可能是apiserver没有相应
+			if utilnet.IsConnectionRefused(err) || apierrors.IsTooManyRequests(err) {
+				<-r.initConnBackoffManager.Backoff().C()
+				continue
+			}
+			return err
+		}
+
+		err = watchHandler(start, w, r.store, r.expectedType, r.expectedGVK, r.name, r.typeDescription, r.setLastSyncResourceVersion, r.clock, resyncerrc, stopCh)
+		retry.After(err)
+		if err != nil {
+			if err != errorStopRequested {
+				switch {
+				case isExpiredError(err):
+					// Don't set LastSyncResourceVersionUnavailable - LIST call with ResourceVersion=RV already
+					// has a semantic that it returns data at least as fresh as provided RV.
+					// So first try to LIST with setting RV to resource version of last observed object.
+					klog.V(4).Infof("%s: watch of %v closed with: %v", r.name, r.typeDescription, err)
+				case apierrors.IsTooManyRequests(err):
+					klog.V(2).Infof("%s: watch of %v returned 429 - backing off", r.name, r.typeDescription)
+					<-r.initConnBackoffManager.Backoff().C()
+					continue
+				case apierrors.IsInternalError(err) && retry.ShouldRetry():
+					klog.V(2).Infof("%s: retrying watch of %v internal error: %v", r.name, r.typeDescription, err)
+					continue
+				default:
+					klog.Warningf("%s: watch of %v ended with: %v", r.name, r.typeDescription, err)
+				}
+			}
+			return nil
+		}
+	}
+}
+```
 
 
 
@@ -797,4 +901,6 @@ List-watch主要分为两部分:List调用API展示资源列表,watch监听资�
 《Kubernetes源码剖析》
 
 [DeltaFIFO](https://www.qikqiak.com/k8strain/k8s-code/client-go/deltafifo/)
+
+[理解 K8S 的设计精髓之 List-Watch机制和Informer模块](https://zhuanlan.zhihu.com/p/59660536)
 
