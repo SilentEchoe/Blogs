@@ -892,6 +892,10 @@ func (r *Reflector) ListAndWatch(stopCh <-chan struct{}) error {
 }
 ```
 
+监控资源对象
+
+Watch（监控）操作通过HTTP协议与Kubernetes API Server 建立长链接,接收 Kubernetes API Server 发来的资源变更事件。Watch操作的实现机制使用HTTP协议的分块传输编码(Chunked Transfer Enconding)。当client-go 调用Kubernetes API Server时,Kubernetes API Server 在Response的 HTTP Header 中设置 Transfer-Encoding的值为chunked,表示采用分块传输编码,客户端收到该信息后,便于服务端进行连接，并等待下一个数据块(资源的事件信息)
+
 
 
 ### 学习资料
