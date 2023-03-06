@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"golang.org/x/time/rate"
 	"time"
@@ -20,16 +19,31 @@ func main() {
 
 	// Limiter 提供了三类方法消费Token,每次消费一个Token,也可以一次性消费多个Token
 
-	// 等待获取到桶中的令牌
-	err := limiter.Wait(context.Background())
-	if err != nil {
-		fmt.Println("Error:", err)
+	//// 等待获取到桶中的令牌
+	//err := limiter.Wait(context.Background())
+	//if err != nil {
+	//	fmt.Println("Error:", err)
+	//}
+	//
+	//// 设置一秒的等待超时事件
+	//ctx, _ := context.WithTimeout(context.Background(), time.Second*1)
+	//err = limiter.Wait(ctx)
+	//if err != nil {
+	//	fmt.Println("Error:", err)
+	//}
+
+	if limiter.AllowN(time.Now(), 2) {
+		fmt.Println("event allowed")
+	} else {
+		fmt.Println("event not allowed")
 	}
 
-	// 设置一秒的等待超时事件
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*1)
-	err = limiter.Wait(ctx)
-	if err != nil {
-		fmt.Println("Error:", err)
+	r := limiter.Reserve()
+	if !r.OK() {
+		// Not allowed to act! Did you remember to set lim.burst to be > 0 ?
+		return
 	}
+	time.Sleep(r.Delay())
+	// 执行相关逻辑
+	r.Cancel()
 }

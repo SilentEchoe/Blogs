@@ -70,12 +70,36 @@ Allow/AllowN
 Allow 实际上就是对 `AllowN(time.Now(),1)` 进行简化的函数。
 
 ```go
-// AllowN 截止到某一个时刻，目前桶中的Token
+// AllowN 截止到某一个时刻，目前桶中的Token是否至少为n个,满足则返回true,同时从桶中消费n个Token。如果不满足则不消费Token,返回false
 func (lim *Limiter) Allow() bool
 func (lim *Limiter) AllowN(now time.Time, n int) bool
 
+// 当前时间是否存在2个Token
+if limiter.AllowN(time.Now(), 2) {
+		fmt.Println("event allowed")
+	} else {
+		fmt.Println("event not allowed")
+	}
 
+```
 
+Reserve/ReserveN
+
+Reserve 相当于 `ReserveN(time.Now(), 1)`
+
+```go
+r := limiter.Reserve()
+if !r.OK() {
+    // Not allowed to act! Did you remember to set lim.burst to be > 0 ?
+    return
+}
+// 执行Reserve后可以调用 Delay方法,这是一个时间类型，反映了需要等待的时间
+time.Sleep(r.Delay())
+// 执行相关逻辑
+Work()
+
+//如果不想等待,可以调用 Cancel 方法,它可以将Token归还
+r.Cancel()
 ```
 
 
