@@ -102,6 +102,21 @@ Work()
 r.Cancel()
 ```
 
+动态调整速率和桶大小
+
+```go
+// Limiter 支持创建后动态调整速率和桶大小
+//SetLimit更改Token的速率
+limit := rate.Every(100 * time.Millisecond)
+limiter := rate.NewLimiter(limit, 100)
+
+limit2 := rate.Every(10 * time.Millisecond)
+limiter.SetLimit(limit2)
+
+//SetBurst改变Token桶大小
+limiter.SetBurst(10)
+```
+
 
 
 ### 学习资料
