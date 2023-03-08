@@ -898,6 +898,12 @@ Watch（监控）操作通过HTTP协议与Kubernetes API Server 建立长链接,
 
 
 
+Reflector 保持中的 items 持续更新,具体实现是通过 ListerWatcher提供的 list-watch 来列选制定类型的资源,这时会产生一系列 Sync 事件,然后通过 DeltaFIFO 提供的方法构造相应的 DeltaType 添加到 DeltaFIFO 中。更新也不是直接修改 DeltaFIFO 中已存在的元素,而是添加一个新的 DeltaType 到队列中,添加时也会有去重机制。
+
+这个监听过程不是一劳永逸的,监听到新的事件后,会拿着对象 ResourceVersion 重新开启一轮新的监听过程,当然watch调用也有超时机制和一系列的健壮性措施。
+
+
+
 ### 学习资料
 
 《Kubernetes Operator 开发进阶》
