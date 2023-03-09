@@ -5,7 +5,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host:
+    - host: #这里可以设置域名
       http:
         paths:
           - path: /backend
