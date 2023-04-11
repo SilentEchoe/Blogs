@@ -904,6 +904,20 @@ Reflector 保持中的 items 持续更新,具体实现是通过 ListerWatcher提
 
 
 
+### 案例实现
+
+需求：创建一个Pod,并传入参数
+
+```go
+
+```
+
+
+
+
+
+
+
 ### 学习资料
 
 《Kubernetes Operator 开发进阶》
