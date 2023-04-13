@@ -37,6 +37,9 @@ func main() {
 	newPod := &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "my-nginx",
+			Labels: map[string]string{
+				"yunhang-platform/backup": "backup",
+			},
 		},
 		Spec: corev1.PodSpec{
 			Containers: []corev1.Container{
@@ -46,7 +49,7 @@ func main() {
 	}
 
 	//创建pod
-	pod, err := clientset.CoreV1().Pods("kube-system").Create(context.Background(), newPod, metav1.CreateOptions{})
+	pod, err := clientset.CoreV1().Pods("yunhang").Create(context.Background(), newPod, metav1.CreateOptions{})
 	if err != nil {
 		panic(err)
 	}
