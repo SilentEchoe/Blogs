@@ -906,10 +906,57 @@ Reflector 保持中的 items 持续更新,具体实现是通过 ListerWatcher提
 
 ### 案例实现
 
-需求：创建一个Pod,并传入参数
+创建一个Pod
 
 ```go
+import (
+    "context"
+    "fmt"
+    "os"
 
+    "k8s.io/client-go/kubernetes"
+    "k8s.io/client-go/tools/clientcmd"
+    "k8s.io/client-go/util/homedir"
+    metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+    "k8s.io/api/core/v1"
+)
+
+func main() {
+    // Use the current context in kubeconfig
+    kubeconfig := filepath.Join(homedir.HomeDir(), ".kube", "config")
+    config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+    if err != nil {
+        panic(err.Error())
+    }
+
+    // Create a new clientset
+    clientset, err := kubernetes.NewForConfig(config)
+    if err != nil {
+        panic(err.Error())
+    }
+
+    // Define the Pod object
+    pod := &v1.Pod{
+        ObjectMeta: metav1.ObjectMeta{
+            Name: "example-pod",
+        },
+        Spec: v1.PodSpec{
+            Containers: []v1.Container{
+                {
+                    Name:  "example-container",
+                    Image: "nginx",
+                },
+            },
+        },
+    }
+
+    // Create the Pod
+    result, err := clientset.CoreV1().Pods("default").Create(context.Background(), pod, metav1.CreateOptions{})
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Printf("Created Pod %q.\n", result.GetObjectMeta().GetName())
+}
 ```
 
 
