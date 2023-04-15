@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{.AppName}}"
+  namespace: {{.Namespace}}
+  annotations:
+    yunhang-platform/tool: backup
+spec:
+  containers:
+    - name:  "{{.AppName}}"
+      image: "{{.ImageName}}" #镜像名固定
+      args:
+        - kubernetes
+        - save
+        - --in-etcd-endpoint="xxx"
+        - --out-minio-endpoint="xxx"
+        - --out-minio-bucket="bucket"
+        - --out-minio-file=""
+        - --out-sftp-endpoint=""
+        - --out-sftp-file=""
+        - --out-volume-file=""
+      volumeMounts:
+        - mountPath: /backup/kubernetes/out/minio/
+          name: minio-secret
+        - mountPath: /backup/kubernetes/out/sftp/
+          name: sftp-secret
+        - mountPath: /backup/kubernetes/in/etcd/
+          name: etcd-secret
+  volumes:
+    - name: minio-secret
+      configMap:
+        name: minio-creds-config
+    - name: sftp-secret
+      configMap:
+        name: sftp-creds-config
+    - name: etcd-secret
+      configMap:
+        name: etcd-creds-config
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minio-creds-config
+  namespace: {{.Namespace}}
+data:
+  accessKey: AKIAIOSFODNN72019EXAMPLE
+  secretKey: wJalrXUtnFEMI2019K7MDENGbPxRfiCYEXAMPLEKEY
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: devops-minio-creds-config
+  namespace: {{.Namespace}}
+data:
+  accessKey: AKIAIOSFODNN72019EXAMPLE
+  secretKey: wJalrXUtnFEMI2019K7MDENGbPxRfiCYEXAMPLEKEY
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sftp-creds-config
+  namespace: {{.Namespace}}
+data:
+  username: root
+  password: yunhang
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etcd-creds-config
+  namespace: {{.Namespace}}
+data:
+  server.crt: root
+  server.key: yunhang
