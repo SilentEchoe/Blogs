@@ -9,16 +9,10 @@ spec:
   containers:
     - name:  "{{.AppName}}"
       image: "{{.ImageName}}" #镜像名固定
-      args: {{.args}}
-#        - kubernetes
-#        - save
-#        - --in-etcd-endpoint="xxx"
-#        - --out-minio-endpoint="xxx"
-#        - --out-minio-bucket="bucket"
-#        - --out-minio-file=""
-#        - --out-sftp-endpoint=""
-#        - --out-sftp-file=""
-#        - --out-volume-file=""
+      args:
+    {{range $value := .MasterIps}}
+      - --{{$value}}
+    {{end}}
       volumeMounts:
         - mountPath: /backup/kubernetes/out/minio/
           name: minio-secret
