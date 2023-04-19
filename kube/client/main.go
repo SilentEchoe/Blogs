@@ -57,7 +57,7 @@ func main() {
 		ImageName:       "nginx:latest",
 		InMinioBucket:   "bucket",
 		InMongoEndpoint: "mongodb://root:zadig@kr-mongodb:27017",
-		MasterIps:       []string{"devops", "save"},
+		MasterIps:       []string{"devops", "save", "in-mongo-endpoint=mongo://127.0.0.1:2710"},
 	}
 
 	var bs bytes.Buffer
