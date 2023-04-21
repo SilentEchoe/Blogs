@@ -44,6 +44,10 @@ func Init() {
 	}
 }
 
+type BacupKubernetesSavePod struct {
+	AppName string
+}
+
 func main() {
 	tmpl, err := template.ParseFiles("./backup.yaml")
 	if err != nil {
@@ -51,13 +55,17 @@ func main() {
 		return
 	}
 
-	pod := BackuoPod{
-		AppName:         "backup-adug16516",
-		Namespace:       "kube-system",
-		ImageName:       "nginx:latest",
-		InMinioBucket:   "bucket",
-		InMongoEndpoint: "mongodb://root:zadig@kr-mongodb:27017",
-		MasterIps:       []string{"devops", "save", "in-mongo-endpoint=mongo://127.0.0.1:2710"},
+	//pod := BackuoPod{
+	//	AppName:         "backup-adug16516",
+	//	Namespace:       "kube-system",
+	//	ImageName:       "nginx:latest",
+	//	InMinioBucket:   "bucket",
+	//	InMongoEndpoint: "mongodb://root:zadig@kr-mongodb:27017",
+	//	MasterIps:       []string{"devops", "save", "in-mongo-endpoint=mongo://127.0.0.1:2710"},
+	//}
+
+	pod := &BacupKubernetesSavePod{
+		AppName: "123456",
 	}
 
 	var bs bytes.Buffer
