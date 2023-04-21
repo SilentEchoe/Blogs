@@ -16,23 +16,19 @@ spec:
       {{end}}
       volumeMounts:
         {{range $key, $value := .VolumeMounts}}
-        - mountPath: {{ $key }}
-          name: {{ $value }}
+        - mountPath: {{$value}}
+          name: {{ $key }}
         {{end}}
   restartPolicy: Never
   volumes:
-    {{range $key, $value := .Volumes }}
-    {{ if eq $value "store-out-data" }}
-    - name: {{ $value }}
+    {{range  .Volumes }}
+      {{if eq .IsHostPath "true"}}
+    - name: {{.Name}}
       hostPath:
-        path: {{ $key }}
+        path: {{.VolumesPath}}
         type: Directory
-    {{ else }}
-    - name: { { $value } }
-      configMap:
-        name: { { $key } }
     {{end}}
-    {{end}}
+  {{end}}
 
 
 

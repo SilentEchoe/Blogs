@@ -27,9 +27,13 @@ type Storage struct {
 	VolueFile string
 
 	VolumeMounts map[string]string
-	Volumes      map[string]string
+	Volumes      []Volumes
+}
 
-	IsHostPath bool
+type Volumes struct {
+	IsHostPath  string
+	Name        string
+	VolumesPath string
 }
 
 type PodTemplate interface {
@@ -73,6 +77,9 @@ func (b *BacupKubernetesSavePod) CreatePod() {
 	newArgs := []string{"cluster-etcd-endpoint=" + b.EtcdAddress}
 
 	b.Args = append(b.Args, newArgs...)
+	// 创建etcd备份时,需要挂载etcd的证书
+	b.VolumeMounts["cluster-etcd-secret"] = "/backup/kubernetes/cluster/etcd/"
+
 	fmt.Println("创建 BacupKubernetesSavePod 结构体", b.Args)
 }
 
@@ -83,22 +90,22 @@ func (b *BacupKubernetesSavePod) StoragePattern(storeType int) {
 		b.Args = append(b.Args, newArgs...)
 
 		//因为是保存到minio，所以需要挂载volume
-		b.VolumeMounts = map[string]string{"/backup/kubernetes/store/minio/": "minio-secret"}
-		b.Volumes = map[string]string{"minio-secret": "store-minio-creds-config"}
+		b.VolumeMounts["minio-secret"] = "/backup/kubernetes/store/minio/"
+		b.Volumes = append(b.Volumes, Volumes{Name: "minio-secret", VolumesPath: "store-minio-creds-config"})
+
 	case SaveToSftp:
 		newArgs := []string{"store-sftp-endpoint=" + b.SftpEndpoint, "store-sftp-file=" + b.SftpFilePath}
 		b.Args = append(b.Args, newArgs...)
 
-		b.VolumeMounts = map[string]string{"/backup/kubernetes/store/sftp/": "sftp-secret"}
-		b.Volumes = map[string]string{"sftp-secret": "store-sftp-creds-config"}
+		b.VolumeMounts["sftp-secret"] = "/backup/kubernetes/store/sftp/"
+		b.Volumes = append(b.Volumes, Volumes{Name: "sftp-secret", VolumesPath: "store-sftp-creds-config"})
 
 	case SaveToLocal:
 		newArgs := []string{"store-volume-file=" + b.VolueFile}
 		b.Args = append(b.Args, newArgs...)
-		b.IsHostPath = true
 
-		b.VolumeMounts = map[string]string{"/newbackup": "store-out-data"}
-		b.Volumes = map[string]string{"/etc/backup/data": "store-out-data"}
+		b.VolumeMounts["store-out-data"] = "/newbackup"
+		b.Volumes = append(b.Volumes, Volumes{Name: "store-out-data", VolumesPath: "/etc/backup/data", IsHostPath: "true"})
 	}
 
 	fmt.Println("设置 BacupKubernetesSavePod的存储方式", b.Args)
@@ -119,14 +126,12 @@ func (b *BacupDevopsSavePod) StoragePattern(storeType int) {
 func main() {
 	var podTemplate PodTemplate
 
-	volume := map[string]string{"/backup/kubernetes/cluster/etcd/": "cluster-etcd-secret"}
-
 	podTemplate = &BacupKubernetesSavePod{
 		Pod: Pod{AppName: "backup", Namespace: "kube-system", ImageName: "registry.cn-hangzhou.aliyuncs.com/kubesphere/etcd-backup:latest"},
 		//AppName:     "backup",
 		//ImageName:   "registry.cn-hangzhou.aliyuncs.com/kubesphere/etcd-backup:latest",
 		EtcdAddress: "https://127.0.0.1:2379",
-		Storage:     Storage{VolueFile: "/newbackup/jobone.zip", VolumeMounts: volume},
+		Storage:     Storage{VolueFile: "/newbackup/jobone.zip", VolumeMounts: map[string]string{}},
 	}
 	podTemplate.CreatePod()
 	podTemplate.StoragePattern(SaveToLocal)
