@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{.AppName}}
+  namespace: {{.Namespace}}
+  annotations:
+    yunhang-platform/tool: backup
+spec:
+  containers:
+    - name:  {{.AppName}}
+      image: {{.ImageName}} #镜像名固定
+      args:
+        - ./backuptool
+      {{range $value := .Args}}
+        - --{{$value}}
+      {{end}}
+      volumeMounts:
+        {{range $key, $value := .VolumeMounts}}
+        - mountPath: {{ $key }}
+          name: {{ $value }}
+        {{end}}
+  restartPolicy: Never
+  volumes:
+    {{range $key, $value := .Volumes }}
+    {{ if eq $value "store-out-data" }}
+    - name: {{ $value }}
+      hostPath:
+        path: {{ $key }}
+        type: Directory
+    {{ else }}
+    - name: { { $value } }
+      configMap:
+        name: { { $key } }
+    {{end}}
+    {{end}}
+
+
+
+
+
