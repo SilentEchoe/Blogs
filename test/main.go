@@ -68,10 +68,6 @@ type BacupDevopsSavePod struct {
 	MysqlFile string
 }
 
-type RestoreDevopsPod struct {
-	Pod
-}
-
 //CreatePod 创建 BacupKubernetesSavePod
 func (b *BacupKubernetesSavePod) CreatePod() {
 	newArgs := []string{"cluster-etcd-endpoint=" + b.EtcdAddress}
