@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dexdemo
+  name: dexdemo
+  namespace: ssodemo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dexdemo
+  template:
+    metadata:
+      labels:
+        app: dexdemo
+    spec:
+      serviceAccountName: dexdemo
+      containers:
+        - image: ghcr.io/dexidp/dex:v2.30.0
+          name: dex
+          command: ["/usr/local/bin/dex", "serve", "/etc/dex/cfg/config.yaml"]
+          ports:
+            - name: http
+              containerPort: 5556
+          volumeMounts:
+            - name: config
+              mountPath: /etc/dex/cfg
+      volumes:
+        - name: config
+          configMap:
+            name: dexdemo
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: dexdemo
+  namespace: ssodemo
+data:
+  config.yaml: |
+    issuer: http://dexdemo:5556/dex
+    storage:
+      type: kubernetes
+      config:
+        inCluster: true
+    web:
+      http: 0.0.0.0:5556
+    oauth2:
+      responseTypes: [ "code","token","id_token" ]
+      skipApprovalScreen: true
+    staticClients:
+      - id: platform
+        redirectURIs:
+          - 127.0.0.1:80
+        name: platform
+        secret: prod-platform-secret
+    
+    enablePasswordDB: true
+    connectors:
+      - type: ldap
+        name: OpenLDAP
+        id: ldap
+        config:
+          host: yunhang-ldap:1389
+          insecureNoSSL: true
+          bindDN: cn=admin,dc=yunhang,dc=cn
+          bindPW: adminpassword
+          usernamePrompt: LDAP 用户名
+          userSearch:
+            baseDN: ou=users,dc=yunhang,dc=cn
+            filter: "(objectClass=person)"
+            username: cn
+            idAttr: DN
+            emailAttr: mail
+            nameAttr: cn
+          groupSearch:
+            baseDN: ou=Groups,dc=yunhang,dc=cn
+            filter: "(objectClass=groupOfNames)"
+            userMatchers:
+              - userAttr: DN
+                groupAttr: member
+            nameAttr: cn
+    expiry:
+      deviceRequests: "5m"
+      signingKeys: "6h"
+      idTokens: "24h"
+      refreshTokens:
+        reuseInterval: "30s"
+        validIfNotUsedFor: "2160h" # 90 days
+        absoluteLifetime: "3960h" # 165 days
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dexdemo
+  namespace: ssodemo
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 5556
+      protocol: TCP
+      targetPort: 5556
+  selector:
+    app: dexdemo
