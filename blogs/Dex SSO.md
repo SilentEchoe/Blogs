@@ -88,7 +88,7 @@ spec:
 
 
 
-创建apache-directory-studio连接Ldap,在Safari浏览器中输入: vnc://127.0.0.1:5901
+创建apache-directory-studio连接Ldap,在Safari浏览器中输入: vnc://127.0.0.1:5901,创建Ldap用户，用于登录
 
 ```shell
 docker run --rm -ti \
@@ -98,4 +98,6 @@ docker run --rm -ti \
 ```
 
 
+
+### 2.创建Dex
 
