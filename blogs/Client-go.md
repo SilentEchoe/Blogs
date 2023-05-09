@@ -906,7 +906,7 @@ Reflector 保持中的 items 持续更新,具体实现是通过 ListerWatcher提
 
 ### 案例实现
 
-创建一个Pod
+使用client-go创建一个Pod
 
 ```go
 import (
@@ -958,8 +958,6 @@ func main() {
     fmt.Printf("Created Pod %q.\n", result.GetObjectMeta().GetName())
 }
 ```
-
-
 
 
 
