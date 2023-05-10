@@ -274,9 +274,7 @@ Mount 阶段在 CSI Node 里面的接口，是NodeStageVolume 和 NodePublishVol
 
 
 
-# 实践操作
 
-## 实现 Identity Server
 
 
 
@@ -288,5 +286,5 @@ Mount 阶段在 CSI Node 里面的接口，是NodeStageVolume 和 NodePublishVol
 
 《深入剖析Kubernetes》
 
-[如何编写 CSI 插件]: 	"https://mritd.com/2020/08/19/how-to-write-a-csi-driver-for-kubernetes/"
+https://mritd.com/2020/08/19/how-to-write-a-csi-driver-for-kubernetes
 
