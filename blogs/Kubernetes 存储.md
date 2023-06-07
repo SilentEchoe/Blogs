@@ -17,7 +17,17 @@ Docker 当中也有卷(Volume)的概念，但是Docker卷是磁盘或另外一�
 
 
 
-### 持久卷
+### 持久卷(Persistent Volume)
+
+持久卷是集群中的一块存储，由管理员事先制备，或者使用存储类(Storage Class)来动态制备。持久卷是集群资源，PV持久卷和普通的 Volume 一样，也是使用卷插件来实现的，它们拥有独立于任何使用PV的Pod的声明周期。
+
+**持久卷申领（PersistentVolumeClaim，PVC）** 表达的是用户对存储的请求。概念上与 Pod 类似。 Pod 会耗用节点资源，而 PVC 申领会耗用 PV 资源。Pod 可以请求特定数量的资源（CPU 和内存）；同样 PVC 申领也可以请求特定的大小和访问模式。
+
+
+
+
+
+
 
 ConfigMap用来保存Key-Value的配置数据，这个数据可以在Pod里使用，ConfigMap跟Secrets类似，但是ConfigMap一般用来管理配置，并且不包敏感信息的字符串.
 
@@ -29,14 +39,25 @@ ConfigMap中的每个data项都会成为一个新文件，一般用来：
 
 3.在数据卷里面创建config文件
 
+以官方文档为例：
+
 ```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: special-config
+  namespace: default
+data:
+  special.how: very
+  special.type: charm
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-   name: demo-config
+  name: env-config
+  namespace: default
 data:
-  demodata: "TestDemoData"
+  log_level: INFO
 ```
 
 Pod中使用ConfigMap
@@ -50,7 +71,7 @@ spec:
   containers:
     - name: test-container
       image: gcr.io/google_containers/busybox
-      command: [ "/bin/sh", "-c", "env" ]
+      command: [ "/bin/sh", "-c", "echo $(SPECIAL_LEVEL_KEY) $(SPECIAL_TYPE_KEY)" ]
       env:
         - name: SPECIAL_LEVEL_KEY
           valueFrom:
@@ -68,3 +89,6 @@ spec:
   restartPolicy: Never
 ```
 
+执行 `kubectl apply -f cm.yaml`会输出
+
+![image-20230510162625449](https://raw.githubusercontent.com/AnAnonymousFriend/images/main/image-20230510162625449.png)
