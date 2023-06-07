@@ -1,15 +1,18 @@
 package main
 
 import (
+	"fmt"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"os"
+	"sync"
 	"time"
 
-	"github.com/go-pg/pg/v9"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-type yhconfiglog struct {
+type yhlog struct {
 	Level      string
 	Time       time.Time
 	Message    string
@@ -17,17 +20,17 @@ type yhconfiglog struct {
 }
 
 type PgHook struct {
-	db *pg.DB
+	db *gorm.DB
 }
 
 func (h *PgHook) Write(p []byte) (int, error) {
-	logEntry := yhconfiglog{
+	logEntry := yhlog{
 		Level:      "debug",
 		Time:       time.Now(),
 		Message:    string(p),
 		Stacktrace: "",
 	}
-	_, err := h.db.Model(&logEntry).Insert()
+	_, err := h.db.Table("").Model(&logEntry).Create(&logEntry).Rows()
 	if err != nil {
 		return 0, err
 	}
@@ -38,10 +41,24 @@ func (h *PgHook) Sync() error {
 	return nil
 }
 
+var gormOnce = sync.Once{}
+var db *gorm.DB
+
+func initGorm() *gorm.DB {
+	gormOnce.Do(func() {
+		var err error
+		dsn := ""
+		db, err = gorm.Open(postgres.Open(dsn))
+		if err != nil {
+			fmt.Println("connect postgres error:%v", err)
+		}
+	})
+	return db
+}
+
 func main() {
 	// Connect to the database.
-	db := pg.Connect(&pg.Options{})
-	defer db.Close()
+	initGorm()
 
 	// Create a Zap logger with a custom encoder and a core with a Zap Hook.
 	encoderConfig := zapcore.EncoderConfig{
@@ -68,7 +85,7 @@ func main() {
 	logger := zap.New(core)
 	defer logger.Sync()
 
-	// yhconfiglog some messages.
+	// yhlog some messages.
 	logger.Warn("A warning occurred.")
 	logger.Info("Some information.")
 	logger.Error("An error occurred.")
@@ -77,7 +94,7 @@ func main() {
 	time.Sleep(2 * time.Second)
 
 	// Query the logs from the database.
-	//var logs []yhconfiglog
+	//var logs []yhlog
 	//err := db.Model(&logs).Select()
 	//if err != nil {
 	//	log.Fatal(err)
