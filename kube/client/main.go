@@ -93,7 +93,6 @@ func newKubeClientSet() *kubernetes.Clientset {
 	} else {
 		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
 	}
-	flag.Parse()
 
 	// 使用kubeconfig中的当前上下文,加载配置文件
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)

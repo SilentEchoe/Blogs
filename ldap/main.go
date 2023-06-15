@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	l, err := ldap.Dial("tcp", "10.3.70.204:1389")
+	l, err := ldap.Dial("tcp", "")
 	if err != nil {
 		fmt.Println("连接失败", err)
 
