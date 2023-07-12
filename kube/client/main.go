@@ -1,89 +1,59 @@
 package main
 
 import (
-	"bytes"
+	"context"
 	"flag"
 	"fmt"
-	"path/filepath"
-	"text/template"
-
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
-
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/runtime/serializer/yaml"
-	"k8s.io/klog/v2"
+	"path/filepath"
 )
-
-type BackuoPod struct {
-	AppName          string
-	Namespace        string
-	ImageName        string
-	Args             []string
-	InMongoEndpoint  string
-	InMysqlEndpoint  string
-	InMinioEndpoint  string
-	InMinioBucket    string
-	OutMinioEndpoint string
-	OutMinioBucket   string
-	OutMinioFile     string
-	OutSftpEndpoint  string
-	OutSftpFile      string
-	OutVolumeFile    string
-	MasterIps        []string
-}
 
 var kubeClientSet *kubernetes.Clientset
 
-func Init() {
+func init() {
 	kubeClientSet = newKubeClientSet()
 	if kubeClientSet == nil {
 		panic("init kube client failed")
 	}
 }
 
-type BacupKubernetesSavePod struct {
-	AppName string
-}
-
 func main() {
-	tmpl, err := template.ParseFiles("./backup.yaml")
+	svc := GenerateAgentService()
+	newSvc, err := kubeClientSet.CoreV1().Services("default").Create(context.Background(), svc, metav1.CreateOptions{})
 	if err != nil {
-		fmt.Println("create template failed, err:", err)
+		fmt.Println(err)
 		return
 	}
+	fmt.Println(newSvc.Spec.Ports[0].NodePort)
+}
 
-	//pod := BackuoPod{
-	//	AppName:         "backup-adug16516",
-	//	Namespace:       "kube-system",
-	//	ImageName:       "nginx:latest",
-	//	InMinioBucket:   "bucket",
-	//	InMongoEndpoint: "mongodb://root:zadig@kr-mongodb:27017",
-	//	MasterIps:       []string{"devops", "save", "in-mongo-endpoint=mongo://127.0.0.1:2710"},
-	//}
-
-	pod := &BacupKubernetesSavePod{
-		AppName: "123456",
+func GenerateAgentService() *corev1.Service {
+	return &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "test-service",
+		},
+		Spec: corev1.ServiceSpec{
+			Selector: map[string]string{
+				"app": "agent",
+			},
+			Type: corev1.ServiceTypeNodePort,
+			Ports: []corev1.ServicePort{
+				{
+					Protocol: corev1.ProtocolTCP,
+					Port:     80,
+					TargetPort: intstr.IntOrString{
+						Type:   intstr.Int,
+						IntVal: 8000,
+					},
+				},
+			},
+		},
 	}
-
-	var bs bytes.Buffer
-	tmpl.Execute(&bs, pod)
-
-	decoder := yaml.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
-
-	// Decode the YAML file into an unstructured object
-	obj := &corev1.Pod{}
-	_, _, err = decoder.Decode(bs.Bytes(), nil, obj)
-	if err != nil {
-		panic(err)
-
-	}
-	//klog.Infof("%#v", obj)
-
-	klog.Infof(string(bs.Bytes()))
-
 }
 
 func newKubeClientSet() *kubernetes.Clientset {
