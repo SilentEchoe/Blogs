@@ -93,15 +93,4 @@ func main() {
 	// Wait a bit for the log message to be written to the database.
 	time.Sleep(2 * time.Second)
 
-	// Query the logs from the database.
-	//var logs []yhlog
-	//err := db.Model(&logs).Select()
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//// Print the logs to the console.
-	//for _, log := range logs {
-	//	fmt.Printf("%v: [%v] %v\n%s\n", log.Time, log.Level, log.Message, log.Stacktrace)
-	//}
 }
