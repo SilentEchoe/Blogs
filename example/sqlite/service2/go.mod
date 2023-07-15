@@ -1,4 +1,4 @@
-module LearningNotes-Go/example
+module LearningNotes-Go/example/sqlite/service2
 
 go 1.19
 
