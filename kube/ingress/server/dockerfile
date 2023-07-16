@@ -1,9 +1,0 @@
-FROM ubuntu:14.04
-
-WORKDIR /workspace
-
-ADD server /workspace/server
-
-CMD [ "./server" ]
-
-EXPOSE 8080

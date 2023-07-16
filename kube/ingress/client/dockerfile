@@ -1,9 +1,0 @@
-FROM ubuntu:14.04
-
-WORKDIR /workspace
-
-ADD client /workspace/client
-
-CMD [ "./client" ]
-
-EXPOSE 8081
