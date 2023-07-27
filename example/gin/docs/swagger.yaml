@@ -1,0 +1,3381 @@
+definitions:
+  client.Branch:
+    properties:
+      merged:
+        type: boolean
+      name:
+        type: string
+      protected:
+        type: boolean
+    type: object
+  client.PullRequest:
+    properties:
+      authorUsername:
+        type: string
+      base:
+        type: string
+      createdAt:
+        type: integer
+      id:
+        type: integer
+      number:
+        type: integer
+      projectId:
+        type: integer
+      sourceBranch:
+        type: string
+      state:
+        type: string
+      targetBranch:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: integer
+      user:
+        type: string
+    type: object
+  client.Tag:
+    properties:
+      message:
+        type: string
+      name:
+        type: string
+      tarball_url:
+        type: string
+      zipball_url:
+        type: string
+    type: object
+  config.CollaborationType:
+    enum:
+    - share
+    - new
+    type: string
+    x-enum-varnames:
+    - CollaborationShare
+    - CollaborationNew
+  handler.BranchesRequest:
+    properties:
+      branches:
+        items:
+          type: string
+        type: array
+      regular:
+        type: string
+    type: object
+  handler.UpdateOrchestrationServiceReq:
+    properties:
+      production_services:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
+      services:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
+    type: object
+  handler.batchCreatePMArgs:
+    type: object
+  handler.createServiceTemplateRequest:
+    type: object
+  handler.getYamlTemplateVariablesReq:
+    properties:
+      content:
+        type: string
+      variable_yaml:
+        type: string
+    required:
+    - content
+    - variable_yaml
+    type: object
+  handler.repoInfo:
+    properties:
+      branch:
+        type: string
+      codehost_id:
+        type: integer
+      namespace:
+        type: string
+      owner:
+        type: string
+      path:
+        type: string
+      repo:
+        type: string
+      repoLink:
+        type: string
+    type: object
+  service.CreateVariableSetRequest:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      project_name:
+        type: string
+      userName:
+        type: string
+      variable_yaml:
+        type: string
+    type: object
+  service.EnvDefinition:
+    properties:
+      cluster_name:
+        type: string
+      env_name:
+        type: string
+      namespace:
+        type: string
+    type: object
+  service.GetWebhookConfigReponse:
+    properties:
+      secret:
+        type: string
+      url:
+        type: string
+    type: object
+  service.GitRepoInfo:
+    properties:
+      branches:
+        items:
+          $ref: '#/definitions/client.Branch'
+        type: array
+      codehost_id:
+        type: integer
+      default_branch:
+        type: string
+      error_msg:
+        description: get repo message fail message
+        type: string
+      filter_regexp:
+        description: FilterRegexp is the regular expression filter for the branches
+          and tags
+        type: string
+      key:
+        type: string
+      project_uuid:
+        type: string
+      prs:
+        items:
+          $ref: '#/definitions/client.PullRequest'
+        type: array
+      repo:
+        type: string
+      repo_id:
+        type: string
+      repo_namespace:
+        type: string
+      repo_owner:
+        type: string
+      repo_uuid:
+        type: string
+      source:
+        type: string
+      tags:
+        items:
+          $ref: '#/definitions/client.Tag'
+        type: array
+    type: object
+  service.LoadKubeWorkloadsYamlReq:
+    properties:
+      cluster_id:
+        type: string
+      namespace:
+        type: string
+      product_name:
+        type: string
+      services:
+        items:
+          $ref: '#/definitions/service.ServiceWorkloads'
+        type: array
+      type:
+        type: string
+      visibility:
+        type: string
+    type: object
+  service.OpenAPIInitializeProjectReq:
+    properties:
+      description:
+        type: string
+      env_list:
+        items:
+          $ref: '#/definitions/service.EnvDefinition'
+        type: array
+      is_public:
+        type: boolean
+      project_key:
+        type: string
+      project_name:
+        type: string
+      service_list:
+        items:
+          $ref: '#/definitions/service.ServiceDefinition'
+        type: array
+    type: object
+  service.RepoInfoList:
+    properties:
+      infos:
+        items:
+          $ref: '#/definitions/service.GitRepoInfo'
+        type: array
+    type: object
+  service.ServiceDefinition:
+    properties:
+      auto_sync:
+        type: boolean
+      service_name:
+        type: string
+      source:
+        type: string
+      template_name:
+        type: string
+      values_yaml:
+        type: string
+      variable_yaml:
+        items:
+          $ref: '#/definitions/util.KeyValue'
+        type: array
+      yaml:
+        type: string
+    type: object
+  service.ServiceWorkloads:
+    properties:
+      name:
+        type: string
+      workloads_map:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+    type: object
+  service.SyncCollaborationInstanceArgs:
+    type: object
+  service.VariableSetFindOption:
+    properties:
+      id:
+        type: string
+      page:
+        type: integer
+      perPage:
+        type: integer
+      projectName:
+        type: string
+    type: object
+  template.AutoDeployPolicy:
+    properties:
+      enable:
+        type: boolean
+    type: object
+  template.EnvRenderKV:
+    properties:
+      env_name:
+        type: string
+      vars:
+        items:
+          $ref: '#/definitions/template.RenderKV'
+        type: array
+    type: object
+  template.Product:
+    type: object
+  template.RenderKV:
+    properties:
+      alias:
+        type: string
+      key:
+        type: string
+      services:
+        items:
+          type: string
+        type: array
+      state:
+        type: string
+      value:
+        type: string
+    type: object
+  template.ServiceInfo:
+    properties:
+      name:
+        type: string
+      owner:
+        type: string
+    type: object
+  template.YamlTemplate:
+    type: object
+  util.KeyValue:
+    properties:
+      key:
+        type: string
+      value: {}
+    type: object
+info:
+  contact: {}
+paths:
+  /api/aslan/Health:
+    get:
+      consumes:
+      - application/json
+      description: 健康检查测试
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 健康检查
+  /api/aslan/collaboration/collaborations/sync:
+    post:
+      consumes:
+      - application/json
+      description: Sync Collaboration Instance
+      parameters:
+      - description: project name
+        in: query
+        name: projectName
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/service.SyncCollaborationInstanceArgs'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Sync Collaboration Instance
+      tags:
+      - collaboration
+  /api/aslan/environment/environments:
+    put:
+      consumes:
+      - application/json
+      description: Update Multi products
+      parameters:
+      - description: project name
+        in: query
+        name: projectName
+        required: true
+        type: string
+      - description: type
+        in: query
+        name: type
+        type: string
+      - description: is force
+        in: query
+        name: force
+        required: true
+        type: boolean
+      - description: updateMultiK8sEnv body
+        in: body
+        name: k8s_body
+        required: true
+        schema:
+          type: string
+      - description: updateMultiHelmEnv body
+        in: body
+        name: helm_body
+        required: true
+        schema:
+          type: string
+      - description: updateMultiCvmEnv body
+        in: body
+        name: pm_body
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Update Multi products
+      tags:
+      - environment
+  /api/aslan/environment/environments/{name}/globalVariableCandidates:
+    get:
+      consumes:
+      - application/json
+      description: Get global variable candidates
+      parameters:
+      - description: project name
+        in: query
+        name: projectName
+        required: true
+        type: string
+      - description: env name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Get global variable candidates
+      tags:
+      - environment
+  /api/aslan/environment/environments/{name}/k8s/globalVariables:
+    put:
+      consumes:
+      - application/json
+      description: Update global variables
+      parameters:
+      - description: project name
+        in: query
+        name: projectName
+        required: true
+        type: string
+      - description: env name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Update global variables
+      tags:
+      - environment
+  /api/aslan/environment/environments/{name}/services:
+    get:
+      consumes:
+      - application/json
+      description: List services in env
+      parameters:
+      - description: env name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: project name
+        in: query
+        name: projectName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: List services in env
+      tags:
+      - environments
+    put:
+      consumes:
+      - application/json
+      description: Delete services from envrionment
+      parameters:
+      - description: project name
+        in: query
+        name: projectName
+        required: true
+        type: string
+      - description: env name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Delete services
+      tags:
+      - environment
+  /api/aslan/environment/environments/{name}/services/{serviceName}:
+    put:
+      consumes:
+      - application/json
+      description: Update service
+      parameters:
+      - description: project name
+        in: query
+        name: projectName
+        required: true
+        type: string
+      - description: env name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: service name
+        in: path
+        name: serviceName
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Update service
+      tags:
+      - environment
+  /api/aslan/environment/environments/{name}/services/{serviceName}/preview:
+    post:
+      consumes:
+      - application/json
+      description: Preview service
+      parameters:
+      - description: project name
+        in: query
+        name: projectName
+        required: true
+        type: string
+      - description: env name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: service name
+        in: path
+        name: serviceName
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Preview service
+      tags:
+      - environment
+  /api/aslan/environment/init_info/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Get init product
+      parameters:
+      - description: project template name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: env type
+        in: query
+        name: envType
+        required: true
+        type: string
+      - description: is base env
+        in: query
+        name: isBaseEnv
+        required: true
+        type: string
+      - description: base env
+        in: query
+        name: baseEnv
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get init product
+      tags:
+      - environment
+  /api/aslan/environment/kube/k8s/resources:
+    post:
+      consumes:
+      - application/json
+      description: Get Resource Deploy Status
+      parameters:
+      - description: project name
+        in: query
+        name: projectName
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Get Resource Deploy Status
+      tags:
+      - environment
+  /api/aslan/environment/rendersets/globalVariables:
+    get:
+      consumes:
+      - application/json
+      description: Get global variable from environment, current only used for k8s
+        project
+      parameters:
+      - description: project name
+        in: query
+        name: projectName
+        required: true
+        type: string
+      - description: env name
+        in: query
+        name: envName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get global variable
+      tags:
+      - environment
+  /api/aslan/environment/rendersets/variables:
+    get:
+      consumes:
+      - application/json
+      description: Get service variables
+      parameters:
+      - description: project name
+        in: query
+        name: projectName
+        required: true
+        type: string
+      - description: env name
+        in: query
+        name: envName
+        type: string
+      - description: service name
+        in: query
+        name: serviceName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Get service variables
+      tags:
+      - environment
+  /api/aslan/environments/{name}/services/{serviceName}/variables:
+    get:
+      consumes:
+      - application/json
+      description: Get production service variables
+      parameters:
+      - description: project name
+        in: query
+        name: projectName
+        required: true
+        type: string
+      - description: env name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: service name
+        in: path
+        name: serviceName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Get production service variables
+      tags:
+      - environment
+  /api/aslan/helm/production/services:
+    post:
+      consumes:
+      - application/json
+      description: 创建生产Helm服务
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Production
+  /api/aslan/helm/production/services/:name/fileContent:
+    get:
+      consumes:
+      - application/json
+      description: 获取生产Helm文件内容
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Production
+  /api/aslan/helm/production/services/:name/filePath:
+    put:
+      consumes:
+      - application/json
+      description: 获取生产Helm文件路径
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Production
+  /api/aslan/helm/production/services/:name/releaseNaming:
+    put:
+      consumes:
+      - application/json
+      description: 修改生产Helm服务发布命名规则
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Production
+  /api/aslan/helm/production/services/:name/serviceModule:
+    get:
+      consumes:
+      - application/json
+      description: 获取生产Helm服务模式
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Production
+  /api/aslan/openapi/statistics/build:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: body
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 获取构建状态
+  /api/aslan/openapi/statistics/test:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: body
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 获取测试状态
+  /api/aslan/openapi/statistics/v2/release:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: body
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 获取已发布状态
+  /api/aslan/overview:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: body
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 获取概览状态
+  /api/aslan/placeholder/deploy_job_spec:
+    post:
+      consumes:
+      - application/json
+      description: '[DONT USE] ZadigDeployJobSpec'
+      parameters:
+      - description: body
+        in: body
+        name: deploy_job_spec
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: '[DONT USE]  ZadigDeployJobSpec'
+      tags:
+      - placeholder
+  /api/aslan/project/codehost:
+    get:
+      consumes:
+      - application/json
+      description: 获取代码宿主列表
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Code
+  /api/aslan/project/codehost/:codehostId/branches:
+    get:
+      consumes:
+      - application/json
+      description: 获取分支列表
+      parameters:
+      - description: codehostId
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: repoOwner
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: repoName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Code
+  /api/aslan/project/codehost/:codehostId/namespaces:
+    get:
+      consumes:
+      - application/json
+      description: 获取命名空间列表
+      parameters:
+      - description: codehostId
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: key
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Code
+  /api/aslan/project/codehost/:codehostId/projects:
+    get:
+      consumes:
+      - application/json
+      description: 获取项目列表
+      parameters:
+      - description: codehostId
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: repoOwner
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Code
+  /api/aslan/project/codehost/:codehostId/prs:
+    get:
+      consumes:
+      - application/json
+      description: 获取PR列表
+      parameters:
+      - description: codehostId
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: repoOwner
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: repoName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Code
+  /api/aslan/project/codehost/:codehostId/tags:
+    get:
+      consumes:
+      - application/json
+      description: 获取标签列表
+      parameters:
+      - description: codehostId
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: repoOwner
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: repoName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Code
+  /api/aslan/project/codehost/branches/regular/check:
+    post:
+      consumes:
+      - application/json
+      description: 获取仓库信息
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/handler.BranchesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Code
+  /api/aslan/project/codehost/infos:
+    put:
+      consumes:
+      - application/json
+      description: 获取仓库信息
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/service.RepoInfoList'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Code
+  /api/aslan/project/pms:
+    get:
+      consumes:
+      - application/json
+      description: 主机列表
+      parameters:
+      - description: encryptedKey
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+    post:
+      consumes:
+      - application/json
+      description: 创建主机
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/pms/:id:
+    delete:
+      consumes:
+      - application/json
+      description: 删除主机
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/handler.batchCreatePMArgs'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+    get:
+      consumes:
+      - application/json
+      description: 获取主机信息
+      parameters:
+      - description: id
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+    put:
+      consumes:
+      - application/json
+      description: 修改主机信息
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/handler.batchCreatePMArgs'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/pms/batch:
+    post:
+      consumes:
+      - application/json
+      description: 批量创建主机
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/handler.batchCreatePMArgs'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/pms/labels:
+    get:
+      consumes:
+      - application/json
+      description: 获取列表标签
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/production/products/:name:
+    patch:
+      consumes:
+      - application/json
+      description: 更新生产业务流程
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/products:
+    post:
+      consumes:
+      - application/json
+      description: 获取产品模版服务
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/template.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+    put:
+      consumes:
+      - application/json
+      description: 修改产品
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/template.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/products/:name:
+    delete:
+      consumes:
+      - application/json
+      description: 删除产品模版
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+    get:
+      consumes:
+      - application/json
+      description: 获取产品模版
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+    patch:
+      consumes:
+      - application/json
+      description: 更新服务或结算
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UpdateOrchestrationServiceReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+    put:
+      consumes:
+      - application/json
+      description: 修改产品模版
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/template.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/products/:name/:status:
+    put:
+      consumes:
+      - application/json
+      description: 修改产品模版
+      parameters:
+      - description: 产品名
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: 状态
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/products/:name/searching-rules:
+    get:
+      consumes:
+      - application/json
+      description: 获取全局变量
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+    put:
+      consumes:
+      - application/json
+      description: 创建或修改自定义匹配规则
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/products/:name/services:
+    get:
+      consumes:
+      - application/json
+      description: 获取产品模版服务
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: envType
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: isBaseEnv
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: baseEnv
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/products/:name/type:
+    put:
+      consumes:
+      - application/json
+      description: 转移项目
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/products/{name}/globalProductionGlobalVariables:
+    get:
+      consumes:
+      - application/json
+      description: 获取候选生产环境全局变量
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/products/{name}/globalVariableCandidates:
+    get:
+      consumes:
+      - application/json
+      description: 获取全局变量候选
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/products/{name}/globalVariables:
+    put:
+      consumes:
+      - application/json
+      description: 更新全局变量
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/products/{name}/productionGlobalVariables:
+    get:
+      consumes:
+      - application/json
+      description: 获取生产环境的全局变量
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+    put:
+      consumes:
+      - application/json
+      description: 更新生产环境的全局变量
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/projects:
+    get:
+      consumes:
+      - application/json
+      description: 列表项目
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/templates/info:
+    get:
+      consumes:
+      - application/json
+      description: 列表模板层次结构
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/variablesets:
+    get:
+      consumes:
+      - application/json
+      description: 列表变量集
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/service.VariableSetFindOption'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+    post:
+      consumes:
+      - application/json
+      description: 创建变量集
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreateVariableSetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/variablesets/:id:
+    delete:
+      consumes:
+      - application/json
+      description: 删除变量集
+      parameters:
+      - description: id
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+    get:
+      consumes:
+      - application/json
+      description: 获取变量集
+      parameters:
+      - description: id
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+    put:
+      consumes:
+      - application/json
+      description: 修改变量集
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreateVariableSetRequest'
+      - description: id
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/aslan/project/workspace:
+    delete:
+      consumes:
+      - application/json
+      description: 清理工作空间
+      parameters:
+      - description: pipelineName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - workspace
+  /api/aslan/project/workspace//getcontents/:codehostId:
+    get:
+      consumes:
+      - application/json
+      description: 获取Git仓库树
+      parameters:
+      - description: codehostId
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: repoName
+        in: body
+        name: json
+        schema:
+          type: string
+      - description: branchName
+        in: body
+        name: json
+        schema:
+          type: string
+      - description: repoOwner
+        in: body
+        name: json
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - workspace
+  /api/aslan/project/workspace/codehub/:codehostId:
+    get:
+      consumes:
+      - application/json
+      description: 获取Codehub仓库信息
+      parameters:
+      - description: codehostId
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: repoUUID
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: branchName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: path
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - workspace
+  /api/aslan/project/workspace/file:
+    get:
+      consumes:
+      - application/json
+      description: 获取工作文件
+      parameters:
+      - description: pipelineName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - workspace
+  /api/aslan/project/workspace/git/:codehostId:
+    get:
+      consumes:
+      - application/json
+      description: 获取Git 仓库信息
+      parameters:
+      - description: codehostId
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: repoName
+        in: body
+        name: json
+        schema:
+          type: string
+      - description: branchName
+        in: body
+        name: json
+        schema:
+          type: string
+      - description: remoteName
+        in: body
+        name: json
+        schema:
+          type: string
+      - description: dir
+        in: body
+        name: json
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - workspace
+  /api/aslan/project/workspace/tree:
+    get:
+      consumes:
+      - application/json
+      description: 获取Git仓库树
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/handler.repoInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - workspace
+  /api/aslan/service/pm/{productName}:
+    post:
+      consumes:
+      - application/json
+      description: 创建PM服务
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+    put:
+      consumes:
+      - application/json
+      description: 修改PM服务模版
+      parameters:
+      - description: productName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: commonservice.ServiceTmplBuildObject 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/service/pm/healthCheckUpdate:
+    put:
+      consumes:
+      - application/json
+      description: 修改服务健康检查状态
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/service/production/services:
+    get:
+      consumes:
+      - application/json
+      description: 生产服务清单
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Production
+  /api/aslan/service/production/services/:name:
+    delete:
+      consumes:
+      - application/json
+      description: 删除生产服务
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Production
+    get:
+      consumes:
+      - application/json
+      description: 获得生产K8s服务选项
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Production
+  /api/aslan/service/production/services/:name/k8s:
+    get:
+      consumes:
+      - application/json
+      description: 生产服务清单
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Production
+  /api/aslan/service/production/services/:name/k8s/variable:
+    put:
+      consumes:
+      - application/json
+      description: 编辑生产K8s服务
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Production
+  /api/aslan/service/production/services/k8s:
+    post:
+      consumes:
+      - application/json
+      description: 创建生产K8s服务
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - Production
+  /api/aslan/service/services:
+    get:
+      consumes:
+      - application/json
+      description: 列表工作负载模板
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: env
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - workloads
+    post:
+      consumes:
+      - application/json
+      description: 根据产品名称查询服务模版
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - workloads
+    put:
+      consumes:
+      - application/json
+      description: 修改服务模版
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/service/services/:name:
+    get:
+      consumes:
+      - application/json
+      description: 获取服务模版操作
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - workloads
+  /api/aslan/service/services/:name/:type:
+    delete:
+      consumes:
+      - application/json
+      description: 删除服务模版
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+    get:
+      consumes:
+      - application/json
+      description: 获取服务模版
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: type
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - workloads
+  /api/aslan/service/services/:name/:type/ports:
+    get:
+      consumes:
+      - application/json
+      description: 服务端口列表
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: type
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/service/services/{name}/environments/deployable:
+    get:
+      consumes:
+      - application/json
+      description: 获取可部署的环境
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/service/services/{name}/variable:
+    put:
+      consumes:
+      - application/json
+      description: 修改服务变量
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/service/services/kube/workloads:
+    get:
+      consumes:
+      - application/json
+      description: 获取Kube的工作负载
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/service/services/variable/convert:
+    post:
+      consumes:
+      - application/json
+      description: 转换变量KV和Yaml
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      tags:
+      - service
+  /api/aslan/service/services/yaml:
+    post:
+      consumes:
+      - application/json
+      description: Load Kube工作加载Yaml
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/service.LoadKubeWorkloadsYamlReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/service/services/yaml/validator:
+    put:
+      consumes:
+      - application/json
+      description: 修改yaml变量
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/service/template/load:
+    post:
+      consumes:
+      - application/json
+      description: Load service from yaml template
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Load service from yaml template
+      tags:
+      - service
+  /api/aslan/service/template/reload:
+    post:
+      consumes:
+      - application/json
+      description: Reload service from yaml template
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Reload service from yaml template
+      tags:
+      - service
+  /api/aslan/service/workloads:
+    post:
+      consumes:
+      - application/json
+      description: 创建K8s工作负载
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+    put:
+      consumes:
+      - application/json
+      description: 修改K8s工作负载
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+  /api/aslan/system/install:
+    delete:
+      consumes:
+      - application/json
+      description: 删除软件包
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - system
+    post:
+      consumes:
+      - application/json
+      description: 创建软件包
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - system
+    put:
+      consumes:
+      - application/json
+      description: 软件包列表
+      parameters:
+      - description: available
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - system
+  /api/aslan/system/install/:name/:version:
+    put:
+      consumes:
+      - application/json
+      description: 软件包详情
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: version
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - system
+  /api/aslan/system/proxy/config:
+    get:
+      consumes:
+      - application/json
+      description: 获取代理配置
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - proxy
+  /api/aslan/system/proxyManage:
+    get:
+      consumes:
+      - application/json
+      description: 获取代理配置列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - system
+    post:
+      consumes:
+      - application/json
+      description: 创建代理配置
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - system
+  /api/aslan/system/proxyManage/:id:
+    delete:
+      consumes:
+      - application/json
+      description: 删除代理配置
+      parameters:
+      - description: id
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - system
+    get:
+      consumes:
+      - application/json
+      description: 修改代理配置
+      parameters:
+      - description: id
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - system
+  /api/aslan/system/proxyManage/connectionTest:
+    post:
+      consumes:
+      - application/json
+      description: 测试代理配置
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - system
+  /api/aslan/system/registry:
+    get:
+      consumes:
+      - application/json
+      description: 镜像仓库列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 镜像仓库
+  /api/aslan/system/registry/images:
+    post:
+      consumes:
+      - application/json
+      description: 镜像列表
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 镜像仓库
+  /api/aslan/system/registry/images/repos/:name:
+    get:
+      consumes:
+      - application/json
+      description: 获取镜像仓库列表
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 镜像仓库
+  /api/aslan/system/registry/namespaces:
+    get:
+      consumes:
+      - application/json
+      description: 获取镜像仓库的namespace列表
+      parameters:
+      - description: encryptedKey
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 镜像仓库
+    post:
+      consumes:
+      - application/json
+      description: 创建镜像仓库的namespace
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 镜像仓库
+  /api/aslan/system/registry/namespaces/:id:
+    delete:
+      consumes:
+      - application/json
+      description: 删除镜像仓库的namespace
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 镜像仓库
+    put:
+      consumes:
+      - application/json
+      description: 修改镜像仓库的namespace
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 镜像仓库
+  /api/aslan/system/registry/namespaces/default:
+    get:
+      consumes:
+      - application/json
+      description: 获取默认镜像仓库的namespace
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 镜像仓库
+  /api/aslan/system/registry/namespaces/specific/:id:
+    get:
+      consumes:
+      - application/json
+      description: 获取镜像仓库的namespace
+      parameters:
+      - description: id
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 镜像仓库
+  /api/aslan/system/registry/release/repos:
+    delete:
+      consumes:
+      - application/json
+      description: 查询所有的镜像仓库列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 镜像仓库
+  /api/aslan/system/s3storage:
+    get:
+      consumes:
+      - application/json
+      description: 对象存储列表
+      parameters:
+      - description: encryptedKey
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 对象存储
+    post:
+      consumes:
+      - application/json
+      description: 创建对象存储
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 对象存储
+  /api/aslan/system/s3storage/:id:
+    delete:
+      consumes:
+      - application/json
+      description: 删除对象存储
+      parameters:
+      - description: id
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 对象存储
+    get:
+      consumes:
+      - application/json
+      description: 获取对象存储
+      parameters:
+      - description: id
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 对象存储
+    put:
+      consumes:
+      - application/json
+      description: 修改对象存储
+      parameters:
+      - description: id
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 对象存储
+  /api/aslan/system/webhook/config:
+    get:
+      consumes:
+      - application/json
+      description: Get webhook config
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.GetWebhookConfigReponse'
+      summary: Get webhook config
+      tags:
+      - system
+  /api/aslan/template/yaml:
+    post:
+      consumes:
+      - application/json
+      description: Create yaml template
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/template.YamlTemplate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Create yaml template
+      tags:
+      - template
+  /api/aslan/template/yaml/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get yaml template detail
+      parameters:
+      - description: template id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get yaml template detail
+      tags:
+      - template
+    put:
+      consumes:
+      - application/json
+      description: Update yaml template
+      parameters:
+      - description: template id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/template.YamlTemplate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Update yaml template
+      tags:
+      - template
+  /api/aslan/template/yaml/{id}/variable:
+    put:
+      consumes:
+      - application/json
+      description: Update yaml template variable
+      parameters:
+      - description: template id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/template.YamlTemplate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Update yaml template variable
+      tags:
+      - template
+  /api/aslan/template/yaml/validateVariable:
+    post:
+      consumes:
+      - application/json
+      description: Validate template varaibles
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.getYamlTemplateVariablesReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Validate template varaibles
+      tags:
+      - service
+  /api/aslan/workflow/v4/filterEnv:
+    post:
+      consumes:
+      - application/json
+      description: Get filtered env services
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      tags:
+      - workflow
+  /api/v1/picket/projects:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 删除项目
+    get:
+      consumes:
+      - application/json
+      description: 获取项目列表
+      parameters:
+      - description: body
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+    post:
+      consumes:
+      - application/json
+      description: 创建标准的模版项目
+      parameters:
+      - description: body
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/v1/picket/projects/detail:
+    get:
+      consumes:
+      - application/json
+      description: 获取项目列表
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/v1/picket/projects/globalVariable:
+    get:
+      consumes:
+      - application/json
+      description: Open API获取全局变量
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+  /api/v1/picket/projects/init/helm:
+    post:
+      consumes:
+      - application/json
+      description: 初始化helm项目
+      parameters:
+      - description: body
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/service.OpenAPIInitializeProjectReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - ""
+  /api/v1/picket/projects/init/yaml:
+    post:
+      consumes:
+      - application/json
+      description: 初始化Yaml项目
+      parameters:
+      - description: body
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/service.OpenAPIInitializeProjectReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+      tags:
+      - 产品
+swagger: "2.0"
