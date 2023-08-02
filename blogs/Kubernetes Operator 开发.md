@@ -234,8 +234,6 @@ type client struct {
 
 
 
-
-
 ### **Kubebuilder 开发**
 
 ```shell
@@ -247,26 +245,24 @@ cd $GOPATH/src/projectName
 #使用 demo.kubebuilder.io 域，所有的 API 组将是<group>.demo.kubebuilder.io.
 
 #创建项目
-kubebuilder init --domain demo.kubebuilder.io 
+kubebuilder init --domain app.kubebuilder.io --repo=github.com/AnAnonymousFriend/KubeMin-Cli --owner kai
 
 #创建API(APP)
 #gourp（资源组）
-kubebuilder create api --group demoApp --version v1 --kind Demo
+Kubebuilder create api apps --version v1 --kind Application
 
 #更改Crd后需要输入命令生成
 make manifests generate
 
 #安装CRD
 make install
-```
 
-
-
-```shell
 #启动服务
 cd $GOPATH/src/projectName
 make run
 ```
+
+Demo 详情见：https://github.com/AnAnonymousFriend/KubeMin-Cli/tree/master/examples
 
 
 

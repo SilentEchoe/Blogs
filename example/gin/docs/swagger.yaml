@@ -54,6 +54,19 @@ definitions:
     x-enum-varnames:
     - CollaborationShare
     - CollaborationNew
+  handler.ApproveRequest:
+    properties:
+      approve:
+        type: boolean
+      comment:
+        type: string
+      stage_name:
+        type: string
+      task_id:
+        type: integer
+      workflow_name:
+        type: string
+    type: object
   handler.BranchesRequest:
     properties:
       branches:
@@ -91,6 +104,17 @@ definitions:
     required:
     - content
     - variable_yaml
+    type: object
+  handler.listWorkflowV4Query:
+    properties:
+      page_num:
+        type: integer
+      page_size:
+        type: integer
+      project:
+        type: string
+      view_name:
+        type: string
     type: object
   handler.repoInfo:
     properties:
@@ -3211,15 +3235,889 @@ paths:
       summary: Validate template varaibles
       tags:
       - service
+  /api/aslan/workflow/v4:
+    get:
+      consumes:
+      - application/json
+      description: 获取工作流
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/handler.listWorkflowV4Query'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+    post:
+      consumes:
+      - application/json
+      description: 创建工作流
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4//cron/preset:
+    get:
+      consumes:
+      - application/json
+      description: 获取工作流中预设的任务
+      parameters:
+      - description: workflowName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: cronID
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4//webhook/:workflowName:
+    post:
+      consumes:
+      - application/json
+      description: 创建工作流的webhook
+      parameters:
+      - description: workflowName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+    put:
+      consumes:
+      - application/json
+      description: 修改工作流的webhook
+      parameters:
+      - description: workflowName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/:name:
+    delete:
+      consumes:
+      - application/json
+      description: 删除工作流
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+    put:
+      consumes:
+      - application/json
+      description: 修改工作流
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/{name}/workflowtask/field:
+    get:
+      consumes:
+      - application/json
+      description: 获取工作流任务自定义字段
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+    post:
+      consumes:
+      - application/json
+      description: 设置工作流任务自定义字段
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/all:
+    get:
+      consumes:
+      - application/json
+      description: 列出所有可用的工作流程
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/check/:name:
+    post:
+      consumes:
+      - application/json
+      description: 检查工作流审批
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/cron:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有工作流中的任务
+      parameters:
+      - description: workflowName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+    put:
+      consumes:
+      - application/json
+      description: 修改工作流中的任务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/cron/:workflowName:
+    post:
+      consumes:
+      - application/json
+      description: 创建工作流中的任务
+      parameters:
+      - description: workflowName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/cron/:workflowName/trigger/:cronID:
+    delete:
+      consumes:
+      - application/json
+      description: 删除工作流中的任务
+      parameters:
+      - description: workflowName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
   /api/aslan/workflow/v4/filterEnv:
     post:
       consumes:
       - application/json
-      description: Get filtered env services
+      description: 获取过滤过的环境服务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/lint:
+    post:
+      consumes:
+      - application/json
+      description: 链接工作流
       parameters:
-      - description: body
+      - description: 入参
         in: body
-        name: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/mse/:envName/tag:
+    get:
+      consumes:
+      - application/json
+      description: 在Env中获取Mse标签
+      parameters:
+      - description: envName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/mse/offline:
+    get:
+      consumes:
+      - application/json
+      description: 获取Mse离线资源
+      parameters:
+      - description: grayTag
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: envName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/mse/render:
+    post:
+      consumes:
+      - application/json
+      description: 渲染Mse服务的Yaml
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/name/:name:
+    get:
+      consumes:
+      - application/json
+      description: 获取工作流仓库索引
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: encryptedKey
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/output/:jobName:
+    post:
+      consumes:
+      - application/json
+      description: 获取工作流全局变量
+      parameters:
+      - description: jobName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/patch:
+    get:
+      consumes:
+      - application/json
+      description: 获取补丁参数
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/preset/:name:
+    get:
+      consumes:
+      - application/json
+      description: 获取工作流预设值
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      - description: encryptedKey
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/repo/:jobName:
+    post:
+      consumes:
+      - application/json
+      description: 获取工作流仓库索引
+      parameters:
+      - description: jobName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/sharestorage:
+    get:
+      consumes:
+      - application/json
+      description: 检查共享存储是否启用
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/trigger:
+    get:
+      consumes:
+      - application/json
+      description: 获取能触发的工作流
+      parameters:
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/webhook:
+    get:
+      consumes:
+      - application/json
+      description: 获取工作流预设值
+      parameters:
+      - description: workflowName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/webhook/:workflowName/trigger/:triggerName:
+    delete:
+      consumes:
+      - application/json
+      description: 删除工作流的webhook
+      parameters:
+      - description: workflowName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workflow
+  /api/aslan/workflow/v4/workflowtask:
+    post:
+      consumes:
+      - application/json
+      description: 创建自定义工作流任务
+      parameters:
+      - description: commonmodels.WorkflowV4
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/workflow/v4/workflowtask//retry/workflow/:workflowName/task/:taskID:
+    post:
+      consumes:
+      - application/json
+      description: 重试工作流任务
+      parameters:
+      - description: taskID
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      - description: workflowName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/workflow/v4/workflowtask/approve:
+    post:
+      consumes:
+      - application/json
+      description: 批准阶段
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/handler.ApproveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/workflow/v4/workflowtask/breakpoint/:workflowName/:jobName/task/:taskID/:position:
+    post:
+      consumes:
+      - application/json
+      description: 设置工作流任务断点
+      parameters:
+      - description: taskID
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/workflow/v4/workflowtask/clone/workflow/:workflowName/task/:taskID:
+    get:
+      consumes:
+      - application/json
+      description: 获取工作流任务
+      parameters:
+      - description: taskID
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      - description: workflowName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/workflow/v4/workflowtask/debug/:workflowName/:jobName/task/:taskID/:position:
+    delete:
+      consumes:
+      - application/json
+      description: 停止调试工作流任务
+      parameters:
+      - description: taskID
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/workflow/v4/workflowtask/debug/:workflowName/task/:taskID:
+    post:
+      consumes:
+      - application/json
+      description: 开启调试工作流任务
+      parameters:
+      - description: taskID
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/workflow/v4/workflowtask/filter/workflow/:name:
+    get:
+      consumes:
+      - application/json
+      description: 获取工作流任务过滤器
+      parameters:
+      - description: name
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      - description: queryType
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      - description: jobName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/workflow/v4/workflowtask/trigger:
+    post:
+      consumes:
+      - application/json
+      description: 通过内置触发器创建工作流任务
+      parameters:
+      - description: commonmodels.WorkflowV4
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      - description: triggerName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/workflow/v4/workflowtask/workflow/:workflowName/task/:taskID:
+    delete:
+      consumes:
+      - application/json
+      description: 取消工作流任务
+      parameters:
+      - description: taskID
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      - description: username
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      - description: projectName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      - description: workflowName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+    get:
+      consumes:
+      - application/json
+      description: 获取工作流任务
+      parameters:
+      - description: taskID
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      - description: workflowName
+        in: body
+        name: json
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/workflow/v4/workflowtask/workflow/:workflowName/taskId/:taskId/job/:jobName:
+    get:
+      consumes:
+      - application/json
+      description: 获取工作流V4工件文件内容
+      parameters:
+      - description: 入参
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/handler.ApproveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - service
+  /api/aslan/workflow/v4/yamlComparison:
+    post:
+      consumes:
+      - application/json
+      description: 比较Helm Service在Env中的Yaml
+      parameters:
+      - description: projectName
+        in: body
+        name: json
         required: true
         schema:
           type: string
