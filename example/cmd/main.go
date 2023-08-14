@@ -24,15 +24,3 @@ func main() {
 		fmt.Println(err)
 	}
 }
-
-type Users struct {
-	UserId    int    `json:"user_id"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Summary   string `json:"summary"`
-}
-
-type Regions struct {
-	RegionId int `json:"region_id"`
-	UserId   int `json:"user_id"`
-}
