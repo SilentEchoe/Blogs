@@ -429,7 +429,7 @@ DetlaFIFO 同时实现了 Queue 和 Store 接口，使用 Deltas 保存了对象
 
 store接口中的`Add() Update()`等函数都会调用`queueActionLocked`函数
 
-`queueActionLocked`函数的作用主要是构建一个Delta添加到[]Deltas中,其中包含一个去重判断,如果已经存在,则只更新items map中对应这个key的[]Deltas
+`queueActionLocked`函数的作用主要是构建一个Delta添加到Deltas中,其中包含一个去重判断,如果已经存在,则只更新items map中对应这个key的Deltas
 
 ```go
 func (f *DeltaFIFO) queueActionLocked(actionType DeltaType, obj interface{}) error {
