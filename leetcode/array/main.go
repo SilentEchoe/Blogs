@@ -19,9 +19,13 @@ package main
 import "fmt"
 
 func main() {
-	NumArray([]int{3, 5, 2, -2, 4, 1})
-	sum := sumRange(0, 3)
-	fmt.Println(sum)
+	slice := []int{1, 2, 3, 4, 5}
+	slice2 := slice[0:3]
+	fmt.Println(slice2)
+
+	//NumArray([]int{3, 5, 2, -2, 4, 1})
+	//sum := sumRange(0, 3)
+	//fmt.Println(sum)
 }
 
 // Code.167 两数之和-输入有序数组

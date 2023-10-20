@@ -34,6 +34,8 @@ func NewIstioClient() *istio.Clientset {
 		panic(err)
 	}
 
+	//todo
+
 	return istioClient
 
 }
