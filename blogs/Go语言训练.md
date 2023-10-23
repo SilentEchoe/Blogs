@@ -576,13 +576,21 @@ func main() {
 
 
 
+**执行顺序**
+
+一个函数中，多个 defer 的执行顺序为 “后进先出”，但是这里要注意，如果函数中包含 return ，会先执行 return ，再执行 defer 。如果函数中包含 **panic** 函数，那么会先执行 defer 函数，最后再执行 panic 函数。
+
+**defer声明时会先计算确定参数的值，defer推迟执行的仅是其函数体。**
+
+
+
 ## panic 和 recover
 
 `panic` 能够改变程序的控制流，调用 `panic` 后会立刻停止执行当前函数的剩余代码，并在当前 Goroutine 中递归执行调用方的 `defer`；
 
 `recover` 可以中止 `panic` 造成的程序崩溃。它是一个只能在 `defer` 中发挥作用的函数，在其他作用域中调用不会发挥作用；
 
-也就是说: panic 只会触发当前Goroutine的defer ，而 recover 只有在defer 中调用才会生效
+也就是说: panic 只会触发当前 Goroutine 的 defer ，而 recover 只有在defer 中调用才会生效
 
 panic 允许在 defer 中嵌套多次调用。
 
@@ -618,23 +626,81 @@ defer func() {
 panic("异常信息")
 ```
 
+在 Goroutine 中使用 recover 和 panic
 
+```go
+func main() {
+	go test()
+	fmt.Println("in main")
+	time.Sleep(2 * time.Second)
+}
 
+func test() {
+	defer func() { 
+		if err := recover(); err != nil {
+			fmt.Println("err info:", err) 
+		}
+	}()
 
-
-
-
-# 算法
-
-## 二分查找
-
-当列表是有序的情况下，使用二分查找才有效。
-
+	panic("test 异常信息")
+}
 ```
-// 伪代码
 
-mid := (star + end )/ 2  //自动向下取整
+
+
+
+
+# 并发编程
+
+## 上下文Conetext
+
+Context 是Go 语言中独特的设计。它用来设置截止日期，同步信号，传递请求相关值的结构体。
+
+在 Goroutine 构成的树形结构中对信号进行同步以减少计算资源的浪费是 [`context.Context`](https://draveness.me/golang/tree/context.Context) 的最大作用。Go 服务的每一个请求都是通过单独的 Goroutine 处理的[2](https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-context/#fn:2)，HTTP/RPC 请求的处理器会启动新的 Goroutine 访问数据库和其他服务。
+
+我们可能会创建多个 Goroutine 来处理一次请求，而 [`context.Context`](https://draveness.me/golang/tree/context.Context) 的作用是在不同 Goroutine 之间同步请求特定数据、取消信号以及处理请求的截止日期。
+
+每一个 [`context.Context`](https://draveness.me/golang/tree/context.Context) 都会从最顶层的 Goroutine 一层一层传递到最下层。[`context.Context`](https://draveness.me/golang/tree/context.Context) 可以在上层 Goroutine 执行出现错误时，将信号及时同步给下层。
+
+这样设计的好处就是：如果最上层的Goroutine出现某些原因执行失败了，可以通过 `context.Context`在下层及时停掉无用的工作以减少额外资源的消耗。
+
+多个Goroutine同时订阅 ctx.Done()管道中的消息，一旦接受道取消信号就立即停止当前正在执行的工作。
+
+```go
+func main() {
+	ctx, canel := context.WithTimeout(context.Background(), 1*time.Second) // 设置一个超时的上下文
+	defer canel()
+
+  // 设置子任务超时时间
+	go handle(ctx, 500*time.Millisecond)
+	select {
+	case <-ctx.Done():
+		fmt.Println("main", ctx.Err())
+	}
+
+}
+
+func handle(ctx context.Context, duration time.Duration) {
+	select {
+	case <-ctx.Done():
+		fmt.Println("handle", ctx.Err())
+
+	case <-time.After(duration):
+		fmt.Println("process request with", duration)
+	}
+}
 ```
+
+从源代码来看，[`context.Background`](https://draveness.me/golang/tree/context.Background) 和 [`context.TODO`](https://draveness.me/golang/tree/context.TODO) 也只是互为别名，没有太大的差别，只是在使用和语义上稍有不同：
+
+- [`context.Background`](https://draveness.me/golang/tree/context.Background) 是上下文的默认值，所有其他的上下文都应该从它衍生出来；
+- [`context.TODO`](https://draveness.me/golang/tree/context.TODO) 应该仅在不确定应该使用哪种上下文时使用；
+
+在多数情况下，如果当前函数没有上下文作为入参，我们都会使用 [`context.Background`](https://draveness.me/golang/tree/context.Background) 作为起始的上下文向下传递。
+
+Go 语言中的 [`context.Context`](https://draveness.me/golang/tree/context.Context) 的主要作用还是在多个 Goroutine 组成的树中同步取消信号以减少对资源的消耗和占用，虽然它也有传值的功能，但是这个功能我们还是很少用到。
+
+在真正使用传值的功能时我们也应该非常谨慎，使用 [`context.Context`](https://draveness.me/golang/tree/context.Context) 传递请求的所有参数一种非常差的设计，比较常见的使用场景是传递请求对应用户的认证令牌以及用于进行分布式追踪的请求 ID。
 
 
 
@@ -769,89 +835,6 @@ Go 内建的 map 类型不是线程安全的，而 [Sync.Map](http://sync.Map) �
 
 
 
-## **接口**
-
-接口的本质是引入一个新的中间层，调用方通过接口与具体实现分离，解除上下游的耦合，上层模块不需要依赖下层的具体模块，只需要依赖一个约定好的接口。
-
-Go 语言中的接口有两种表达形式，一种是正常的接口类型，另外一种不包含任何方法的接口在实现时，使用了特殊的类型。
-
-> interface{} 类型不是任意类型。如果将类型转换成了 interface{} 类型，变量在运行期间的类型也会发生变化，获取变量类型时会得到 interface{}
-
-
-
-**Go 语言的接口类型不是任意类型，它很有可能向方法传入参数之后，变量的赋值，类型转换时，发生隐式的类型转换。**
-
-Go 1.18 支持泛型后，Go interface 的意义已经彻底被改变了。**旧接口定义了方法集合，现接口定义了类型集合。**
-
-interface 的定义也扩展了。先前，接口定义只能包含方法元素（method element），现在的接口除了方法元素外，还可以包含类型元素。
-
-
-
-**interface 包含的元素类型必须是底层类型，而且不能是接口类型。**
-
-```go
-type MyInt int
-
-type IO interface {
-	~MyInt // 错误，不能这样使用，只能是底层类型
-}
-```
-
-
-
-**联合（union） 类型元素不能是类型参数**
-
-```go
-// 错误 interface 里面的 K 是类型参数
-func I1 [K any, V interface { K }](){
-}
-
-// 错误, interface{ nt | K }中K 是类型参数
-func I2[K any, V interface{ int | K }]() {
-}
-```
-
-
-
-**联合类型元素的非接口元素必须是两两不相交**
-
-比如 int | string 的交集是空集
-
-
-
-**联合类型元素如果包含多余一个元素，不能包含非空方法的接口类型，也不能是 comparable 或者嵌入 comparable**
-
-```go
-// 编译没问题，只包含一个元素
-func I9[K interface{ io.Reader }]() {
-}
-
-// 错误!不能编译。因为包含了两个元素，而且无论是`io.Reader`还是`io.Writer`都包含方法
-func I10[K interface{ io.Reader | io.Writer }]() {
-}
-
-// 编译正常，因为这是正常的接口，没有联合元素
-func I11[K interface {
-	io.Reader
-	io.Writer
-}]() {
-}
-
-// 错误! 联合类型多于一个元素，并且io.Reader包含方法
-func I12[K interface{ io.Reader | int }]() {
-}
-
-// 错误! 不能编译.因为联合元素大于一个，并且不能是comparable
-func I13[K comparable | int]() {
-}
-
-// 错误! 不能编译.因为联合元素大于一个，并且元素不能嵌入comparable
-func I14[K interface{ comparable } | int]() {
-}
-```
-
-
-
 ## **反射**
 
 Go 语言中反射的第一法则：**我们能将 Go 语言的 interface{} 变量转换成反射对象。因为函数的调用都是值传递，所以变量类型在底层函数调用时进行类型转换。所以会从基本类型转换到 interface{}**
@@ -864,25 +847,9 @@ Go 语言中反射的第一法则：**我们能将 Go 语言的 interface{} 变�
 
 
 
-## **panic 和 recover 关键字**
-
-panic 只会触发当前 Goroutine 的 defer
-
-recover 只有在 defer 中调用才会生效
-
-panic 允许在 defer 中嵌套多次调用
 
 
 
-## **defer**
-
-使用 defer 最常见的场景是在函数调用结束后完成一些收尾工作，例如在 defer 中回滚数据库的事务。
-
-**执行顺序**
-
-一个函数中，多个 defer 的执行顺序为 “后进先出”，但是这里要注意，如果函数中包含 return ，会先执行 return ，再执行 defer 。如果函数中包含 **panic** 函数，那么会先执行 defer 函数，最后再执行 panic 函数。
-
-**defer声明时会先计算确定参数的值，defer推迟执行的仅是其函数体。**
 
 
 
