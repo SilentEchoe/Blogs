@@ -704,7 +704,64 @@ Go 语言中的 [`context.Context`](https://draveness.me/golang/tree/context.Con
 
 
 
+## Sync.Mutex 
 
+互斥锁是并发控制的一个基本手段，是为了避免竞争而建立的一种并发控制机制。当一个公共变量被多个Goroutine所访问，为了避免并发访问导致意想不到的结果，使用互斥锁让公共变量只能同时由一个线程持有。
+
+当一个变量被某个线程持有时，其他线程如果想访问这个变量，会访问失败或等待。直到持有这个变量的线程释放**锁**，其他线程才有机会获取这个变量。
+
+Mutex 是使用最广泛的同步原语，所以我们从互斥锁开始，再到读写锁，并发编排等。在Go标准库中 sync 提供锁等一系列同步原语。
+
+```go
+func main() {
+	var wg sync.WaitGroup
+	count := 0
+	wg.Add(10000)
+	for i := 0; i < 10000; i++ {
+		go func() {
+			count++
+			wg.Done()
+		}()
+	}
+
+	wg.Wait()
+	fmt.Println(count)
+}
+
+//输出：
+9347
+```
+
+上述代码中使用了多个协程访问同一个变量，可以看到输出结果是9347，这并不是我们想要的。如果使用`mu.Lock()`和 `mu.unLock()` 来安全访问公共变量：
+
+```go
+func main() {
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+	count := 0
+	wg.Add(10000)
+	for i := 0; i < 10000; i++ {
+		go func() {
+			mu.Lock()
+			count++
+			mu.Unlock()
+			wg.Done()
+		}()
+	}
+
+	wg.Wait()
+	fmt.Println(count)
+}
+
+//输出：
+10000
+```
+
+
+
+
+
+还有一种方式是：Mutex 嵌入
 
 
 
