@@ -383,6 +383,56 @@ false
 
 
 
+## For 和 range
+
+对于数组和切片来说，Go 语言有三种不同的遍历方式，这三种不同的遍历方式分别对应着代码中的不同条件
+
+1. 分析遍历数组和切片清空元素的情况；
+
+   Go 语言会直接使用内置函数(runtime函数)清空目标数组内存空间中的全部数据，并在执行完成后更新遍历数组的索引。
+
+2. 分析使用 `for range a {}` 遍历数组和切片，不关心索引和数据的情况；
+
+3. 分析使用 `for i := range a {}` 遍历数组和切片，只关心索引的情况；
+
+4. 分析使用 `for i, elem := range a {}` 遍历数组和切片，关心索引和数据的情况；
+
+
+
+如果同时遍历索引和元素的range循环时，Go会额外创建一个新的变量存储切片中的元素，循环中使用的这个变量会在每一次迭代被重新赋值而覆盖，赋值时也会触发拷贝。
+
+```go
+// 错误写法
+func main() {
+	arr := []int{1, 2, 3}
+	newArr := []*int{}
+	for _, v := range arr {
+		newArr = append(newArr, &v)
+	}
+	for _, v := range newArr {
+		fmt.Println(*v)
+	}
+}
+
+
+
+// 正确写法
+func main() {
+	arr := []int{1, 2, 3}
+	newArr := []*int{}
+	for i, _ := range arr {
+		newArr = append(newArr, &arr[i])
+	}
+	for _, v := range newArr {
+		fmt.Println(*v)
+	}
+}
+```
+
+
+
+
+
 # 算法
 
 ## 二分查找
