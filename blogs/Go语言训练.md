@@ -431,6 +431,197 @@ func main() {
 
 
 
+## Select
+
+Go 语言中的 `select` 也能够让 Goroutine 同时等待多个 Channel 可读或者可写，在多个文件或者 Channel状态改变之前，`select` 会一直阻塞当前线程或者 Goroutine。
+
+`select` 是与 `switch` 相似的控制结构，与 `switch` 不同的是，`select` 中虽然也有多个 `case`，但是这些 `case` 中的表达式必须都是 Channel 的收发操作。
+
+```go
+func fibonacci(c, quit chan int) {
+	x, y := 0, 1
+	for {
+		select {
+		case c <- x:
+			x, y = y, x+y
+
+		case <-quit:
+			fmt.Println("quit")
+			return
+		}
+	}
+}
+```
+
+1. `select` 能在 Channel 上进行非阻塞的收发操作；
+2. `select` 在遇到多个 Channel 同时响应时，会随机执行一种情况；
+
+
+
+### 非阻塞的收发
+
+在通常情况下，`select` 语句会阻塞当前 Goroutine 并等待多个 Channel 中的一个达到可以收发的状态。但是如果 `select` 控制结构中包含 `default` 语句，那么这个 `select` 语句在执行时会遇到以下两种情况：
+
+1. 当存在可以收发的 Channel 时，直接处理该 Channel 对应的 `case`；
+2. 当不存在可以收发的 Channel 时，执行 `default` 中的语句；
+
+```
+func main() {
+	ch := make(chan int)
+	select {
+	case i := <-ch:
+		fmt.Println("i:", i)
+	default:
+		fmt.Println("default")
+	}
+}
+```
+
+随机执行
+
+`select` 在遇到多个 `<-ch` 同时满足可读或者可写条件时会随机选择一个 `case` 执行其中的代码。
+
+```go
+func main() {
+	ch := make(chan int)
+	go func() {
+		for range time.Tick(1 * time.Second) {
+			ch <- 0
+		}
+	}()
+
+	for {
+		select {
+		case <-ch:
+			println("case1")
+		case <-ch:
+			println("case2")
+		}
+	}
+}
+
+//输出:
+case2
+case1
+case2
+case2
+case1
+case2
+...
+```
+
+两个 `case` 都是同时满足执行条件的，如果我们按照顺序依次判断，那么后面的条件永远都会得不到执行，而随机的引入就是为了避免饥饿问题的发生。
+
+第一种情况：`select` 不存在任何的 `case`，空的 `select` 语句会直接阻塞当前 Goroutine，导致 Goroutine 进入无法被唤醒的永久休眠状态。
+
+第二种情况：`select` 只存在一个 `case`，编译器会将`select` 语句改写为 if 条件语句。当 `case` 中的 Channel 是空指针时，会直接挂起当前 Goroutine 并陷入永久休眠。
+
+第三种情况：`select` 存在两个 `case`，其中一个 `case` 是 `default`。编译器认为这是一次非阻塞的收发操作，该函数会将 `case` 中的所有 Channel 都转换成指向 Channel 的地址。
+
+第四种情况：`select` 存在多个 `case`。编译器会编译成多个 if 语句执行对应 case 的代码。
+
+
+
+## Defer
+
+Go 语言的 `defer` 会在当前函数返回前执行传入的函数，它会经常被用于关闭文件描述符、关闭数据库连接以及解锁资源。
+
+使用`defer`一般是在函数调用结束后完成一些收尾工作。
+
+### 作用域
+
+向 `defer` 关键字传入的函数会在函数返回之前运行。假设我们在 `for` 循环中多次调用 `defer` 关键字：
+
+可以看到下例代码输出是倒序，可以把`defer`的执行顺序看成一个出栈的顺序，即最后加入栈的最先出。是这里要注意，如果函数中包含 return ，会先执行 return ，再执行 defer 。如果函数中包含 **panic** 函数，那么会先执行 defer 函数，最后再执行 panic 函数。
+
+```go
+func main() {
+	for i := 0; i < 5; i++ {
+		defer fmt.Println(i)
+	}
+}
+
+
+// 输出
+4
+3
+2
+1
+0
+
+
+func main() {
+	for i := 0; i < 5; i++ {
+		if i == 4 {
+			fmt.Println("结束")
+			return
+		}
+		defer fmt.Println(i)
+	}
+}
+
+// 输出
+结束
+3
+2
+1
+0
+```
+
+同时`defer` 传入的函数不是在退出代码块的作用域时执行的，它只会在当前函数和方法返回之前被调用。
+
+`defer`关键字会拷贝函数中引用外部参数，在调用`defer`关键字的时候就会进行计算(defer也继承了函数调用传值的特性)。
+
+默认情况下Go语言中defer结构体都会在堆上分配，分配在堆上的方案是一个保底方案。但是除了分配的位置不同，本质上没有什么不同，除了分配在栈上可以节约额外开销。
+
+
+
+## panic 和 recover
+
+`panic` 能够改变程序的控制流，调用 `panic` 后会立刻停止执行当前函数的剩余代码，并在当前 Goroutine 中递归执行调用方的 `defer`；
+
+`recover` 可以中止 `panic` 造成的程序崩溃。它是一个只能在 `defer` 中发挥作用的函数，在其他作用域中调用不会发挥作用；
+
+也就是说: panic 只会触发当前Goroutine的defer ，而 recover 只有在defer 中调用才会生效
+
+panic 允许在 defer 中嵌套多次调用。
+
+```go
+func main() {
+	defer println("in main")
+
+	go func() {
+		defer println("in goroutine")
+		panic("error !")
+	}()
+
+	time.Sleep(1 * time.Second)
+}
+
+// 输出
+in goroutine
+panic: error !
+
+```
+
+要注意：main函数中的defer 语句没有执行，执行的只有当前Goroutine 中的 `defer`。多个 Goroutine 之间没有太多的关联，一个 Goroutine 在 `panic` 时也不应该执行其他 Goroutine 的延迟函数。
+
+`recover` 只有在发生 `panic` 之后调用才会生效：
+
+```go
+// 必须要先声明defer，否则不能捕获到panic异常
+defer func() { 
+		if err := recover(); err != nil {
+			fmt.Println("err info:", err) // 这里的err其实就是panic传入的内容
+		}
+	}()
+panic("异常信息")
+```
+
+
+
+
+
 
 
 # 算法
@@ -670,10 +861,6 @@ Go 语言中反射的第一法则：**我们能将 Go 语言的 interface{} 变�
 第三法则：我们得到的反射对象跟原对象没有任何关系，那么直接修改反射对象无法改变原变量，程序为了防止错误就会崩溃。
 
 
-
-## Select
-
-同时有多个 case 就绪时 select 会**随机**选择一个 case 执行其中的代码，这是为了避免按照顺序执行，后面的条件永远得不到执行，引入随机性是为了避免饥饿问题发生。 
 
 
 
