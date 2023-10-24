@@ -704,6 +704,12 @@ Go 语言中的 [`context.Context`](https://draveness.me/golang/tree/context.Con
 
 
 
+## Channel
+
+
+
+
+
 ## Sync.Mutex 
 
 互斥锁是并发控制的一个基本手段，是为了避免竞争而建立的一种并发控制机制。当一个公共变量被多个Goroutine所访问，为了避免并发访问导致意想不到的结果，使用互斥锁让公共变量只能同时由一个线程持有。
