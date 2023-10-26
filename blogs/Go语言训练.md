@@ -706,6 +706,89 @@ Go 语言中的 [`context.Context`](https://draveness.me/golang/tree/context.Con
 
 ## Channel
 
+Channel 是Go语言中比较核心的数据结构，它用于Goroutine之间的通信。Go语言中核心的并发设计是：**不要通过共享内存的方式进行通信，而是应该通过通信的方式共享内存。**虽然在Go语言中也能使用共享内存加互斥锁进行通信，但是Go语言提供了一种不同的并发模型：
+
+通信顺序进程(Communicating sequential processes，CSP)，Goroutine 和 Channel 分别对应 CSP 中的实体和传递信息的媒介，Goroutine 之间会通过 Channel 传递数据。
+
+**Channel 几种应用场景：**
+
+1.数据交流：解决生产者-消费者问题，多个 Goroutine 可以并发当作生产者和消费者。
+
+2.数据传递：一个Goroutine将数据传递给另一个Goroutine，相当于把数据的所有权递交给其他人。
+
+3.信号通知：Goroutine可以将信号传递给一个或一组Goroutine。
+
+4.任务编排：可以让一组Goroutine按照一定的顺序并发串行执行。
+
+5.锁:利用 Channel 也可以实现互斥锁的机制。
+
+### Channel基础使用
+
+从某种程度上说，Channel 是一个用于同步和通信的有锁队列，因为在底层结构中包含了保护成员变量的互斥锁，使用互斥锁解决程序中可能存在的线程竞争问题是很常见的。但是锁导致的休眠和唤醒会带来额外的上下文切换，如果临界区过大，加锁解锁导致的额外的开销就会成为性能瓶颈。
+
+```go
+//创建Channel
+ch := make(chan int) // 创建一个无缓存区的管道
+ch := make(chan int, 10) // 创建一个有缓冲区的管道
+```
+
+Go语言中创建Channel有两种方式：
+
+1.创建一个无缓冲区的管道，这种情况下是同步的，即它是阻塞的，一个Goroutine想要通过一个无缓冲的Channel通信另一个Goroutine，只有它们同时准备好发收才能让工作继续下去，否则会阻塞。
+
+也就说一次只能像通道发送一个数据，只要这个数据没被接收那么所有的发送就被阻塞。
+
+```
+func main() {
+	// 创建一个无缓存的管道
+	ch := make(chan int)
+	go Producer(ch)
+	go Consumer(ch)
+
+	time.Sleep(1 * time.Second)
+}
+
+// Producer 生产者函数
+func Producer(c chan int) {
+	 c <- 1
+}
+
+// Consumer 消费者函数
+func Consumer(c chan int) {
+	// 消费管道里面的数据
+	fmt.Println("消费数据：", <-c)
+}
+```
+
+
+
+2.创建一个有缓冲区的管道，这种情况下它是异步的，
+
+
+
+
+
+
+
+chan 中的元素可以是任意类型，所以也可以是 chan 类型
+
+```go
+chan<- （chan int） // <- 和第一个chan结合
+chan<- （<-chan int） // 第一个<-和最左边的chan结合，第二个<-和左边第二个chan结合
+<-chan （<-chan int） // 第一个<-和最左边的chan结合，第二个<-和左边第二个chan结合 
+chan (<-chan int) // 因为括号的原因，<-和括号内第一个chan结合
+```
+
+如果 chan 中还有数据，那么从这个 chan 接收数据的时候就不会阻塞，如果 chan 还未达到设定的容量，给它发送数据也不会阻塞，否则机会阻塞。但是如果是一个无缓冲的 chan，那么只有读写都准备好了以后才不会阻塞。
+
+nil 是 chan的零值，对值是 nil 的 chan 的发送接收调用则总是会阻塞。
+
+
+
+
+
+
+
 
 
 
@@ -763,11 +846,15 @@ func main() {
 10000
 ```
 
+在Go语言中Mutex有两种模式，正常模式下锁的等待者会按照先进先出的顺序获取锁。但是一旦Goroutine 超过 1ms 没有获取到锁，它就会将当前互斥锁切换饥饿模式，防止部分 Goroutine 【饿死】，因为刚唤起的Goroutine与新创建的Goroutine 竞争时大概率获取不到锁。
+
+饥饿模式是为了保证互斥锁的公平性，在饥饿模式中，互斥锁会直接交给等待队列最前面的 Goroutine。新的 Goroutine 在该状态下不能获取锁、也不会进入自旋状态，它们只会在队列的末尾等待。如果一个 Goroutine 获得了互斥锁并且它在队列的末尾或者它等待的时间少于 1ms，那么当前的互斥锁就会切换回正常模式。
+
+与饥饿模式相比，正常模式下的互斥锁能够提供更好地性能，饥饿模式的能避免 Goroutine 由于陷入等待无法获取锁而造成的高尾延时。
 
 
 
 
-还有一种方式是：Mutex 嵌入
 
 
 
