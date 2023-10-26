@@ -738,31 +738,79 @@ Go语言中创建Channel有两种方式：
 
 也就说一次只能像通道发送一个数据，只要这个数据没被接收那么所有的发送就被阻塞。
 
-```
+```go
 func main() {
-	// 创建一个无缓存的管道
-	ch := make(chan int)
-	go Producer(ch)
-	go Consumer(ch)
+	var wg sync.WaitGroup
+	wg.Add(2)
+	ch := make(chan int) //创建无缓冲的通道 c
+	go func(c chan int) {
+		c <- 1
+		//time.Sleep(1 * time.Second)
+		fmt.Println("结束任务")
+		wg.Done()
+	}(ch)
 
-	time.Sleep(1 * time.Second)
-}
-
-// Producer 生产者函数
-func Producer(c chan int) {
-	 c <- 1
-}
-
-// Consumer 消费者函数
-func Consumer(c chan int) {
-	// 消费管道里面的数据
-	fmt.Println("消费数据：", <-c)
+	go func(c chan int) {
+		time.Sleep(10 * time.Second)
+		fmt.Println("消费：", <-c)
+		wg.Done()
+	}(ch)
+	wg.Wait()
 }
 ```
 
+上述代码中使用无缓冲的管道，通过代码执行可以发现，我们需要等待十秒才能看到输出，这是因为无缓冲管道必须发送方与接收方都准备好才能正常工作，否则就会阻塞，从输出的等待时间可以观察到，当接收方的Goroutine在经过十秒的线程休眠后才工作，于是发送方的Goroutine的“结束任务”打印才会和“消费:1”一起打印出来。
 
 
-2.创建一个有缓冲区的管道，这种情况下它是异步的，
+
+2.创建一个有缓冲区的管道，这种情况下它是异步的，这意味着发送方在容量足够的情况下，发送方Goroutine将值传递给Channel 时无需等待接收方Goroutine
+
+```go
+func main() {
+	var wg sync.WaitGroup
+	wg.Add(2)
+	ch := make(chan int,1) //创建缓冲为1的通道 
+	go func(c chan int) {
+		c <- 1
+		//time.Sleep(1 * time.Second)
+		fmt.Println("结束任务")
+		wg.Done()
+	}(ch)
+
+	go func(c chan int) {
+		time.Sleep(10 * time.Second)
+		fmt.Println("消费：", <-c)
+		wg.Done()
+	}(ch)
+	wg.Wait()
+}
+```
+
+将Channel 改为有缓冲的管道，可以看到马上输出"结束任务"，等待十秒后再输出"消费:1"。
+
+```go
+func main() {
+	var wg sync.WaitGroup
+	wg.Add(2)
+	ch := make(chan int, 1) //创建有缓冲的通道 
+	go func(c chan int) {
+		c <- 1
+		fmt.Println("任务1结束")
+		c <- 2
+		fmt.Println("任务2结束")
+		wg.Done()
+	}(ch)
+
+	go func(c chan int) {
+		time.Sleep(10 * time.Second)
+		fmt.Println("消费：", <-c)
+		wg.Done()
+	}(ch)
+	wg.Wait()
+}
+```
+
+略微修改后可以发现，当输出"任务1结束"后，需要等待十秒，然后输出"消费： 1"和"任务2结束"，这代表：**如果当前 Channel 的缓冲区已满，向该 Channel 发送数据则会阻塞。**
 
 
 
