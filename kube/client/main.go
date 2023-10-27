@@ -36,7 +36,8 @@ func main() {
 
 	// 注册时间处理程序
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
-		AddFunc: OnAdd,
+		AddFunc:    OnAdd,
+		UpdateFunc: OnUpdate,
 	})
 
 	stopper := make(chan struct{})
@@ -60,9 +61,17 @@ func main() {
 }
 
 func OnAdd(obj interface{}) {
-
 	backup := obj.(*v1.Backup)
 	fmt.Println("add a backup:", backup.Name)
+}
+
+func OnUpdate(old, new interface{}) {
+	backup := new.(*v1.Backup)
+	if backup.Status.Progress != nil {
+		result := fmt.Sprintf("当前进度%d/%d", backup.Status.Progress.ItemsBackedUp, backup.Status.Progress.TotalItems)
+		fmt.Println(result)
+	}
+	fmt.Println("当前状态：", backup.Status.Phase)
 }
 
 func GetVeleroClient() versioned.Interface {

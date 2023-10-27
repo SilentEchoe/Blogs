@@ -827,12 +827,15 @@ chan (<-chan int) // 因为括号的原因，<-和括号内第一个chan结合
 nil 是 chan的零值，对值是 nil 的 chan 的发送接收调用则总是会阻塞。
 
 ```go
+
+
 close(ch)// 关闭 chan
 
 cap(ch) //返回chan的容量
 
 len(ch) //返回chan中缓存的还未被取走的元素数量
 
+// channel 的循环
 for v := range ch{
   fmt.prin
 }
