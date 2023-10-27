@@ -1,62 +1,71 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/intstr"
-	"k8s.io/client-go/kubernetes"
+	v1 "github.com/vmware-tanzu/velero/pkg/apis/velero/v1"
+	"github.com/vmware-tanzu/velero/pkg/generated/clientset/versioned"
+	verleroInformer "github.com/vmware-tanzu/velero/pkg/generated/informers/externalversions"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 	"path/filepath"
+	"sync"
+	"time"
 )
 
-var kubeClientSet *kubernetes.Clientset
-
-func init() {
-	kubeClientSet = newKubeClientSet()
-	if kubeClientSet == nil {
-		panic("init kube client failed")
-	}
-}
+var clientSetOnce = sync.Once{}
+var clientSet versioned.Interface
 
 func main() {
-	svc := GenerateAgentService()
-	newSvc, err := kubeClientSet.CoreV1().Services("default").Create(context.Background(), svc, metav1.CreateOptions{})
+	GetVeleroClient()
+
+	// 初始化 informer factory (一个小时List 一次)
+	informerFactory := verleroInformer.NewSharedInformerFactory(clientSet, time.Hour)
+
+	// 对Backup资源进行监听
+	backupInformer := informerFactory.Velero().V1().Backups()
+
+	// 创建 Informer（相当于注册到工厂中去，这样下面启动的时候就会去 List & Watch 对应的资源）
+
+	informer := backupInformer.Informer()
+
+	// 创建 Lister
+	backupLister := backupInformer.Lister()
+
+	// 注册时间处理程序
+	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc: OnAdd,
+	})
+
+	stopper := make(chan struct{})
+	defer close(stopper)
+
+	// 启动 informer，List & Watch
+	informerFactory.Start(stopper)
+
+	// 等待所有启动的 Informer 的缓存被同步
+	informerFactory.WaitForCacheSync(stopper)
+
+	// 从本地缓存中获取 default 中的所有 deployment 列表
+	backups, err := backupLister.Backups("velero").List(labels.Everything())
 	if err != nil {
-		fmt.Println(err)
-		return
+		panic(err)
 	}
-	fmt.Println(newSvc.Spec.Ports[0].NodePort)
+	for idx, backup := range backups {
+		fmt.Printf("%d -> %s\\n", idx+1, backup.Name)
+	}
+	<-stopper
 }
 
-func GenerateAgentService() *corev1.Service {
-	return &corev1.Service{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "test-service",
-		},
-		Spec: corev1.ServiceSpec{
-			Selector: map[string]string{
-				"app": "agent",
-			},
-			Type: corev1.ServiceTypeNodePort,
-			Ports: []corev1.ServicePort{
-				{
-					Protocol: corev1.ProtocolTCP,
-					Port:     80,
-					TargetPort: intstr.IntOrString{
-						Type:   intstr.Int,
-						IntVal: 8000,
-					},
-				},
-			},
-		},
-	}
+func OnAdd(obj interface{}) {
+
+	backup := obj.(*v1.Backup)
+	fmt.Println("add a backup:", backup.Name)
 }
 
-func newKubeClientSet() *kubernetes.Clientset {
+func GetVeleroClient() versioned.Interface {
 	var kubeconfig *string
 	if home := homedir.HomeDir(); home != "" {
 		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
@@ -70,12 +79,13 @@ func newKubeClientSet() *kubernetes.Clientset {
 		panic(err.Error())
 	}
 
-	// 创建clientset
-	clientset, err := kubernetes.NewForConfig(config)
+	// 创建 veleroClient
+	veleroClient, err := versioned.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		panic(err)
+	} else {
+		clientSet = veleroClient
 	}
 
-	return clientset
-
+	return clientSet
 }
