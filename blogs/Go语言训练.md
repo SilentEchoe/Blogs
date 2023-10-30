@@ -828,8 +828,7 @@ nil 是 chan的零值，对值是 nil 的 chan 的发送接收调用则总是会
 
 ```go
 
-
-close(ch)// 关闭 chan
+close(ch)// 关闭 chan，如果 chan 已经被 close 再往里面发送数据会panic
 
 cap(ch) //返回chan的容量
 
@@ -839,11 +838,47 @@ len(ch) //返回chan中缓存的还未被取走的元素数量
 for v := range ch{
   fmt.prin
 }
+
+//清空 chan
+for range ch {
+  
+}
 ```
 
+单向通道
+
+```go
+// 创建一个单向的通道
+ch := make(chan<- int,1) 
+```
+
+上述单向通道表示只能收不能发，单向通道最主要的用途就是约束其他代码的行为。
 
 
 
+使用Channel 最常见的错误是panic和goroutine泄漏：
+
+1.close 为nil 的chan
+
+2.send 已经close 的chan
+
+3.close 已经 close的chan
+
+
+
+### Channel 使用技巧
+
+#### 使用反射操作Channel
+
+虽然Go语言中不经常使用反射，但是通过反射的方式执行 select语句，在处理不定长的 case clause 的时候非常有用。通过`reflect.Select`函数。
+
+```go
+//
+select {
+  case v:= <- ch1:
+    fmt.prin
+}
+```
 
 
 

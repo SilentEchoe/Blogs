@@ -19,6 +19,7 @@ var clientSetOnce = sync.Once{}
 var clientSet versioned.Interface
 
 func main() {
+
 	GetVeleroClient()
 
 	// 初始化 informer factory (一个小时List 一次)
@@ -38,6 +39,7 @@ func main() {
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc:    OnAdd,
 		UpdateFunc: OnUpdate,
+		DeleteFunc: OnDelete,
 	})
 
 	stopper := make(chan struct{})
@@ -72,6 +74,10 @@ func OnUpdate(old, new interface{}) {
 		fmt.Println(result)
 	}
 	fmt.Println("当前状态：", backup.Status.Phase)
+}
+
+func OnDelete(obj interface{}) {
+
 }
 
 func GetVeleroClient() versioned.Interface {
