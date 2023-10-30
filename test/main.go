@@ -2,47 +2,52 @@ package main
 
 import (
 	"fmt"
-	"reflect"
+	"strings"
 )
 
 func main() {
-	ch1 := make(chan int, 10)
-	ch2 := make(chan int, 10)
+	var list = []string{"Hao", "Chen", "Demo"}
 
-	var cases = createCases(ch1, ch2)
+	x := MapStrToStr(list, func(s string) string {
+		return strings.ToUpper(s)
+	})
+	fmt.Printf("%v\n", x)
 
-	// 执行十次 select
-	for i := 0; i < 10; i++ {
-		chosen, recv, ok := reflect.Select(cases)
-		if recv.IsValid() {
-			fmt.Println("recv:", cases[chosen].Dir, recv, ok)
-		} else {
-			// send case
-			fmt.Println("send:", cases[chosen].Dir, ok)
-		}
-	}
+	y := MapStrToInt(list, func(s string) int { return len(s) })
+	fmt.Printf("%v\n", y)
+
+	// 数据筛选
+	var intset = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	out := Filter(intset, func(n int) bool { return n > 5 })
+	fmt.Printf("%v\n", out)
+
 }
 
-func createCases(chs ...chan int) []reflect.SelectCase {
-	var cases []reflect.SelectCase
+// Map
 
-	// 创建recv case
-	for _, ch := range chs {
-		cases = append(cases, reflect.SelectCase{
-			Dir:  reflect.SelectRecv,
-			Chan: reflect.ValueOf(ch),
-		})
+func MapStrToStr(arr []string, fn func(s string) string) []string {
+	var newArray = []string{}
+	for _, it := range arr {
+		newArray = append(newArray, fn(it))
 	}
+	return newArray
+}
 
-	// 创建send case
-	for i, ch := range chs {
-		v := reflect.ValueOf(i)
-		cases = append(cases, reflect.SelectCase{
-			Dir:  reflect.SelectSend,
-			Chan: reflect.ValueOf(ch),
-			Send: v,
-		})
+func MapStrToInt(arr []string, fn func(s string) int) []int {
+	var newArray = []int{}
+	for _, it := range arr {
+		newArray = append(newArray, fn(it))
 	}
+	return newArray
+}
 
-	return cases
+// Filter
+func Filter(arr []int, fn func(n int) bool) []int {
+	var newArray []int
+	for _, it := range arr {
+		if fn(it) {
+			newArray = append(newArray, it)
+		}
+	}
+	return newArray
 }

@@ -873,12 +873,198 @@ ch := make(chan<- int,1)
 虽然Go语言中不经常使用反射，但是通过反射的方式执行 select语句，在处理不定长的 case clause 的时候非常有用。通过`reflect.Select`函数。
 
 ```go
-//
-select {
-  case v:= <- ch1:
-    fmt.prin
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+func main() {
+	ch1 := make(chan int, 10)
+	ch2 := make(chan int, 10)
+
+	var cases = createCases(ch1, ch2)
+
+	// 执行十次 select
+	for i := 0; i < 10; i++ {
+		chosen, recv, ok := reflect.Select(cases)
+		if recv.IsValid() {
+			fmt.Println("recv:", cases[chosen].Dir, recv, ok)
+		} else {
+			// send case
+			fmt.Println("send:", cases[chosen].Dir, ok)
+		}
+	}
+}
+
+func createCases(chs ...chan int) []reflect.SelectCase {
+	var cases []reflect.SelectCase
+
+	// 创建recv case
+	for _, ch := range chs {
+		cases = append(cases, reflect.SelectCase{
+			Dir:  reflect.SelectRecv,
+			Chan: reflect.ValueOf(ch),
+		})
+	}
+
+	// 创建send case
+	for i, ch := range chs {
+		v := reflect.ValueOf(i)
+		cases = append(cases, reflect.SelectCase{
+			Dir:  reflect.SelectSend,
+			Chan: reflect.ValueOf(ch),
+			Send: v,
+		})
+	}
+
+	return cases
 }
 ```
+
+
+
+#### 使用Go每分钟处理百万请求
+
+Worker池应对大并发请求设计，用户请求放在一个 chan Job 中，这个 chan Job 相当于一个待处理任务队列。然后再使用一个 chan chan Job 队列，用来存放可以处理任务的 Worker 的缓存队列。
+
+Dispatcher 会把待处理任务队列中的任务放到一个可用的缓存队列中，worker 会一直处理它的缓存队列。通过使用 Channel，实现一个 Worker 池的任务处理中心，并且解耦了前端Http请求处理和后端任务处理的逻辑。
+
+常见的第三方实现的 worker 池，一般都是通过 Channel 实现的，我们常用 Channel 应用于 Worker 池的生产者和消费者。
+
+文章来源：http://marcio.io/2015/07/handling-1-million-requests-per-minute-with-golang/
+
+
+
+#### 信号通知
+
+Channel 可以用于当程序关闭时，需要在退出前做一些清理动作。
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+)
+
+func main() {
+	var closing = make(chan struct{})
+	var closed = make(chan struct{})
+
+	go Worker(closing)
+
+	termChan := make(chan os.Signal)
+	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM)
+	<-termChan
+
+	close(closing)
+
+	go Cleanup(closed)
+
+	select {
+	case <-closed:
+	case <-time.After(time.Second):
+		fmt.Println("清理超时，不等了")
+
+	}
+
+	fmt.Println("优雅退出")
+
+}
+
+func Worker(closing chan struct{}) {
+	for {
+		select {
+		case <-closing:
+			return
+		default:
+			time.Sleep(100 * time.Millisecond)
+		}
+
+	}
+}
+
+func Cleanup(closed chan struct{}) {
+	time.Sleep(time.Minute)
+	close(closed)
+}
+```
+
+
+
+#### Map-reduce
+
+Map-reduce 是一种处理数据的方式，是谷歌提出的一种面向大规模数据处理的并行技术模型和方法。
+
+Map-reduce 分为两个步骤，映射：处理队列中的数据;规约：把列表中的每一个元素按照一定的方式处理称结果，放入到结果队列中。
+
+```go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	var list = []string{"Hao", "Chen", "Demo"}
+
+	x := MapStrToStr(list, func(s string) string {
+		return strings.ToUpper(s)
+	})
+	fmt.Printf("%v\n", x)
+
+	y := MapStrToInt(list, func(s string) int { return len(s) })
+	fmt.Printf("%v\n", y)
+}
+
+func MapStrToStr(arr []string, fn func(s string) string) []string {
+	var newArray = []string{}
+	for _, it := range arr {
+		newArray = append(newArray, fn(it))
+	}
+	return newArray
+}
+
+func MapStrToInt(arr []string, fn func(s string) int) []int {
+	var newArray = []int{}
+	for _, it := range arr {
+		newArray = append(newArray, fn(it))
+	}
+	return newArray
+}
+
+```
+
+上述代码中编写了两个函数：`MapStrToStr()`用于"转大写"函数，`MapStrToInt()`用于算出每个字符串的长度。
+
+Filter 相当于做数据筛选：
+
+```go
+func main() {
+// 数据筛选
+	var intset = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	out := Filter(intset, func(n int) bool { return n > 5 })
+	fmt.Printf("%v\n", out)
+}
+
+func Filter(arr []int, fn func(n int) bool) []int {
+	var newArray []int
+	for _, it := range arr {
+		if fn(it) {
+			newArray = append(newArray, it)
+		}
+	}
+	return newArray
+}
+```
+
+Map,Reduce,Filter 只是一种控制逻辑，真正的业务逻辑是以传给它们的数据和函数来定义的。
 
 
 
