@@ -1141,6 +1141,74 @@ func main() {
 
 # 面试题
 
+## Kubernetes/Docker 相关
+
+Kubernetes 组件有哪些？
+
+```markdown
+Kubernetes API Server: 
+API 是Kubernetes 控制平面的组件，负责公开Kubernetes API，负责处理接收请求的工作。
+
+Etcd:
+一致性且高可用的键值存储，用作Kubernetes 所有集群数据的后台数据库。
+
+Kube-Scheduler：
+负责监视新创建的，未指定运行节点(node)的Pods，并选择节点来让Pod 在上面运行
+
+
+Controller Manager:
+每个控制器都是一个单独的进程，但是为了降低复杂性，它们被编译到同一个可执行文件，并在同一个进程中运行：
+Replication Controller 副本控制器
+Node Controller 节点控制器
+Job Controller 任务控制器...
+
+
+Kubelet:
+kubelet 会在集群中每个节点上运行，它保证容器都运行在Pod中。
+
+Kube-proxy:
+集群中每个节点上运行的网络代理，实现Kubernetes 服务(Service)概念的一部分。
+它会维护节点上的一些网络规则，这些网络规则会允许从集群内部或外部的网络回话与Pod进行网络通信。
+```
+
+
+
+Docker的网络是怎么实现的？
+
+```markdown
+在Docker 中每一个容器都可以看做是一台主机，它们有自己一套独立的“网络栈”。
+Linux 中使用网桥（Bridge）作为虚拟交换机作用的网络设备。
+
+1.Docker 会默认在宿主机创建一个名为"docker0"的网桥，所有连接在 docker0 网桥上的容器可以用它来进行通信。
+2.通过“Veth Pair”设备+宿主机网桥的方式实现通信
+
+Veth Pair 虚拟设备用作连接不同 Network Namespace 的“网线”，它被创建出来后会以两张虚拟网卡的形式成对出现。
+```
+
+
+
+Docker 通信过程
+
+```
+在一台宿主机访问容器的IP地址时
+1.先根据路由规则发送到docker0网桥上
+2.转发到对应的Veth Pair 设备
+3.通过Veth Pair 将流量发送到容器中
+
+容器互相访问时
+1.容器1发出请求包会先发送到docker0网桥上
+2.docker0网桥会将流量包出现在宿主机上，然后根据宿主机路由表里面的直连路由规则，交给宿主机的eth0
+3.宿主机的 eth0 网卡转发到宿主机网络上
+```
+
+![Untitled](https://raw.githubusercontent.com/AnAnonymousFriend/images/main/Untitled.png)
+
+图片来自：《深入剖析Kubernetes》
+
+
+
+
+
 ## **Go 语言中 new 和 make 的区别**
 
 new 和 make 都是 分配内存的原语。new 只分配内存但并不初始化内存，而 make 用于 slice , map 和 channel 的初始化。
