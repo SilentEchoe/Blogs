@@ -51,7 +51,7 @@ func main() {
 	// 等待所有启动的 Informer 的缓存被同步
 	informerFactory.WaitForCacheSync(stopper)
 
-	// 从本地缓存中获取 default 中的所有 deployment 列表
+	// 从本地缓存中获取 velero 中的所有 backup 列表
 	backups, err := backupLister.Backups("velero").List(labels.Everything())
 	if err != nil {
 		panic(err)
