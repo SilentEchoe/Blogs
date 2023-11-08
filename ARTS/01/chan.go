@@ -129,4 +129,5 @@ func (d *Dispatcher) dispatch() {
 func main() {
 	dispatcher := NewDispatcher(MaxWorker)
 	dispatcher.Run()
+	select {}
 }

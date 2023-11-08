@@ -1131,9 +1131,115 @@ func main() {
 
 
 
+# 设计模式
+
+## Functional Options 编程模式
+
+函数式编程的应用案例，是Go语言中最流程的一种编程模式。
+
+```go
+package main
+
+import (
+	"crypto/tls"
+	"time"
+)
+
+type Server struct {
+	Addr string
+	Port int
+	Conf *Config
+}
+
+type Config struct {
+	Protocol string
+	Timeout  time.Duration
+	Maxconns int
+	TLS      *tls.Config
+}
+
+type Option func(*Server)
+
+// 使用函数式的方式定义一组函数
+func Protocol(p string) Option {
+	return func(s *Server) {
+		s.Conf.Protocol = p
+	}
+}
+
+func Timeout(timeout time.Duration) Option {
+	return func(s *Server) {
+		s.Conf.Timeout = timeout
+	}
+}
+
+func MaxConns(maxconns int) Option {
+	return func(s *Server) {
+		s.Conf.Maxconns = maxconns
+	}
+}
+
+func TLS(tls *tls.Config) Option {
+	return func(s *Server) {
+		s.Conf.TLS = tls
+	}
+}
 
 
 
+```
+
+上述代码传入一个参数，然后返回一个函数，返回的这个函数会设置自己的`Server`参数。这个叫做高阶函数。
+
+```go
+func NewServer(addr string, port int, options ...func(*Server)) (*Server, error) {
+	srv := Server{
+		Addr:     addr,
+		Port:     port,
+		Protocol: "tcp",
+		Timeout:  30 * time.Second,
+		Maxconns: 1000,
+		TLS:      nil,
+	}
+	for _, option := range options {
+		option(&srv)
+	}
+
+	return &srv, nil
+}
+
+// 调用
+func main() {
+	s1, _ := NewServer("localhost", 1024)
+	fmt.Println(s1)
+	s2, _ := NewServer("localhost", 2048, Protocol("udp"))
+	fmt.Println(s2)
+	s3, _ := NewServer("0.0.0.0", 8080, Timeout(300*time.Second), MaxConns(1000))
+	fmt.Println(s3)
+}
+```
+
+使用Functional Options这种方式可以拥有高度的可配化，同时很容易维护和扩展。
+
+
+
+
+
+# 算法
+
+大O表示法是一种特殊的表示法，指出了算法的速度有多快。
+
+假设检查一个元素需要1毫秒，使用简单查找(暴力查找)时检查100个元素，则需要100毫秒。但是使用二分查找，只需要检查7个元素，所以7毫秒就能查找完毕。
+
+但是要注意，二分查找和简单查找的运行时间增速不同，随着元素数量增加，二分查找需要的额外时间并不多，而简单查找需要的额外时间却很多。不能简单衡量某个算法是另外一个的多少倍。
+
+大O表示算法有多快，假设n个元素，简单查找需要检查每个元素，因此需要执行n次操作。使用大O表示法，这个运行时间为O(n)。大O表示法并非以秒为单位速度，它表示的是：让你能够比较操作数，它代表算法运行时间的增速。
+
+大O表示法指出了最糟糕情况下的运行时间
+
+![image-20231106175126282](https://raw.githubusercontent.com/AnAnonymousFriend/images/main/image-20231106175126282.png)
+
+## 选择排序
 
 
 
