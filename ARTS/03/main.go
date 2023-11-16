@@ -3,34 +3,39 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println(quicksort([]int{10, 5, 2, 3}))
+	list := []int{2, 44, 4, 8, 33, 1, 22, -11, 6, 34, 55, 54, 9}
+	quicksort(list, 0, len(list)-1)
+	fmt.Println(list)
 }
 
 // 快速排序
 // 从数列中挑出一个元素，作为基准（pivot）
 // 重新排序数列，所有比基准小的值放到基准前面，所有比基准大的值放到基准后面。排序之后，基准值便处于数列的中间位置，这个过程称为分区。
-func quicksort(arr []int) []int {
-	if len(arr) == 0 {
-		return arr
+func quicksort(list []int, low, high int) {
+	if high > low {
+		//位置划分
+		pivot := partition(list, low, high)
+		//左边部分排序
+		quicksort(list, low, pivot-1)
+		//右边排序
+		quicksort(list, pivot+1, high)
 	}
-	pivot := arr[0] // 选出基准
-	var less []int
-	for i := 1; i < len(arr); i++ {
-		if i < pivot {
-			less = append(less, arr[i])
+}
+
+// 基准值
+func partition(list []int, low, high int) int {
+	pivot := list[low]
+	for low < high {
+		for low < high && pivot <= list[high] {
+			high--
 		}
-	}
+		list[low] = list[high]
 
-	var greater []int
-	for i := 1; i < len(arr); i++ {
-		if i > pivot {
-			greater = append(greater, arr[i])
+		for low < high && pivot >= list[low] {
+			low++
 		}
+		list[high] = list[low]
 	}
-
-	var newarr = append(quicksort(less))
-	newarr = append(newarr, pivot)
-	newarr = append(quicksort(greater))
-
-	return newarr
+	list[low] = pivot
+	return low
 }
