@@ -4,8 +4,9 @@ import "fmt"
 
 func main() {
 	list := []int{2, 44, 4, 8, 33, 1, 22, -11, 6, 34, 55, 54, 9}
-	quicksort(list, 0, len(list)-1)
-	fmt.Println(list)
+	//quicksort(list, 0, len(list)-1)
+	//fmt.Println(list)
+	Quicksort(list)
 }
 
 // 快速排序
@@ -38,4 +39,28 @@ func partition(list []int, low, high int) int {
 	}
 	list[low] = pivot
 	return low
+}
+
+func Quicksort(arr []int) {
+	if len(arr) < 2 {
+		return
+	}
+	pivot := arr[0]
+
+	var less []int
+	for k, _ := range arr[1:] {
+		if arr[k] <= pivot {
+			less = append(less, arr[k])
+		}
+	}
+
+	var greater []int
+	for k, _ := range arr[1:] {
+		if arr[k] > pivot {
+			greater = append(greater, arr[k])
+		}
+	}
+	fmt.Println("less:", less)
+	fmt.Println("pivot:", pivot)
+	fmt.Println("greater:", greater)
 }
