@@ -1131,7 +1131,7 @@ func main() {
 
 
 
-# 设计模式
+# 设计模式/编程模式
 
 ## Functional Options 编程模式
 
@@ -1223,6 +1223,26 @@ func main() {
 
 
 
+## IOC 依赖注入和控制反转
+
+一般情况下我们调用一个函数或方法，都是直接主动的行为，我们很清楚被调用的函数名是什么，归属于哪个包下。而"控制反转"就是将这种主动行为变为间接行为，不直接调用函数或对象，而是借助框架代码进行间接的调用。
+
+"依赖注入"是实现"控制反转"的一种方法，通过注入的参数或实例的方法实现控制反转。
+
+Wire是谷歌开源的依赖注入工具，通过自动生成代码的方式在编译期完成依赖注入：
+
+提供者(provider)和注入器(injector)是Wire的核心概念
+
+Provider 
+
+Wire 中提供者是一个可以产生值的普通函数
+
+```go
+
+```
+
+
+
 
 
 # 算法
@@ -1280,6 +1300,33 @@ func selectionSort(sum []int) []int {
 	return newArr
 }
 ```
+
+
+
+## 二分查找
+
+二分查找是一种算法，输入一个有序的元素列表，如果要查找的元素包含在列表中，二分查找返回其位置；否则返回nil；
+
+```go
+func binary_search(arr []int, target int) int {
+	low := 0
+	high := len(arr) - 1
+
+	for low <= high {
+		mid := (low + high) / 2
+		if arr[mid] == target {
+			return mid
+		} else if arr[mid] > target {
+			high = mid - 1
+		} else {
+			low = mid + 1
+		}
+	}
+	return -1
+}
+```
+
+
 
 
 
