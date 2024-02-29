@@ -1,7 +1,7 @@
 package main
 
 func main() {
-
+	println(binary_search([]int{1, 2, 3, 4, 5, 6, 7, 8}, 4))
 }
 
 func binary_search(arr []int, target int) int {

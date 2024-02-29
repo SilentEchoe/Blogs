@@ -1238,6 +1238,65 @@ Provider
 Wire 中提供者是一个可以产生值的普通函数
 
 ```go
+package main
+
+import "fmt"
+
+type AuthService struct {
+	Name string
+}
+
+func NewAuthService(name string) AuthService {
+	return AuthService{Name: name}
+}
+
+type RoleService struct {
+	doamin string
+}
+
+func NewRoleService() RoleService {
+	return RoleService{doamin: "拥有访问角色模块权限"}
+}
+
+type UserService struct {
+	RoleService RoleService
+	AuthService AuthService
+}
+
+func NewUserService(r RoleService, a AuthService) UserService {
+	return UserService{RoleService: r, AuthService: a}
+}
+
+func (u UserService) Start() {
+	fmt.Printf("用户:%s,拥有权限域:%s", u.AuthService.Name, u.RoleService.doamin)
+}
+
+func main() {
+	user := InitUser("kai")
+	user.Start()
+}
+
+```
+
+
+
+Write.go 
+
+```go
+//go:build wireinject
+// +build wireinject
+
+// The build tag makes sure the stub is not built in the final build.
+package main
+
+import "github.com/google/wire"
+
+// InitializeEvent creates an Event. It will error if the Event is staffed with
+// a grumpy greeter.
+func InitUser(name string) UserService {
+	wire.Build(NewAuthService, NewRoleService, NewUserService)
+	return UserService{}
+}
 
 ```
 
