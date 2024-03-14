@@ -1300,6 +1300,12 @@ func InitUser(name string) UserService {
 
 ```
 
+Ioc 可以解决对象间依赖关系混乱的问题/循环依赖的问题/
+
+
+
+
+
 
 
 
