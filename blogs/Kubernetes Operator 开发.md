@@ -234,7 +234,7 @@ type client struct {
 
 
 
-### **Kubebuilder 开发**
+### **Kubebuilder 开发示例**
 
 ```shell
 # Mac 安装 Kubebuilder
@@ -262,7 +262,7 @@ cd $GOPATH/src/projectName
 make run
 ```
 
-Demo 详情见：https://github.com/AnAnonymousFriend/KubeMin-Cli/tree/master/examples
+
 
 
 
