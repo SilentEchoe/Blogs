@@ -35,37 +35,45 @@ DevSecOps带来全新的文化冲击，这不仅要求开发人员熟知应用�
 
 DevSecOps和DevOps 本质上是两种不同的理念，并没有好坏之分，也不代表DevSecOps要优于DevOps。无论做出哪种选择，最终都要结合实际情况和最终目标来选择适合的。如果所在行业收到了严格监管，需要处理敏感的客户数据，比如需要通过某种监管才能出口，那么DevSecOps可能是比较明智的选择。反之，如果没有这些"束缚"，更在意的是快速迭代，那DevOps便是首选。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-将类似于SonarQube这样的自动化代码审查工具，用来检测代码中的错误，漏洞，在Devops的过程中对每一次的PR进行检查。这与传统的方式不同，过去安全性总是由单独的安全团队在开发周期结束时才参与进来，如今DevSecOps将应用和安全性无缝链接到敏捷和DevOps流程和工具中。
-
-这使得安全性不在是安全团队独有的责任，参与应用开发的所有工程师都需要重视安全问题。
-
-
-
-
-
-
-
-
+DevSecOps[推荐工具](https://time.geekbang.org/column/article/197268)。
 
 
 
 ### Kubernete 原生安全防护
+
+Kubernetes原生安全防护的原则是：当安全防护与管理容器化应用的系统保持一致时，安全防护才能得到最有效的实现。
+
+它必须具备以下特点才能被称为"Kubernetes 原生":
+
+1.直接和Kubernetes API 服务器集成
+
+2.评估Kubernetes软件本身的漏洞
+
+3.为Kubernetes中的资源建立策略管理等安全功能
+
+4.分析Kubernetes特定工作和配置中的声明性数据
+
+5.尽量使用内置的Kubernetes安全功能来处理执行，以实现更高的自动化，可扩展性和可靠性
+
+当我们阅读技术文档时，总是会看到一些"原则"或"特点"，这些条条框框看起来晦涩难懂，其实它只是描述某一概念的特征，当结合实际场景就会容易理解很多。
+
+比如第一条"直接和Kubernetes API 服务器集成"，这是为了获得Kubernetes上工作负载信息，假设现在需要基于Kubernetes 做一个定制化插件，如果不与Kubernetes API 服务器集成在一起，我们很难了解整个架构的全貌。Kubernetes上部署了哪些中间件，有哪些业务容器已经部署在上面，如果需要调度应该怎么更合理分配资源，有哪些边缘计算？
+
+通过结合实际业务场景反推，我们不仅能了解"特点"为什么这么制定，也能更好的思考它的局限性以及延展性。
+
+"评估Kubernetes软件本身的漏洞"好像没什么必要，作为云原生时代的操作系统，很多工程师会下意识忽略"Kubernetes"本身也会存在漏洞，亦或"即使Kubernetes出现漏洞，我也没能力去修补"。对于普通工程师来说，可能唯一能做的就是定期计划性迭代Kubernetes版本，不得不承认在生产环境对Kubernetes集群规划迭代是一个很繁琐的事情，一不小心就会导致大面积宕机。但换个角度看，不管处不处理，风险它都在那里。
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -91,5 +99,7 @@ https://www.cnblogs.com/FLY_DREAM/p/17599368.html
 
 https://www.ibm.com/cn-zh/topics/devsecops
 
+https://www.redhat.com/zh/topics/containers/advantages-of-kubernetes-native-security
 
+https://www.redhat.com/zh/topics/security/container-security
 
