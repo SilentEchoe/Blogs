@@ -26,15 +26,39 @@ category: 对象存储
 
 直连式存储被称为"文件存储"，网络附属存储和存储区域网络被称为"块存储"。无论是文件存储，块存储还是对象存储，底层的硬件介质都是硬盘，但存储架构完全不同。
 
-在云原生环境下，对象存储因为搞性能，高可用的特性被广泛用于云存储，大数据分析，备份和恢复，多媒体内容存储等场景。如今云厂商提供非常成熟的对象存储服务，例如Amazon S3,阿里云(Object Storage Service,OSS)，基础设施中的对象存储成为构建各类应用必不可少的一环，我们理应对它有更清晰的认知，这也是作为工程师构建稳定可靠应用不可缺少的。
+在云原生环境下，对象存储因为高性能，高可用的特性被广泛用于云存储，大数据分析，备份和恢复，多媒体内容存储等场景。如今云厂商提供非常成熟的对象存储服务，例如Amazon S3,阿里云(Object Storage Service,OSS)，基础设施中的对象存储成为构建各类应用必不可少的一环，我们理应对它有更清晰的认知，这也是作为工程师构建稳定可靠应用不可缺少的。
 
 
 
-### 对象存储及S3协议
+### S3协议及实现
+
+S3协议全称 Amazon Simple Storage Service(Amazon *S3*)，最初是亚马逊提供的简单存储服务，它为应用程序的开发者提供了通过一系列API来控制数据的方式，经过多年的发展这些方法逐渐演变为S3协议，国内外很多云厂商提供的云存储服务都是在它的基础上做了一部分演变，但都保留了通用的S3接口。
+
+[Minio](https://min.io/)是一个高性能，兼容S3的对象存储，它可以在任何云或本地基础架构上运行。Minio现在已经成为业界部署范围最广的对象存储设施，从云计算到边缘计算，从公有云到AI数据基础设施都有它的身影。
+
+S3中包含两个基础概念：Bucket 和 Object
+
+#### Bucket
+
+亚马逊将存储系统中的一个命名空间当作一个Bucket，在这个命名空间下你可以放任意文件，二进制文件，PDF，MP3，PNG，Doc……有点类似操作系统中"文件夹"的概念，对于存储系统来说它并不关心你存放的是什么类型的文件，它在乎的是你将这些文件放在哪个"命名空间下"，即哪个Bucket下。
+
+为了保证不产生歧义，在一个存储系统中里面所有的Bucket都必须是唯一，同时创建这个Bucket的权限不可转移，如果是在云对象存储中则不能从一个Region转到另一个Region。
+
+Bucket就像Linux中的根目录，在对象存储系统中，一个Bucket就像是一个根目录，所有对象都必须要保存在某一个Bucket下。
 
 
 
+#### Object
 
+Bucket 里面存储的对象就是Object，由对象名(Key)和数据(Value)组成。
+
+下例Minio示例中可以看到，如果想要分享一个对象文件，Minio会生成出一长串的Link，它的链接生成方式是：http://domain/bucket/file?CheckCode 这种方式类似于模拟文件文件夹的层级结构，从某一域名到某个命名空间再到某个存储对象，给这个链接添加一定时期的有效期。
+
+![image-20240506173912182](https://raw.githubusercontent.com/AnAnonymousFriend/images/main/image-20240506173912182.png)
+
+Minio还会存储对象文件一些元数据，上图右下角中Object Info 包含了对象的文件类型，创建时间，加密算法以及用户上传时添加的一部分元信息。这些元信息在对象文件创建后是无法更改的。Minio中默认单个对象最大大小是5GB，可以通过设置提高上限，但文件最高上限可达到5TB，并且没有文件数量的限制。
+
+Minio还提供Tag(标签)为对象做一些拓展功能，例如可以为一部分对象指定特殊的Tag，通过这些Tag可以配合权限管理实现颗粒度更细的管理。也可以通过Tag对对象进行生命周期的控制，比如定时删除一批带有某一Tag的对象文件……
 
 
 
@@ -47,5 +71,9 @@ category: 对象存储
 https://cloud.tencent.com/developer/article/2353439
 
 https://cloud.tencent.com/developer/article/1919463
+
+https://aws.amazon.com/cn/s3/features/
+
+https://zhuanlan.zhihu.com/p/670386960
 
 https://www.alibabacloud.com/zh/knowledge/difference-between-object-storage-file-storage-block-storage?_p_lc=1
