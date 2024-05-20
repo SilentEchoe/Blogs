@@ -1,5 +1,5 @@
 ---
-title: Minio-云原生对象存储
+title: Minio存储层解析
 date: 2024-5-16 18:09:00
 tags: [Minio]
 category: 对象存储
