@@ -5,7 +5,7 @@ tags: [AI,RAG]
 category: AI
 ---
 
-### RAG是什么？
+### RAG概述
 
 Retrieval Augmented Generation RAG 检索增强的内容生成。
 
