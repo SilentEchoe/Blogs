@@ -31,7 +31,7 @@ Retrieval Augmented Generation RAG 检索增强的内容生成。
 from langchain.document_loaders import WebBaseLoader
 from langchain.indexes import VectorstoreIndexCreator
 
-loader = WebBaseLoader("http://www.paulgraham.com/greatwork.htm	l")
+loader = WebBaseLoader("http://www.paulgraham.com/greatwork.html")
 index = VectorstoreIndexCreator().from_loaders([loader])
 index.query("What should I work on?")
 ```
@@ -58,6 +58,24 @@ index.query("What should I work on?")
 
 
 
+### 如何优化提问？
+
+怎样提一个好问题？从主观上来讲，如果别人问我们一个问题，理想的情况是：只要稍加思索便能回答出对方想要的答案，同时既让提问的人满意这个答案，又能让回答的人准确捕捉到其中的关键点。
+
+上述描述肯定不是一个好的回答，现实生活中因为问题质量差而导致得不到回答的例子比比皆是，那么又怎么能奢求大模型输出高质量的回答呢？反过来，通过现实生活的思考优化对大模型的提问似乎也是可行的。
+
+提问时，尽量提供充足的相关背景信息；使用简单，具体的词句；明确问题的目的。
+
+技巧一：用三种不同的语言提问，会得到完全不一样的答案。
+
+这涉及到训练时的语料质量以及数据量，所以导致结果和答案不一样。(不同语言的语义，语法也不一样，这点很直观地反映到输出)
+
+技巧二：将问题抽象
+
+技巧三：将一个大的问题拆分成若干个小的问题，但细节上更为丰富。
+
+
+
 
 
 
@@ -75,3 +93,5 @@ index.query("What should I work on?")
 ### 学习资料
 
 [How do domain-specific chatbots work? An Overview of Retrieval Augmented Generation (RAG)](https://scriv.ai/guides/retrieval-augmented-generation-overview)
+
+https://rolen.wiki/talk-to-a-successful-american-with-seven-kids/
