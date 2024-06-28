@@ -5,8 +5,6 @@ tags: [Go,学习笔记,并发编程]
 category: Go
 ---
 
-
-
 ## Go 标准库Cond
 
 Cond 的目的是为 等待/通知场景下的并发提供支持。Cond 是和某个条件相关，这个条件满足后会触发一组 goroutine 协作完成，在条件还没有满足的时候，所有等待这个条件的 goroutine 都会被阻塞。

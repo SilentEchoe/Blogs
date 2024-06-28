@@ -60,7 +60,7 @@ index.query("What should I work on?")
 
 ### 如何优化提问？
 
-怎样提一个好问题？从主观上来讲，如果别人问我们一个问题，理想的情况是：只要稍加思索便能回答出对方想要的答案，同时既让提问的人满意这个答案，又能让回答的人准确捕捉到其中的关键点。
+怎样提一个好问题？从主观上来讲，如果别人问我们一个问题，比较理想的情况是：回答者只要稍加思索便能准确捕捉到其中的关键点，从而轻松回答出对方想要的答案。
 
 上述描述肯定不是一个好的回答，因为太理想化，现实生活中因为问题质量差而导致得不到回答的例子比比皆是，那么又怎么能奢求大模型输出高质量的回答呢？无论如何，提一个好的问题是有门槛的，否则互联网也不会存在关于“如何提一个好问题”的文章，市面上也不会存在指导人们如何提问的书。
 
@@ -95,11 +95,38 @@ template = """
 
 #### 将问题具象
 
+通过提示词，将一个抽象的问题拆分成具象化的子问题，并要求这些问题能被单独回答。要注意的是：这里的子问题是依次回答，然后再将答案作为文档的一部分，作为下一个问题的检索源。
+
+这很类似人类的思考方式，将一个大问题拆分成多个子问题，这些子问题存在一定的关联性，像是逐步递进：问题1——>问题2——>问题3——>答案
+
+但是这种方式只适合太过概括化的问题，可预知的是，如果一个问题本来就很具象话，再进行子任务的拆分，不可避免的是会得到更加"混淆"的答案。
+
 
 
 #### 将问题抽象
 
+HyDE 基于问题生成一个假象的文档内容，再对于这个内容进行检索。不同于问题生成问题，HyDE用更为抽象的解题思路，将问题生成段落，文档，在更加抽象层面的生成
 
+```python
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_openai import ChatOpenAI
+
+template = """ Please wirte a scientific paper passage to answer the question
+Question: {question}
+Passage: """
+
+propt_hyde = ChatPromptTemplate.from_template(template)
+
+
+generate_docs_for_retrieval = (
+    propt_hyde | ChatOpenAI(template=0) | StrOutputParser()
+)
+
+#Run
+question = "What is task decomposition for LLM Agents?"
+generate_docs_for_retrieval.invoke({"question":question})
+```
 
 
 
@@ -117,6 +144,14 @@ template = """
 
 
 
+### 路由和高级查询
+
+上述提及，如果要优化问题基本的操作就是增加问题的覆盖面，即一个问题变成多个问题。这也衍生出新的决策：私域文档能否满足这些问题的覆盖面？如果不能满足，那是否能使用文档模版来衍生成新的文档，从而作为回答这些问题的依据？
+
+
+
+
+
 
 
 
@@ -124,6 +159,8 @@ template = """
 
 
 ### 学习资料
+
+从零开始学习RAG
 
 [How do domain-specific chatbots work? An Overview of Retrieval Augmented Generation (RAG)](https://scriv.ai/guides/retrieval-augmented-generation-overview)
 
