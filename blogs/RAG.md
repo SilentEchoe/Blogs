@@ -104,7 +104,7 @@ index.query("What should I work on?")
 
 通过提示词将一个抽象的问题拆分成具象化的子问题，并要求这些问题依次回答，然后将答案作为检索文档的一部分，为下一个问题提供信息依据。
 
-```go
+```latex
 输入：如何写作？
 
 生成：写作的基本概念是什么？
@@ -116,7 +116,7 @@ index.query("What should I work on?")
 生成：如何确定写作的主题或论点？
 答案：确定主题或论点通常基于个人兴趣、专业领域、社会热点或读者需求。
 
-..
+...
 
 答案：写作是一个复杂的过程，但可以分解为几个关键步骤来逐一掌握。以下是写作的基本指南：
 1.确定写作目的：首先明确你写作的目的是什么，是为了传达信息、娱乐读者、还是表达个人观点。
@@ -126,44 +126,48 @@ index.query("What should I work on?")
 5.撰写初稿：根据大纲开始写作，不必担心初稿的完美，关键是将想法转化为文字。
 ```
 
-可预见的是：如果一个问题本身就很具体，如果再进行子任务的拆分，那么不可避免的到一些无意义的信息，这样不仅不会提高输出的质量，反而会下降。这也意味着，这种处理方式只适合太过概括或抽象的问题。
+可预见的是：如果一个问题本身就很具体，如果再进行子任务的拆分，那么不可避免的到一些无意义的信息，这样不仅不会提高输出的质量，反而会下降。这也意味着，这种处理方式只适合太过概括或抽象的问题。如果太抽象的问题可以将它们具体化，那么具体的问题能不能抽象化呢？
 
-
-
-#### 将问题抽象
-
-HyDE 基于问题生成一个假象的文档内容，再对于这个内容进行检索。不同于问题生成问题，HyDE用更为抽象的解题思路，将问题生成段落，文档，在更加抽象层面的生成
+将问题抽象化可以拔高视角，再与原问题进行检索，以得到更全面的信息。
 
 ```python
-from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 
-template = """ Please wirte a scientific paper passage to answer the question
-Question: {question}
-Passage: """
-
-propt_hyde = ChatPromptTemplate.from_template(template)
-
-
-generate_docs_for_retrieval = (
-    propt_hyde | ChatOpenAI(template=0) | StrOutputParser()
+system = """ - Role: 抽象化问题专家
+						 - Background: 用户需要设计一个能够将具体问题抽象化的提示词，以获得更广泛、更深入的信息和洞见。
+						 - Profile: 你是一位能够将具体问题提炼出其核心概念和普遍规律的专家，擅长从具体实例中发现普遍性原则。
+						 - Skills: 抽象思维、概括能力、深度分析、信息整合。
+						 - Goals: 设计一个能够引导用户从具体问题中提炼出抽象概念的提示词，帮助用户获得更高层次的认识。
+						 - Constrains: 确保抽象化过程不丢失问题的关键信息，同时能够引导用户思考更广泛的应用场景。
+						 - OutputFormat: 抽象化的问题描述，可能包括概念定义、原则概括、理论框架等。
+						 - Workflow:
+ 							 1. 识别具体问题的关键要素。
+  						 2. 提炼问题中的普遍性原则或概念。
+  						 3. 形成抽象化的问题描述，引导深入思考。
+						 - Examples:
+  						 具体问题：某公司员工流失率高，如何降低？
+  						 抽象化描述：
+    					 - 定义问题：员工留存问题。
+    					 - 普遍性原则：员工满意度、工作环境、职业发展机会对员工留存的影响。
+    					 - 理论框架：马斯洛需求层次理论在员工留存策略中的应用。
+						 如果你不认识一个词或成语，不要尝试重写它。写出简洁的问题。"""
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", system),
+        ("user", "{question}"),
+    ]
 )
-
-#Run
-question = "What is task decomposition for LLM Agents?"
-generate_docs_for_retrieval.invoke({"question":question})
+llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+step_back = prompt | llm | StrOutputParser()
 ```
 
 
 
+HyDE(Hypothetical Document Embeddings) 提供另外一种思路：如果用户输入的问题过于简短，那么可以基于LLM的能力生成一个假设性文档，再对这个文档进行检索。这也是一种将问题抽象化的方式，但显而易见的是：对于现阶段AI应用来说它的效果可能并不好——如今AI应用都在极力降低LLM的幻觉，这种生成假设性文档的内容方式显然会加剧幻觉的不可控。当然，这种思路至少看起来会让问题产生更多的创造性。
 
-
-#### 其他技巧
-
-技巧一：用三种不同的语言提问，会得到完全不一样的答案。
-
-这涉及到训练时的语料质量以及数据量，所以导致结果和答案不一样。(不同语言的语义，语法也不一样，这点很直观地反映到输出)
+上述是从应用的角度在“如何提问”这个维度进行分析，从用户的角度有一个小技巧也可以提高输出质量，即：用多种不同的语言提问，会得到完全不一样的答案。LLM 在训练时的预料质量和数据量都会影响输出的质量，不同语言的语言，语法也不一样，这点会很直观地反映到输出内容中。
 
 
 
