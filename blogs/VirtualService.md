@@ -27,8 +27,6 @@ Istio是一个开源服务网格,它透明地分层到现有的分布式应用�
 - 一个可插入的策略层和配置 API，支持访问控制、速率限制和配额
 - 对集群内的所有流量(包括集群入口和出口)进行自动度量、日志和跟踪
 
-
-
 Istio是为了可扩展性设计的，可以处理不同范围的部署需求。Istio的控制平面运行在Kubernetes上，可以将部署在该集群中的应用程序添加到您的网格中，将网格裸站到其他集群，甚至连接VM或者其他端点。
 
 
@@ -97,6 +95,23 @@ spec:
 **路由规则**按从上到下的顺序选择，虚拟服务中定义的第一条规则有最高优先级。本示例中， 不满足第一个路由规则的流量均流向一个默认的目标，该目标在第二条规则中指定。因此， 第二条规则没有 match 条件，直接将流量导向 v3 子集。
 
 
+
+
+
+### Istio 实战
+
+#### 部署
+
+```shell
+helm repo add istio https://istio-release.storage.googleapis.com/charts
+helm repo update
+
+kubectl create namespace istio-system
+helm install istio-base istio/base -n istio-system --set defaultRevision=default
+
+#helm 版本要大于3.7.1 错误信息：https://github.com/istio/istio/issues/52016
+helm install istiod istio/istiod -n istio-system --wait
+```
 
 
 
