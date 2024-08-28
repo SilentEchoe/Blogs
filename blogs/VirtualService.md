@@ -46,13 +46,80 @@ Istio 提供两种数据平面的模式：
 
 虚拟服务和目标规则是 Istio 流量路由功能的核心模块。虚拟服务这一概念是为了增强流量管理的灵活性和有效性，目的就是为了解耦客户端请求的目标地址与实际响应的载体，这也符合计算机领域的一贯做法：增加抽象层来解耦。
 
-试想一下，如果没有虚拟服务，Envoy 将会沿用Kubernetes的默认网络策略，即轮询的负载均衡策略分发请求。这会增加更多的成本，比如在A/B测试中可能要创建更多的 SVC 或 Ingress 以不同的路由进行测试；如果配置不用服务版本的流量百分比路由就更麻烦了，需要按照流量比例部署多个副本以达到其目的。
+试想一下，如果没有虚拟服务，Envoy 将会沿用 Kubernetes 的默认网络策略，即轮询的负载均衡策略分发请求。这会增加更多的成本，比如在A/B测试中可能要创建更多的 SVC 或 Ingress 以不同的路由进行测试；如果配置不用服务版本的流量百分比路由就更麻烦了，需要按照流量比例部署多个副本以达到其目的。
 
-使用虚拟服务，可以为一个或多个主机名指定流量行为，在虚拟服务中使用路由规则就是告诉 Envoy 如何将流量传递到适合的目标，这点很像 Nginx 的 Conf 配置，但要更为强大。如果想要将流量路由到不同的版本，则可以配置百分比调用到某个目标，再通过逐步增加流量比例完成金丝雀发布，对于用户来说是无感知的。流量路由完全独立于实例部署，这意味着工程师可以创建任意流量路由来实现更为复杂的操作，相比直接使用 Kubernetes 只支持实例缩放的流量分发，要简单得多。
-
-
+使用虚拟服务，可以为一个或多个主机名指定流量行为，在虚拟服务中使用路由规则就是告诉 Envoy 如何将流量传递到适合的目标，这点很像 Nginx 的 Conf 配置，但要更为强大。如果想要将流量路由到不同的版本，则可以配置百分比调用到某个目标，再通过逐步增加流量比例完成金丝雀发布，这对于用户来说是无感知的。流量路由完全独立于实例部署，这意味着工程师可以创建任意流量路由来实现更为复杂的操作，相比直接使用 Kubernetes 只支持实例缩放的流量分发，要简单得多。
 
 
+
+```yaml
+#命名空间标记
+kubectl label namespace default istio-injection=enabled
+
+#准备一个Nginx的Pod及Service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-svc
+spec:
+  selector:
+    app.kubernetes.io/name: demo
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: http-web-svc
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    app.kubernetes.io/name: demo
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+      - containerPort: 80
+        name: http-web-svc
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: demo-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: demoinfo
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - demo-gateway
+  http:
+  - match:
+    - uri:
+        exact: /
+    route:
+    - destination:
+        host: demopage
+        port:
+          number: 80
+```
 
 
 
