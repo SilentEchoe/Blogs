@@ -27,7 +27,7 @@ Istio 由Google、IBM 和 Lyft 创立，它与Kubernetes 和 Prometheus 等项�
 
 Istio 分为数据平面和控制平面，数据平面由 Envoy 组成，这个由 C++ 开发的高性能七层代理与 Nginx 的技术架构相似，代理服务用于控制微服务之间的网络通信，相当于给每个 Pod 分配一个代理；控制平面则用于管理/配置规则策略，这种方式可以让 Istio 完成细颗粒度的流量控制，故障注入，安全性策略和各种身份认证……
 
-架构图如下：
+架构图来自istio官网：
 
 ![image-20240827143854780](https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240827143854780.png)
 
@@ -54,30 +54,16 @@ Istio 提供两种数据平面的模式：
 
 ```yaml
 #命名空间标记
-kubectl label namespace default istio-injection=enabled
+kubectl label namespace test istio-injection=enabled
 
 #准备一个Nginx的Pod及Service
 ---
 apiVersion: v1
-kind: Service
-metadata:
-  name: demo-svc
-spec:
-  selector:
-    app.kubernetes.io/name: demo
-  ports:
-    - name: http
-      protocol: TCP
-      port: 80
-      targetPort: http-web-svc
-
----
-apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx
+  name: demo-nginx
   labels:
-    app.kubernetes.io/name: demo
+    app.kubernetes.io/name: demo-nginx
 spec:
   containers:
   - name: nginx
@@ -85,11 +71,27 @@ spec:
     ports:
       - containerPort: 80
         name: http-web-svc
+
 ---
-apiVersion: networking.istio.io/v1beta1
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app.kubernetes.io/name: demo-nginx
+  ports:
+  - name: name-of-service-port
+    protocol: TCP
+    port: 80
+    targetPort: http-web-svc
+    
+    
+---
+apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: demo-gateway
+  name: nginx-gateway
 spec:
   selector:
     istio: ingressgateway # use istio default controller
@@ -99,29 +101,57 @@ spec:
       name: http
       protocol: HTTP
     hosts:
-    - "*"
+    - '*'
+    
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: demoinfo
+  name: nginx
 spec:
   hosts:
-  - "*"
+  - '*'
   gateways:
-  - demo-gateway
+  - nginx-gateway
   http:
   - match:
     - uri:
         exact: /
     route:
     - destination:
-        host: demopage
+        host: nginx-service
         port:
           number: 80
+          
 ```
 
+当通过curl 命令请求 istio-gateway 地址请求时：
 
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html
+```
 
 
 
