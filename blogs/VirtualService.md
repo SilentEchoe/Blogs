@@ -125,7 +125,13 @@ spec:
           
 ```
 
-当通过curl 命令请求 istio-gateway 地址请求时：
+为了方便演示，可以直接将 istio 的 ingressgateway 更改为 NodePort 模式
+
+```shell
+kubectl edit svc istio-ingressgateway -n istio-system
+```
+
+当通过curl 命令请求 istio-gateway 地址就变成了 `curl IP + {ingressgatewayProt}` 
 
 ```html
 <!DOCTYPE html>
@@ -153,7 +159,55 @@ Commercial support is available at
 </html
 ```
 
+上述虚拟服务中包含了[路由规则]，这是用来描述匹配条件和路由行为，当匹配到 `/` 时会 destination 按照虚拟服务的路由规则像指定的 `Service` 转发流量。这里要注意的是：destination 的 host 必须是存在于 istio 服务注册中心的实际目标地址。
 
+路由的规则是从上到下的顺序进行优先级排序，这点很像代码，一般情况下在构建路由规则时都会提供一个默认的规则，以确保流量在经过虚拟服务时至少能匹配到一条路由规则。
+
+更多的路由规则可以在[[官方文档](https://istio.io/latest/zh/docs/reference/config/networking/virtual-service/#HTTPMatchRequest)]中找到。
+
+在代理前端服务时，比较常见的是需要虚构出一个动态路由，在 istio 中可以通过配置反向代理对进入服务的 URL 进行重写：
+
+```yaml
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: nginx
+spec:
+  gateways:
+  - nginx-gateway
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /v1/
+    - uri:
+        prefix: /v2/
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: nginx-service
+        port:
+          number: 80
+```
+
+使用 rewirte 中的 uri 替换 match 中的 uri 这步操作是强绑定的，只要匹配到符合的路由规则都会重定向到 / ，在 nginx-ingress 实现相同的目标要更为复杂，需要在 Ingress 配置中加上rewrite 的配置，在Path中还要编写正则进行路由的匹配。
+
+```yaml
+ nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^(/v1)$ $1/ redirect;
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
+      nginx.ingress.kubernetes.io/use-regex: "true"
+     
+     
+...
+
+path: /v1(/|$)(.*)
+pathType: Prefix
+```
+
+在验证上述配置时，往往会遇到 `404 503` 等错误，在调试时会相对复杂，当然也不是没有对应的[解决办法](https://www.danielhu.cn/2404-k8s-ingress-debug)。
 
 
 
@@ -165,5 +219,9 @@ Commercial support is available at
 
 https://www.thebyte.com.cn/ServiceMesh/What-is-ServiceMesh.html
 
-https://istio.io/latest/zh/docs/ops/deployment/architecture/
+https://istio.io/latest/zh/docs/ops/deployment/architecture
+
+https://blog.fleeto.us/post/istio-route-rules
+
+https://www.danielhu.cn/2404-k8s-ingress-debug
 
