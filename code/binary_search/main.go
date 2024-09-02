@@ -1,23 +1,32 @@
 package main
 
 func main() {
-	println(binary_search([]int{1, 2, 3, 4, 5, 6, 7, 8}, 4))
 
 }
 
-func binary_search(arr []int, target int) int {
-	low := 0
-	high := len(arr) - 1
-
-	for low <= high {
-		mid := (low + high) / 2
-		if arr[mid] == target {
-			return mid
-		} else if arr[mid] > target {
-			high = mid - 1
-		} else {
-			low = mid + 1
+func twoSum(nums []int, target int) []int {
+	m := make(map[int]int)
+	for i, v := range nums {
+		if j, ok := m[target-v]; ok {
+			return []int{j, i}
 		}
+		m[v] = i
 	}
-	return -1
+	return nil
+}
+
+func groupAnagrams(strs []string) [][]string {
+	m := make(map[[26]int][]string)
+	for _, str := range strs {
+		var key [26]int
+		for _, c := range str {
+			key[c-'a']++
+		}
+		m[key] = append(m[key], str)
+	}
+	var res [][]string
+	for _, v := range m {
+		res = append(res, v)
+	}
+	return res
 }
