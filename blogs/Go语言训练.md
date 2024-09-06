@@ -110,7 +110,7 @@ fmt.Println(cap(slice)) // 10
 
 #### 追加和扩容
 
-go 语言中切片食用 append 关键字向切片追加元素，在中间代码生成阶段会根据返回值是否会覆盖原变量，选择进入两种流程
+go 语言中切片使用 append 关键字向切片追加元素，在中间代码生成阶段会根据返回值是否会覆盖原变量，选择进入两种流程
 
 1.第一种，会覆盖原切片
 
@@ -1429,6 +1429,28 @@ Kube-proxy:
 
 
 
+
+
+Docker 如何实现资源隔离？
+
+```
+容器技术的核心功能就是通过约束和修改进程的动态表现，从而为其创建出一个"边界"
+容器使用 Linux Namespaces 技术来创建一个全新的进程空间，比如：
+int pid = clone(main_function, stack_size, CLONE_NEWPID | SIGCHLD, NULL); 
+当使用 clone 函数时可以设置CLONE_NEWPID的参数，指定Pid，在这个进程空间里它的PID和设置的参数相同，但是在宿主机的进程空间里，这个容器的PID的真实数值由操作系统分配
+Linux 操作系统提供 Mount UTS IPC Network User 等一系列 Namespace 让隔离进程只能看到当前 Namespace 里的信息
+```
+
+cgroup隔离了什么？
+
+```
+Linux Cgroups 主要作用就是限制一个进程组能够使用的资源上限，包括CPU 内存 磁盘 网络带宽等。
+它以文件和目录的方式在操作系统的/sys/fs/cgroup 目录下，在镜像中这个目录会包含 cpuset cpu memory 这样的子目录，也被称为子系统。
+不同的子系统可以通过不同的参数的进行配置限制。
+```
+
+
+
 Docker的网络是怎么实现的？
 
 ```markdown
@@ -1584,6 +1606,12 @@ Go 内建的 map 类型不是线程安全的，而 [Sync.Map](http://sync.Map) �
 
 
 
+Go语言的内存管理是如何设计的
+
+Go语言函数如何实现多参数返回的
+
+
+
 
 
 ## **反射**
@@ -1593,12 +1621,6 @@ Go 语言中反射的第一法则：**我们能将 Go 语言的 interface{} 变�
 第二法则：我们可以从反射对象获取 interface{} 变量。
 
 第三法则：我们得到的反射对象跟原对象没有任何关系，那么直接修改反射对象无法改变原变量，程序为了防止错误就会崩溃。
-
-
-
-
-
-
 
 
 
@@ -1648,7 +1670,11 @@ Channel 是一个用于同步和通信的有锁队列。
 
 
 
-> 共享资源的并发访问使用传统并发原语 复杂的任务编排和消息传递使用 Channel 消息通知机制使用 Channel，除非只想 signal 一个 goroutine，才使用 Cond 简单等待所有任务的完成用 WaitGroup ，也有 Channel 的推崇者用 Channel，都可以使用 需要和 Select 语句结合，使用 Channel 需要和超时配合时，使用 Channel 和 Context
+> 共享资源的并发访问使用传统并发原语 
+>
+> 复杂的任务编排和消息传递使用 Channel 消息通知机制使用 Channel
+>
+> 除非只想 signal 一个 goroutine，才使用 Cond 简单等待所有任务的完成用 WaitGroup ，也有 Channel 的推崇者用 Channel，都可以使用 需要和 Select 语句结合，使用 Channel 需要和超时配合时，使用 Channel 和 Context
 
 
 
