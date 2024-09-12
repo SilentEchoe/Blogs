@@ -86,5 +86,15 @@ EOF
 
 Device Plugin 会通过 Kubernetes 的 ListAndWatch API 定期向 kubelet 上报该 Node 上 GPU ID 信息，不会包含 GPU 设备的信息，这一点将插件和实际的显卡信息做了解耦，kubelet 通过双层缓存来维护这些 GPU 的 ID 列表，并通过 ListAndWatch API 定时更新。
 
-当一个 Pod 想使用一个 GPU 时，开发者只需要在 resources 中添加 nvidia.com/gpu: 1 这样调度器会从缓存中查询符合条件的 Node 再对双重缓存里的 Gpu 数量减去相应的数量，至此完成 Pod 和 Node 的绑定。
+当一个 Pod 想使用一个 GPU 时，开发者只需要在resources中添加`nvidia.com/gpu: 1`这样调度器会从缓存中查询符合条件的Node再对双重缓存里的 Gpu 数量减去相应的数量，完成 Pod 和 Node 的绑定。
+
+现实的情况是复杂的，一个 Node 上可能包含多个 GPU 设备，这是由硬件资源来决定的，当 Pod 绑定某个 Node 后 kubelet 会根据设备ID 找到对应的设备路径和驱动目录，这些具体的 GPU 信息也是由 Device Plugin 维护。当 kubelet 将这些信息追加在创建容器所对应的 CRI 请求中，CRI 再发给 Docker ，创建出来的容器中自然就会出现这个 GPU 设备。
+
+这是 Kubernetes 为 Pod 分配 GPU 资源最简单的实现方式，它只能按照 GPU 的个数进行分配，在 Device Plugin 的设计和实现中很难对 ListAndWatch API 做更多的扩展，这源于它本身的扩展性就不好，如果面对一些更复杂的场景需求，是无法通过 Device Plugin 的 API 来实现的。
+
+
+
+### GPU 共享
+
+
 
