@@ -27,13 +27,17 @@ category: Kubernetes
 
 那么，如果想要在集群内实现 GPU 设备的管理，需要使用哪些技术？
 
-了解容器化技术的开发者会明白，在 Linux 中 Cgroups 暴露出来的操作接口是文件系统，它以文件和目录的方式出现在 /sys/fs/cgroup 路径下，可以通过挂载的方式自行挂载 Cgroups，在这个文件夹下会包含 cpuset cpu memory 这样的子目录，这些子目录代表着可以被 Cgroups 所限制的资源种类。
+Linux 中 Cgroups 暴露出来的操作接口是文件系统，它以文件和目录的方式出现在 /sys/fs/cgroup 路径下，可以通过挂载的方式自行挂载 Cgroups，在这个文件夹下会包含 cpuset cpu memory 这样的子目录，这些子目录代表着可以被 Cgroups 所限制的资源种类。
 
 根据上述推理，如果想要在容器内使用 NVIDIA 的 GPU 设备，那么这个容器必须挂载 GPU 的设备和驱动目录。
 
 ![image-20240912143357471](https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240912143357471.png)
 
+Kubernetes 在实现 GPU 设备时，直接设置容器的 CRI (Container Runtime Interface) 参数就可以通过 Volume 将 GPU 驱动信息挂载到容器内，这也是 Linux 系统的特点，一切皆文件，只要设置好参数挂载驱动目录后就能直接使用该设备。
 
+NVIDIA 开源了一个名为[nvidia-container-toolkit](https://github.com/NVIDIA/nvidia-container-toolkit)的项目，包含了容器运行时库，用于自动配置容器使用 NVIDIA GPU ，这样可以不需要在启动容器时设置额外的参数。
 
+![image-20240912150116210](https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240912150116210.png)
 
+容器化只是第一步，如果要将 Kubernetes 与 Docker 一起使用需要将 Docker 配置为 NVIDIA Container Runtime 的引用，并设置为默认运行时。
 
