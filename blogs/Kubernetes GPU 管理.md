@@ -27,7 +27,7 @@ category: Kubernetes
 
 那么，如果想要在集群内实现 GPU 设备的管理，需要使用哪些技术？
 
-Linux 中 Cgroups 暴露出来的操作接口是文件系统，它以文件和目录的方式出现在 /sys/fs/cgroup 路径下，可以通过挂载的方式自行挂载 Cgroups，在这个文件夹下会包含 cpuset cpu memory 这样的子目录，这些子目录代表着可以被 Cgroups 所限制的资源种类。
+Linux 中 Cgroups 暴露出来的操作接口是文件系统，它以文件和目录的方式出现在 `/sys/fs/cgroup` 路径下，可以通过挂载的方式自行挂载 Cgroups，在这个文件夹下会包含 cpuset cpu memory 这样的子目录，这些子目录代表着可以被 Cgroups 所限制的资源种类。
 
 根据上述推理，如果想要在容器内使用 NVIDIA 的 GPU 设备，那么这个容器必须挂载 GPU 的设备和驱动目录。
 
@@ -39,5 +39,52 @@ NVIDIA 开源了一个名为[nvidia-container-toolkit](https://github.com/NVIDIA
 
 ![image-20240912150116210](https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240912150116210.png)
 
-容器化只是第一步，如果要将 Kubernetes 与 Docker 一起使用需要将 Docker 配置为 NVIDIA Container Runtime 的引用，并设置为默认运行时。
+容器化只是第一步，如果要将 Kubernetes 与 Docker 一起使用需要将 Docker 配置为 NVIDIA Container Runtime 的引用，并设置为默认运行时。docker 的 daemon.json 文件内容如下：
+
+```json
+{ 
+  "default-runtime": "nvidia",
+    "exec-opts": [
+        "native.cgroupdriver=systemd"
+    ],
+    "log-driver": "json-file",
+    "log-opts": {
+        "max-size": "100m"
+    },
+    "runtimes": {
+        "nvidia": {
+            "args": [],
+            "path": "nvidia-container-runtime"
+        }
+    },
+    "storage-driver": "overlay2"
+}
+```
+
+在 Kubernetes 支持的 GPU 方案里所有对硬件加速设备进行管理的功能，都是通过 Device Plugin 插件来实现的。NVIDIA 会实现一个叫做 **[k8s-device-plugin](https://github.com/NVIDIA/k8s-device-plugin)** 的插件，以官方的调度示例为例：
+
+```yaml
+$ cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-pod
+spec:
+  restartPolicy: Never
+  containers:
+    - name: cuda-container
+      image: nvcr.io/nvidia/k8s/cuda-sample:vectoradd-cuda10.2
+      resources:
+        limits:
+          nvidia.com/gpu: 1 # requesting 1 GPU
+  tolerations:
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+EOF
+```
+
+Device Plugin 会通过 Kubernetes 的 ListAndWatch API 定期向 kubelet 上报该 Node 上 GPU ID 信息，不会包含 GPU 设备的信息，这一点将插件和实际的显卡信息做了解耦，kubelet 通过双层缓存来维护这些 GPU 的 ID 列表，并通过 ListAndWatch API 定时更新。
+
+当一个 Pod 想使用一个 GPU 时，开发者只需要在 resources 中添加 nvidia.com/gpu: 1 这样调度器会从缓存中查询符合条件的 Node 再对双重缓存里的 Gpu 数量减去相应的数量，至此完成 Pod 和 Node 的绑定。
 
