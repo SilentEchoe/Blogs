@@ -94,7 +94,44 @@ Device Plugin 会通过 Kubernetes 的 ListAndWatch API 定期向 kubelet 上报
 
 
 
-### GPU 共享
+### GPU Share
 
+随着机器学习对 GPU 资源需求的日益增加，单卡资源的分配已经无法满足机器学习的需求，模型训练的过程中衍生出多种复杂场景：小任务场景下希望能在一张卡上执行多个任务以提高利用率，大任务场景下希望一次训练能调用多张卡进行并行计算。
 
+如果需要在一张卡上运行多个推理任务，需要解决的问题是：如何在 Pod 之间共享 GPU？
+
+阿里推出一个开源的 [GPUShare调度器扩展](https://github.com/AliyunContainerService/gpushare-scheduler-extender?tab=readme-ov-file)它基于调度器的扩展和设备插件机制，在 Kubernetes 中实现将一卡分配给多个 Pod，随之而来创建资源也发生了变化：
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: binpack-1
+  labels:
+    app: binpack-1
+spec:
+  replicas: 1
+  selector: # define how the deployment finds the pods it mangages
+    matchLabels:
+      app: binpack-1
+  template: # define the pods specifications
+    metadata:
+      labels:
+        app: binpack-1
+    spec:
+      containers:
+      - name: binpack-1
+        image: cheyang/gpu-player:v2
+        env:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "all"
+        resources:
+          limits:
+            # GiB
+            aliyun.com/gpu-mem: 8
+```
+
+资源的划分不再以卡为单位，而是采用内存G为单位，当使用插件查看共享的 GPU 资源信息时能轻易发现当前集群的 GPU Memory 占比：
+
+![image-20240913105232561](https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913105232561.png)
 
