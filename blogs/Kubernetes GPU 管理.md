@@ -135,3 +135,27 @@ spec:
 
 ![image-20240913105232561](https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913105232561.png)
 
+在该项目的 README 能发现共享的解决方案基于[Nvidia Docker2](https://github.com/NVIDIA/nvidia-docker)(这个项目现在已经封存了)，通过参考 [GPU 共享设计](https://docs.google.com/document/d/1ZgKH_K4SEfdiE_OfxQ836s4yQWxZfSjS288Tq9YIWCA/edit#heading=h.r88v2xgacqr)完成该项目，虽然[gpushare-device-plugin](https://github.com/AliyunContainerService/gpushare-device-plugin)已经停止维护，但从源码的设计来看可以发现，它的实现方式和 **[k8s-device-plugin](https://github.com/NVIDIA/k8s-device-plugin)**的思路相似，整个过程大致分为三步：
+
+1. 查询所有的GPU ID 设备，如果查询到了，那么更改 Pod 的 Spec 信息
+
+   ![image-20240913113457790](https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913113457790.png)
+
+2. 将Pod 绑定到指定的 Node 上
+
+![image-20240913113535393](https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913113535393.png)
+
+3.如果pod更新成功，更新设备信息
+
+![image-20240913113724395](https://raw.githubusercontent.com/SilentEchoe/images/main/image-20240913113724395.png)
+
+将一个设备信息同时挂载多个 Pod 是实现小任务共享的简单方式，GPU Share 通过插件和调度器动态遍历所有 Pod 的显存信息来计算所能调度的 GPU 资源，以扩展的方式来进行资源分配。这种方式实现成本低，但也会存在问题：GPU 资源不隔离。
+
+当 Pod 中的计算任务在申请显存时，因为资源的不隔离，所以它实际上能申请超过分配给它的显存数。假设有一张 80G 的显卡，按照正常流程可以分配 4 个 20G显存的 Pod，当其中的某个 Pod 申请显存时多申请了 5G ，这样会引发资源的抢占从而出现显存溢出的错误。
+
+
+
+
+
+
+
