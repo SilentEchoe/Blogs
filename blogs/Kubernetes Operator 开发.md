@@ -268,8 +268,6 @@ make run
 
 ### 学习资料
 
-
-
 [controller-runtime](https://maao.cloud/2021/02/26/Kubernetes-Controller%E5%BC%80%E5%8F%91%E5%88%A9%E5%99%A8-controller-runtime)
 
 [controller-runtime 源码分析](https://qiankunli.github.io/2020/08/10/controller_runtime.html)
