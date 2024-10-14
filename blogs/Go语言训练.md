@@ -1429,8 +1429,6 @@ Kube-proxy:
 
 
 
-
-
 Docker 如何实现资源隔离？
 
 ```
@@ -1440,6 +1438,8 @@ int pid = clone(main_function, stack_size, CLONE_NEWPID | SIGCHLD, NULL);
 当使用 clone 函数时可以设置CLONE_NEWPID的参数，指定Pid，在这个进程空间里它的PID和设置的参数相同，但是在宿主机的进程空间里，这个容器的PID的真实数值由操作系统分配
 Linux 操作系统提供 Mount UTS IPC Network User 等一系列 Namespace 让隔离进程只能看到当前 Namespace 里的信息
 ```
+
+
 
 cgroup隔离了什么？
 
