@@ -1487,6 +1487,14 @@ Docker 通信过程
 
 
 
+20G
+
+request 2 G limit 4G
+
+
+
+
+
 ## **Go 语言中 new 和 make 的区别**
 
 new 和 make 都是 分配内存的原语。new 只分配内存但并不初始化内存，而 make 用于 slice , map 和 channel 的初始化。
@@ -1608,7 +1616,16 @@ Go 内建的 map 类型不是线程安全的，而 [Sync.Map](http://sync.Map) �
 
 Go语言的内存管理是如何设计的
 
+> Go 语言使用空闲链表分配器，将内存分割成 4 8 16 32 字节的内存块组成的链表
+
+
+
 Go语言函数如何实现多参数返回的
+
+> Go语言使用栈空间来返回多个值
+> C语言通过寄存器来返回多个值
+
+
 
 
 
@@ -1674,7 +1691,7 @@ Channel 是一个用于同步和通信的有锁队列。
 >
 > 复杂的任务编排和消息传递使用 Channel 消息通知机制使用 Channel
 >
-> 除非只想 signal 一个 goroutine，才使用 Cond 简单等待所有任务的完成用 WaitGroup ，也有 Channel 的推崇者用 Channel，都可以使用 需要和 Select 语句结合，使用 Channel 需要和超时配合时，使用 Channel 和 Context
+> 除非只想 signal 一个 goroutine，才使用 Cond。简单等待所有任务的完成用 WaitGroup ，也有 Channel 的推崇者用 Channel，都可以使用 需要和 Select 语句结合，使用 Channel 需要和超时配合时，使用 Channel 和 Context
 
 
 

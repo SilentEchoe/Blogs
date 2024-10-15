@@ -3,11 +3,20 @@ package main
 
 import "fmt"
 
+const (
+	C1 int = 1 << iota
+	C2
+	C3
+)
+
 func main() {
 	var nums1 = []int{1, 2, 3, 0, 0, 0}
 	var nums2 = []int{2, 5, 6}
 
 	merge(nums1, 3, nums2, 3)
+	println(C1)
+	println(C2)
+	println(C3)
 }
 
 // 给定一个 n 个元素有序的（升序）整型数组 nums 和一个目标值 target
