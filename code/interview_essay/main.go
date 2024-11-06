@@ -5,10 +5,15 @@
 */
 package main
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 func main() {
-
+	arry := [3]int{}
+	arry[0] = 1
+	fmt.Println(arry)
 }
 
 // 请实现一个算法，确定一个字符串的所有字符【是否全都不同】

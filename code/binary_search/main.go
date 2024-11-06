@@ -36,6 +36,27 @@ func search(nums []int, target int) int {
 	return -1
 }
 
+// 搜索插入位置
+// 给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
+// 输入: nums = [1,3,5,6], target = 5
+// 输出: 2
+// 官方提解的思路：用右偏移位来减少计算时间，如果单纯只用二分查找法没办法过时间限制。
+func searchInsert(nums []int, target int) int {
+	n := len(nums)
+	left, right := 0, n-1
+	ans := n
+	for left <= right {
+		mid := (right-left)>>1 + left
+		if target <= nums[mid] {
+			ans = mid
+			right = mid - 1
+		} else {
+			left = mid + 1
+		}
+	}
+	return ans
+}
+
 // Leetcode 88.合并两个有序数据
 // 给你两个按 非递减顺序 排列的整数数组 nums1 和 nums2，另有两个整数 m 和 n ，分别表示 nums1 和 nums2 中的元素数目。
 // 请你 合并 nums2 到 nums1 中，使合并后的数组同样按 非递减顺序 排列。
@@ -80,6 +101,7 @@ func partition(list []int, low, high int) int {
 	return low
 }
 
+// QuickSort 快排
 func QuickSort(list []int, low, high int) {
 	if high > low {
 		//位置划分
