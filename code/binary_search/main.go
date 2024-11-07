@@ -1,14 +1,14 @@
 /* 二分查找 */
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 func main() {
-	var nums1 = []int{1, 2, 3, 0, 0, 0}
-	var nums2 = []int{2, 5, 6}
-
-	merge(nums1, 3, nums2, 3)
-
+	soucre := searchRange([]int{2, 2}, 3)
+	fmt.Println(soucre)
 }
 
 // 给定一个 n 个元素有序的（升序）整型数组 nums 和一个目标值 target
@@ -122,4 +122,17 @@ func searchMatrix(matrix [][]int, target int) bool {
 		}
 	}
 	return false
+}
+
+// 在排列数组中查找元素的第一个和最后一个
+// 输入：nums = [5,7,7,8,8,10], target = 8
+// 输出：[3,4]
+func searchRange(nums []int, target int) []int {
+	// 官方的解就是用sort标准库里面的包，进行两次二分查询
+	leftmost := sort.SearchInts(nums, target)
+	if leftmost == len(nums) || nums[leftmost] != target {
+		return []int{-1, -1}
+	}
+	rightmost := sort.SearchInts(nums, target+1) - 1
+	return []int{leftmost, rightmost}
 }
