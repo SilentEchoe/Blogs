@@ -112,3 +112,14 @@ func QuickSort(list []int, low, high int) {
 		QuickSort(list, pivot+1, high)
 	}
 }
+
+// 搜索二维矩阵
+func searchMatrix(matrix [][]int, target int) bool {
+	for _, v := range matrix {
+		soure := search(v, target)
+		if soure != -1 {
+			return true
+		}
+	}
+	return false
+}
