@@ -1,19 +1,36 @@
 package main
 
+import "fmt"
+
 func main() {
 
 	strs := []string{"eat", "tea", "tan", "ate", "nat", "bat"}
-	groupAnagrams(strs)
+
+	fmt.Println(groupAnagrams(strs))
 }
 
-//找出由相同字母组成的单词
-//输入: strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
-//输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
-
+// 找出由相同字母组成的单词
+// 输入: strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
+// 输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
 func groupAnagrams(strs []string) [][]string {
-	//newMap := NewAnagramsMap()
+	oldMap := NewAnagramsMap()
+	newMap := make(map[int][]string)
+	rest := make([][]string, 0)
+	for _, v := range strs {
+		primeNumber := 1
+		for _, j := range v {
+			primeNumber *= oldMap[string(j)]
+		}
+		// 这样就得到一个单词的质数
+		newMap[primeNumber] = append(newMap[primeNumber], v)
+	}
 
-	return make([][]string, 0)
+	for _, v := range newMap {
+		//fmt.Println(v)
+		rest = append(rest, v)
+	}
+
+	return rest
 }
 
 // NewAnagramsMap 用质数表示26个字母，把字符串的各个字母相乘以，字母异位词的乘积必定是相等的
