@@ -36,7 +36,7 @@ func search(nums []int, target int) int {
 	return -1
 }
 
-// 搜索插入位置
+// Leetcode 35.搜索插入位置
 // 给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
 // 输入: nums = [1,3,5,6], target = 5
 // 输出: 2
@@ -113,7 +113,7 @@ func QuickSort(list []int, low, high int) {
 	}
 }
 
-// 搜索二维矩阵
+// Leetcode 74.搜索二维矩阵
 func searchMatrix(matrix [][]int, target int) bool {
 	for _, v := range matrix {
 		soure := search(v, target)
@@ -135,4 +135,14 @@ func searchRange(nums []int, target int) []int {
 	}
 	rightmost := sort.SearchInts(nums, target+1) - 1
 	return []int{leftmost, rightmost}
+}
+
+// Leetcode 33.搜索螺旋排序数组
+// 输入：nums = [4,5,6,7,0,1,2], target = 0
+// 输出：4
+func searchSpiralSort(nums []int, target int) int {
+	// 因为不确定是从哪个下标进行旋转，所以不好进行二分搜索
+	// 第一步，先找到分割点，才好进行二分
+
+	return -1
 }

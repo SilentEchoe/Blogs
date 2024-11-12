@@ -5,8 +5,6 @@ tags: [Go,面试]
 category: Go
 ---
 
-
-
 # Go语言基础
 
 ## 数组
@@ -1411,7 +1409,6 @@ Etcd:
 Kube-Scheduler：
 负责监视新创建的，未指定运行节点(node)的Pods，并选择节点来让Pod 在上面运行
 
-
 Controller Manager:
 每个控制器都是一个单独的进程，但是为了降低复杂性，它们被编译到同一个可执行文件，并在同一个进程中运行：
 Replication Controller 副本控制器
@@ -1689,7 +1686,7 @@ Channel 是一个用于同步和通信的有锁队列。
 
 > 共享资源的并发访问使用传统并发原语 
 >
-> 复杂的任务编排和消息传递使用 Channel 消息通知机制使用 Channel
+> 复杂的任务编排和消息传递/消息通知机制使用 Channel
 >
 > 除非只想 signal 一个 goroutine，才使用 Cond。简单等待所有任务的完成用 WaitGroup ，也有 Channel 的推崇者用 Channel，都可以使用 需要和 Select 语句结合，使用 Channel 需要和超时配合时，使用 Channel 和 Context
 
