@@ -87,3 +87,49 @@ func hasCycle(head *ListNode) bool {
 	}
 	return false
 }
+
+// LeetCode.142. 环形链表2
+// 给定一个链表的头节点  head ，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。
+// head = [3,2,0,-4], pos = 1
+// 返回索引为 1 的链表节点
+func detectCycle(head *ListNode) *ListNode {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			p := head
+			// 调整到最初到样子
+			for p != slow {
+				p = p.Next
+				slow = slow.Next
+			}
+			return p
+		}
+	}
+	return nil
+}
+
+// LeetCode.2. 两数相加
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+	//var root *ListNode = nil
+	root := &ListNode{
+		Val: 0,
+	}
+	cursor := root
+	carry := 0
+
+	for l1 != nil || l2 != nil {
+		sumVal := l1.Val + l2.Val + carry
+		carry = sumVal / 10
+		sumNode := &ListNode{
+			Val: sumVal % 10,
+		}
+		cursor.Next = sumNode
+		cursor = sumNode
+
+		l1 = l1.Next
+		l2 = l1.Next
+	}
+	return root.Next
+}
