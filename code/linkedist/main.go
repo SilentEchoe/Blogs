@@ -71,3 +71,19 @@ func middleNode(head *ListNode) *ListNode {
 	}
 	return res[len(res)/2]
 }
+
+// LeetCode.141. 环形链表
+// 给你一个链表的头节点 head ，判断链表中是否有环。
+// head = [3,2,0,-4], pos = 1
+// 输出：true
+func hasCycle(head *ListNode) bool {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			return true
+		}
+	}
+	return false
+}
