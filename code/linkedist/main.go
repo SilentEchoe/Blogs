@@ -30,5 +30,11 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 // 输入：head = [1,2,3,4,5]
 // 输出：[5,4,3,2,1]
 func reverseList(head *ListNode) *ListNode {
-	return nil
+	if head == nil || head.Next == nil {
+		return head
+	}
+	newHead := reverseList(head.Next)
+	head.Next.Next = head
+	head.Next = nil
+	return newHead
 }
