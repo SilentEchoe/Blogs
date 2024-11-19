@@ -143,24 +143,37 @@ func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
 
 // LeetCode.2. 两数相加
 func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
-	//var root *ListNode = nil
-	root := &ListNode{
-		Val: 0,
-	}
+	root := &ListNode{Val: 0}
 	cursor := root
 	carry := 0
 
-	for l1 != nil || l2 != nil {
-		sumVal := l1.Val + l2.Val + carry
+	for l1 != nil || l2 != nil || carry != 0 {
+		l1val := 0
+		l2val := 0
+		if l1 != nil {
+			l1val = l1.Val
+		}
+		if l2 != nil {
+			l2val = l2.Val
+		}
+		sumVal := l1val + l2val + carry
 		carry = sumVal / 10
+		// 如果不能被膜
 		sumNode := &ListNode{
 			Val: sumVal % 10,
 		}
 		cursor.Next = sumNode
 		cursor = sumNode
 
-		l1 = l1.Next
-		l2 = l1.Next
+		if l1 != nil {
+			l1 = l1.Next
+		}
+
+		if l2 != nil {
+			l2 = l2.Next
+		}
 	}
 	return root.Next
 }
+
+// LeetCode.

@@ -860,7 +860,7 @@ ch := make(chan<- int,1)
 
 2.send 已经close 的chan
 
-3.close 已经 close的chan
+3.close 已经 close 的chan
 
 
 
