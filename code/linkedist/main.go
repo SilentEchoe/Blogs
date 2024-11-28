@@ -176,4 +176,23 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 	return root.Next
 }
 
-// LeetCode.
+// LeetCode.24 两两交换链表中的节点
+// 给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题（即，只能进行节点交换）
+// 输入：head = [1,2,3,4]
+// 输出：[2,1,4,3]
+func swapPairs(head *ListNode) *ListNode {
+	tem := &ListNode{-1, head}
+	r := tem
+	for r.Next != nil && r.Next.Next != nil {
+		node1 := r.Next
+		node2 := r.Next.Next
+
+		// 交换
+		r.Next = node2
+		node1.Next, node2.Next = node2.Next, node1
+
+		// 继续迭代
+		r = node1
+	}
+	return tem.Next
+}
