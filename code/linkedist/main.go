@@ -196,3 +196,11 @@ func swapPairs(head *ListNode) *ListNode {
 	}
 	return tem.Next
 }
+
+// LeetCode.25 K个一组翻转链表
+func reverseKGroup(head *ListNode, k int) *ListNode {
+	for i := 0; i < k; i++ {
+		// 生成一组
+	}
+	return head
+}
