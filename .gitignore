@@ -39,7 +39,8 @@ coverage.html
 temp_coverage_test.go
 
 # VS Code IDE
-.vscode
+**/.DS_Store
+**/.idea
 docker/*.tar.gz
 *.patch
 /main
