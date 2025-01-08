@@ -1,5 +1,7 @@
 package main
 
+/* LeetCode Hot 100 */
+
 func main() {
 
 }
@@ -12,11 +14,14 @@ func twoSum(nums []int, target int) []int {
 	m := make(map[int]int)
 	for i, v := range nums {
 		if j, ok := m[target-v]; ok {
-			return []int{j, i}
+			return []int{j, v}
 		}
 		m[v] = i
 	}
 	return nil
 }
 
-// LeetCode.49 字母异位词分组
+// LeetCode
+func groupAnagrams(strs []string) [][]string {
+	return nil
+}
