@@ -1,0 +1,7 @@
+  - acquisition-interval : 10 #采集间隔
+    max-work: 10
+    timeout-seconds: 5
+    target-endpoint: http://0.0.0.0:4317
+    actions:
+      - agreement : prometheus
+        value: https://prometheus.demo.do.prometheus.io/metrics
