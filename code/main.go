@@ -2,140 +2,96 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-
-	"go.uber.org/zap"
 )
 
-// Worker 结构体，模拟一个工作器
-type Worker struct {
-	signalsChannel      chan os.Signal
-	asyncErrorChannel   chan error
-	reloadConfigChannel chan struct{}
-	shutdownChan        chan struct{}
-	service             struct {
-		Logger func() *zap.Logger
-	}
-	// 模拟配置
-	config struct {
-		// 工作间隔
-		Interval time.Duration
-	}
-}
-
-// NewWorker 创建一个新的 Worker 实例
-func NewWorker() *Worker {
-	logger, _ := zap.NewProduction()
-	w := &Worker{
-		signalsChannel:      make(chan os.Signal, 1),
-		asyncErrorChannel:   make(chan error, 1),
-		reloadConfigChannel: make(chan struct{}),
-		shutdownChan:        make(chan struct{}),
-	}
-	w.service.Logger = func() *zap.Logger {
-		return logger
-	}
-	w.config.Interval = 2 * time.Second
-	return w
-}
-
-// setupConfigurationComponents 模拟设置配置组件
-func (w *Worker) setupConfigurationComponents(ctx context.Context) error {
-	// 模拟一些初始化工作
-	w.service.Logger().Info("Setting up configuration components")
-	time.Sleep(1 * time.Second)
-	return nil
-}
-
-// reloadConfiguration 模拟重新加载配置
-func (w *Worker) reloadConfiguration(ctx context.Context) error {
-	w.service.Logger().Info("Reloading configuration")
-	// 模拟重新加载配置的耗时操作
-	time.Sleep(1 * time.Second)
-	// 这里可以更新配置
-	w.config.Interval = 3 * time.Second
-	return nil
-}
-
-// shutdown 模拟关闭操作
-func (w *Worker) shutdown(ctx context.Context) error {
-	w.service.Logger().Info("Shutting down worker")
-	// 模拟关闭操作的耗时
-	time.Sleep(1 * time.Second)
-	return nil
-}
-
-// Run 启动工作器并等待其完成
-func (w *Worker) Run(ctx context.Context) error {
-	// 初始化配置组件
-	if err := w.setupConfigurationComponents(ctx); err != nil {
-		return err
-	}
-
-	// 始终监听 SIGHUP 信号以进行配置重新加载
-	signal.Notify(w.signalsChannel, syscall.SIGHUP)
-	defer signal.Stop(w.signalsChannel)
-
-	// 监听 SIGTERM 和 SIGINT 信号以进行优雅关闭
-	signal.Notify(w.signalsChannel, os.Interrupt, syscall.SIGTERM)
-
-	// 启动一个 goroutine 模拟异步工作
-	go func() {
-		ticker := time.NewTicker(w.config.Interval)
-		defer ticker.Stop()
-		for {
-			select {
-			case <-ticker.C:
-				w.service.Logger().Info("Doing some work")
-				// 模拟异步错误
-				if time.Now().Unix()%5 == 0 {
-					w.asyncErrorChannel <- fmt.Errorf("simulated async error")
-				}
-			case <-ctx.Done():
-				return
-			}
-		}
-	}()
-
-	// 控制循环：监听各种中断信号
-LOOP:
-	for {
-		select {
-		case err := <-w.asyncErrorChannel:
-			w.service.Logger().Error("Asynchronous error received, terminating process", zap.Error(err))
-			break LOOP
-		case s := <-w.signalsChannel:
-			w.service.Logger().Info("Received signal from OS", zap.String("signal", s.String()))
-			if s == syscall.SIGHUP {
-				if err := w.reloadConfiguration(ctx); err != nil {
-					return err
-				}
-			} else {
-				break LOOP
-			}
-		case <-w.shutdownChan:
-			w.service.Logger().Info("Received shutdown request")
-			break LOOP
-		case <-ctx.Done():
-			w.service.Logger().Info("Context done, terminating process", zap.Error(ctx.Err()))
-			// 使用背景上下文调用关闭函数，因为传入的上下文已被取消
-			return w.shutdown(context.Background())
-		}
-	}
-
-	return w.shutdown(ctx)
+type Collector struct {
+	// shutdownChan is used to terminate the collector.
+	shutdownChan chan struct{}
+	// signalsChannel is used to receive termination signals from the OS.
+	signalsChannel chan os.Signal
+	logger         *zap.Logger
 }
 
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// Initialize logger
+	logger, err := zap.NewProduction()
+	if err != nil {
+		fmt.Println("Failed to initialize logger:", err)
+		return
+	}
+	defer logger.Sync()
+
+	// Create a context with cancellation
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	worker := NewWorker()
-	if err := worker.Run(ctx); err != nil {
-		fmt.Printf("Error running worker: %v\n", err)
+	// Create a new collector
+	col := &Collector{
+		shutdownChan:   make(chan struct{}),
+		signalsChannel: make(chan os.Signal, 1),
+		logger:         logger,
 	}
+
+	// Run the collector in a goroutine
+	go func() {
+		if err := col.Run(ctx); err != nil {
+			logger.Error("Collector exited with error", zap.Error(err))
+		}
+	}()
+
+	// Simulate running for some time
+	time.Sleep(5 * time.Second)
+
+	// Stop the collector gracefully
+	col.Stop()
+
+	// Wait for shutdown to complete
+	time.Sleep(1 * time.Second)
+	logger.Info("Main function exiting")
+}
+
+// Run starts the collector and listens for shutdown signals.
+func (col *Collector) Run(ctx context.Context) error {
+	// Notify signalsChannel for SIGHUP, SIGINT, and SIGTERM
+	signal.Notify(col.signalsChannel, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
+	defer signal.Stop(col.signalsChannel)
+
+	col.logger.Info("Collector started")
+
+	// Control loop: selects between channels for various interrupts
+LOOP:
+	for {
+		select {
+		case <-col.shutdownChan:
+			col.logger.Info("Received shutdown request")
+			break LOOP
+		case sig := <-col.signalsChannel:
+			col.logger.Info("Received signal", zap.String("signal", sig.String()))
+			break LOOP
+		case <-ctx.Done():
+			col.logger.Info("Context done, terminating process", zap.Error(ctx.Err()))
+			break LOOP
+		}
+	}
+
+	// Perform shutdown
+	return col.shutdown(ctx)
+}
+
+// Stop gracefully shuts down the collector by sending a signal to shutdownChan.
+func (col *Collector) Stop() {
+	col.logger.Info("Stopping collector...")
+	close(col.shutdownChan) // Send shutdown signal
+}
+
+// shutdown performs cleanup operations before the collector exits.
+func (col *Collector) shutdown(ctx context.Context) error {
+	col.logger.Info("Shutting down collector")
+	// Add cleanup logic here, e.g., closing files, releasing resources, etc.
+	return nil
 }
