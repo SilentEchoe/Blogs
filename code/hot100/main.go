@@ -1,5 +1,7 @@
 package main
 
+import "sort"
+
 /* LeetCode Hot 100 */
 
 func main() {
@@ -27,5 +29,20 @@ func twoSum(nums []int, target int) []int {
 // 输入: strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
 // 输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
 func groupAnagrams(strs []string) [][]string {
-	return nil
+	m := map[string][]string{}
+	for _, str := range strs {
+		s := []byte(str)
+		sort.Slice(s, func(i, j int) bool {
+			return s[i] < s[j]
+		})
+		sortedStr := string(s)
+		m[sortedStr] = append(m[sortedStr], str)
+	}
+	ans := make([][]string, 0, len(m))
+
+	for _, v := range m {
+		ans = append(ans, v)
+	}
+
+	return ans
 }
