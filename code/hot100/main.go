@@ -1,11 +1,14 @@
 package main
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+)
 
 /* LeetCode Hot 100 */
 
 func main() {
-
+	fmt.Println(longestConsecutive([]int{100, 4, 200, 1, 3, 2}))
 }
 
 // LeetCode.1 两数之和
@@ -45,4 +48,34 @@ func groupAnagrams(strs []string) [][]string {
 	}
 
 	return ans
+}
+
+// LeetCode.128 最长连续序列
+// 给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+// 输入：nums = [100,4,200,1,3,2]
+// 输出：4
+func longestConsecutive(nums []int) int {
+	m := make(map[int]bool)
+
+	// 先把数组里面所有的元素放入map
+	for _, num := range nums {
+		m[num] = true
+	}
+	sum := 0
+	for num := range m {
+		if !m[num-1] {
+			currentNum := num
+			currentStreak := 1
+			// 扩展连续序列
+			for m[currentNum+1] {
+				currentNum++
+				currentStreak++
+			}
+			// 更新最长连续序列的长度
+			if currentStreak > sum {
+				sum = currentStreak
+			}
+		}
+	}
+	return sum
 }
