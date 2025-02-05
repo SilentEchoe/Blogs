@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 )
 
 type Collector struct {
@@ -37,25 +37,12 @@ func main() {
 		logger:         logger,
 	}
 
-	// Run the collector in a goroutine
-	go func() {
-		if err := col.Run(ctx); err != nil {
-			logger.Error("Collector exited with error", zap.Error(err))
-		}
-	}()
-
-	// Simulate running for some time
-	time.Sleep(5 * time.Second)
-
-	// Stop the collector gracefully
-	col.Stop()
-
-	// Wait for shutdown to complete
-	time.Sleep(1 * time.Second)
-	logger.Info("Main function exiting")
+	// Run the collector
+	if err := col.Run(ctx); err != nil {
+		logger.Error("Collector exited with error", zap.Error(err))
+	}
 }
 
-// Run starts the collector and listens for shutdown signals.
 func (col *Collector) Run(ctx context.Context) error {
 	// Notify signalsChannel for SIGHUP, SIGINT, and SIGTERM
 	signal.Notify(col.signalsChannel, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
@@ -83,13 +70,6 @@ LOOP:
 	return col.shutdown(ctx)
 }
 
-// Stop gracefully shuts down the collector by sending a signal to shutdownChan.
-func (col *Collector) Stop() {
-	col.logger.Info("Stopping collector...")
-	close(col.shutdownChan) // Send shutdown signal
-}
-
-// shutdown performs cleanup operations before the collector exits.
 func (col *Collector) shutdown(ctx context.Context) error {
 	col.logger.Info("Shutting down collector")
 	// Add cleanup logic here, e.g., closing files, releasing resources, etc.
