@@ -15,7 +15,7 @@ func maxArea(height []int) int {
 	right := len(height) - 1
 	ans := 0
 	for left < right {
-		area := min(height[left], height[right]*(right-left))
+		area := min(height[left], height[right]) * (right - left)
 		fmt.Println(area)
 		ans = max(ans, area)
 		if height[left] <= height[right] {
