@@ -27,13 +27,13 @@ func maxArea(height []int) int {
 	return ans
 }
 
-// 方法2：自定义 min 函数
 func min(a, b int) int {
 	if a < b {
 		return a
 	}
 	return b
 }
+
 func max(a, b int) int {
 	if a > b {
 		return a
