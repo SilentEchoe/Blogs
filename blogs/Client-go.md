@@ -961,6 +961,18 @@ func main() {
 
 
 
+Client-Go 有四种客户端：RESTClient、ClientSet、DynamicClient和DiscoveryClient。这些客户端在与Kubernetes API Server交互时有不同的连接方式和用途。
+
+RESTClient 是最基础的客户端，直接处理HTTP请求，支持RESTful风格的API。灵活性较高，但是直接使用不太方便，ClientSet 和 DynamicClient都是基于它构建的。
+
+ClientSet 在 RESTClient 的基础上封装了资源和版本管理，每个资源对应一个客户端，适合处理Kubernetes内部的资源。ClientSet不能处理自定义资源。
+
+DynamicClient 能处理包括自定义资源在内的所有资源，使用非结构化的数据，所以在使用时需要类型转换。
+
+DiscoveryClient 用于发现API Server 支持的资源组，副本等信息，并缓存这些数据以减少频繁请求。
+
+
+
 
 
 ### 学习资料
