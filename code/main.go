@@ -1,9 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
-	maxArea([]int{1, 8, 6, 2, 5, 4, 8, 3, 7})
+	//maxArea([]int{1, 8, 6, 2, 5, 4, 8, 3, 7})
 }
 
 // LeetCode.11 盛最多水的容器
