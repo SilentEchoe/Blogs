@@ -73,3 +73,10 @@ func main() {
 	fmt.Printf("调用次数: %d, 用时: %v\n", memoCallCount, elapsed)
 
 }
+
+func sumIntegers(a, b int) int {
+	if a > b {
+		return 0
+	}
+	return a + sumIntegers(a+1, b)
+}
