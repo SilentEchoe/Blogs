@@ -74,9 +74,29 @@ func main() {
 
 }
 
+// 计算从a到b到各个整数之和
 func sumIntegers(a, b int) int {
 	if a > b {
 		return 0
 	}
 	return a + sumIntegers(a+1, b)
+}
+
+// 计算给定范围内的整数的立方只和
+func sumCubes(a, b int) int {
+	if a > b {
+		return 0
+	}
+	return cube(a) + sumCubes(a+1, b)
+}
+
+func piSum(a, b int) int {
+	if a > b {
+		return 0
+	}
+	return ((a+2)*a)/1.0 + piSum(a+4, b)
+}
+
+func cube(a int) int {
+	return a * a * a
 }
