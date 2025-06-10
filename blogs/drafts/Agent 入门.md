@@ -2,7 +2,7 @@
 title: Agent 入门
 date: 2024-11-10 19:51:00
 tags: [人工智能,Agent]
-category: Agent
+category: AI
 ---
 
 AI有三种核心能力: 存储，计算和自我学习。
