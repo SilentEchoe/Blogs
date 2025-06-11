@@ -26,3 +26,7 @@ StatefulSet 在设计之初抽象了两种情况：
 
 Persistent Volume Claim（PVC）和 Persistent Volume（PV）的 API 对象是为了降低了用户声明和使用持久化 Volume 的门槛。
 
+
+
+### Etcd
+
