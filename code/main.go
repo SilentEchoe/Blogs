@@ -7,6 +7,12 @@ import (
 func main() {
 	////maxArea([]int{1, 8, 6, 2, 5, 4, 8, 3, 7})
 
+	m := make(map[string]string)
+	m["alias"] = "a"
+
+	alias, ok := m["alias"]
+	fmt.Println(alias, ok)
+
 }
 
 // LeetCode.11 盛最多水的容器
