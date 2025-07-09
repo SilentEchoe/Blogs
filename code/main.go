@@ -6,6 +6,9 @@ import (
 
 func main() {
 	//maxArea([]int{1, 8, 6, 2, 5, 4, 8, 3, 7})
+	const a = 3.1415926
+	b := a * 2
+	fmt.Println(b)
 }
 
 // LeetCode.11 盛最多水的容器
