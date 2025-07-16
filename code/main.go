@@ -6,8 +6,9 @@ import (
 
 func main() {
 	//maxArea([]int{1, 8, 6, 2, 5, 4, 8, 3, 7})
-	const a = 3
-	fmt.Println(square(a))
+	fmt.Println("sqrt(9) =", Sqrt(9))
+	fmt.Println("sqrt(2) =", Sqrt(2))
+	fmt.Println("sqrt(0.01) =", Sqrt(0.01))
 }
 
 func square(x int) int {
