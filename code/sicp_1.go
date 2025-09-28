@@ -1,41 +1,17 @@
 package main
 
-import (
-	"context"
-	"fmt"
-	"sync"
-	"time"
-)
+import "fmt"
 
-func main() {
-	var wg sync.WaitGroup
-	var result string
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		work()
-	}()
-
-	// 主线程继续执行逻辑
-	fmt.Println("waiting for goroutine...")
-	wg.Wait()
-
-	fmt.Println("got result:", result)
+func multiplier(factor int) func(int) int {
+	return func(x int) int {
+		return x * factor // 捕获 factor
+	}
 }
 
-func work() {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
-	defer cancel()
-	ticker := time.NewTicker(5 * time.Second)
-	defer ticker.Stop()
+func main() {
+	double := multiplier(2)
+	triple := multiplier(3)
 
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-ticker.C:
-			fmt.Println("Job done")
-		}
-	}
+	fmt.Println(double(5)) // 10
+	fmt.Println(triple(5)) // 15
 }
