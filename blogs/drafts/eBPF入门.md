@@ -45,8 +45,6 @@ Linux 内核的主要目的是对硬件或虚拟硬件进行抽象，并提供�
 
 虽然社区提供了很多eBPF相关的工具库，比如 ebpf-go libbpfgo gobpf 等，不同的编程语言也有相应的实现库，但是Go开发库只适用于用户态程序中，它可以完成 eBPF程序编译，加载，事件挂载，以及 BPF 映射交互等用户态的能力。内核态的 eBPF 程序还是需要使用 C 语言开发。
 
-
-
 ```
 # For Ubuntu20.10+
 sudo apt-get install -y  make clang llvm libelf-dev libbpf-dev bpfcc-tools libbpfcc-dev linux-tools-$(uname -r) linux-headers-$(uname -r)
@@ -55,8 +53,6 @@ sudo apt-get install -y  make clang llvm libelf-dev libbpf-dev bpfcc-tools libbp
 sudo yum install libbpf-devel make clang llvm elfutils-libelf-devel bpftool bcc-tools bcc-devel
 ```
 
-
-
 ```c
 int hello_world(void *ctx)
 {
@@ -64,8 +60,6 @@ int hello_world(void *ctx)
     return 0;
 }
 ```
-
-
 
 ```python
 #!/usr/bin/env python3
@@ -86,8 +80,6 @@ b.trace_print()
 
 ![QQ_1734400238779](https://raw.githubusercontent.com/SilentEchoe/images/main/QQ_1734400238779.png)
 
-
-
 eBPF 是一个运行在内核中的虚拟机，但是系统虚拟化和 eBPF 虚拟机有着本质的不同。系统虚拟化基于 x86 或 arm64 等通用指令集，这些指令集足以完成完整计算机的所有功能。eBPF 只提供了有限的指令集，这些指令集可以完成一部分内核的功能，但是没办法完整使用计算的所有功能。eBPF 指令使用 C 调用约定，它支持的辅助函数可以在 C 语言中直接调用。
 
 
@@ -105,10 +97,6 @@ eBPF 在内核运行时主要由五个模块组成：
 4.即时编译器，它将eBPF字节码编译成本地机器指令，以便更高效地在内核中执行。
 
 5.BPF映射，用于提供大块的存储，这些存储可被用户空间程序用来进行访问，进而控制eBPF程序的运行状态。
-
-
-
-
 
 ```
 478: kprobe  name hello_world  tag c3d700bdee3931e4  gpl

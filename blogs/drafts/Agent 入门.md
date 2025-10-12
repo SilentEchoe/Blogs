@@ -1,9 +1,19 @@
 ---
-title: Agent 入门
+title: 如何构建一个Agent？
 date: 2024-11-10 19:51:00
 tags: [人工智能,Agent]
 category: AI
 ---
+
+什么是Agent?
+
+
+
+Agent的作用是什么？
+
+
+
+
 
 AI有三种核心能力: 存储，计算和自我学习。
 
