@@ -76,8 +76,6 @@ b.trace_print()
 
 调用BPF()加载BPF源码，也就是C语言编写的内容。然后将BPF程序挂载到内核探针(kprobe) do_sys_openat2()是系统调用 openat() 在内核中的实现。最后读取内核调试文件中 /sys/kernel/debug/tracing/trace_pipe 的内容，并打印到标准输出中。
 
-
-
 ![QQ_1734400238779](https://raw.githubusercontent.com/SilentEchoe/images/main/QQ_1734400238779.png)
 
 eBPF 是一个运行在内核中的虚拟机，但是系统虚拟化和 eBPF 虚拟机有着本质的不同。系统虚拟化基于 x86 或 arm64 等通用指令集，这些指令集足以完成完整计算机的所有功能。eBPF 只提供了有限的指令集，这些指令集可以完成一部分内核的功能，但是没办法完整使用计算的所有功能。eBPF 指令使用 C 调用约定，它支持的辅助函数可以在 C 语言中直接调用。
