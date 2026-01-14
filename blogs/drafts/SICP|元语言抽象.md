@@ -5,13 +5,13 @@ tags: [计算机基础,读书笔记]
 category: 计算机基础
 ---
 
-元语言抽象(Metalinguistic Abstraction)指的就是设计和实现新的领域专用语言(DSL),这使工程不仅可以使用现有的高级编程语言，还可以通过编写**解释器**来创造新语言，比如Go语言最初的解释器是C语言写的，在经历数个版本后才使用Go语言实现**自举**。
+> 无论哪一种确定的程序设计语言，都不足以满足我们的需要。我们必须经常转向新的语言，以便更有效地表述自己的想法。建立新语言是在工程设计中控制复杂性的一种威力强大的策略，我们常常能通过采用一种新语言而提升处理复杂问题的能力，因为新的语言可能使我们以不同的路径，使用不同的原语、不同的组合方法和抽象方法，去描述（因此也是去思考）面对的问题，这些都可以是为了处理手头的问题而专门打造的。
+
+元语言抽象(Metalinguistic Abstraction)到创造新语言，这在工程设计中扮演着重要角色。DSL(领域专用语言) 是这种能力在工程中的一种常见产物，这使工程师不仅可以使用现有的高级编程语言，还可以通过编写**解释器**来创造新语言，比如Go语言最初的解释器是C语言写的，在经历数个版本后才使用Go语言实现**自举**。
 
 解释器本质上就是一个接受“程序”(表达式)作为输入并执行它的过程。编程语言本身也可以被程序操控和实现，它定义了某种语言中表达式的含义。
 
-SICP中使用 Scheme 实现了 Scheme 的解释器，这是为了展示**语言与解释器的关系**。一种语言的语法和语义完全由其解释器决定，如果用另外一门语言编写一个解释器来执行某种语言的程序，那么这个解释器本身就是对改语言的一种定义。
-
-
+SICP中使用 Scheme 实现了 Scheme 的解释器，这是为了展示**语言与解释器的关系**。解释器（或编译器）是对语言语义的一种可执行定义；不同实现必须遵循语言规范，从而保持语义一致。如果用另外一门语言编写一个解释器来执行某种语言的程序，那么这个解释器本身就是对改语言的一种定义。
 
 
 
@@ -19,7 +19,7 @@ SICP中使用 Scheme 实现了 Scheme 的解释器，这是为了展示**语言�
 
 解释器的核心在于两个互相递归调用的过程: eval(求值)和apply(应用)，eval在某个环境中计算一个表达式的值，apply则将一个过程作用于一组参数值。这两个过程构成了解释器的基本工作循环：eval 将表达式的求值转换为对过程的调用，apply 在调用过程中产生新的表达式需要求值，通过互相递归调用直到得出最终结果(如原始数据类型的值或基本过程的执行结果)。
 
-在任何解释器中处理不同的表达式逻辑都不相同，比如表达式的值就是它自身，1就是1；变量表达式的值需要在环境中查找。
+在任何解释器中处理不同的表达式逻辑都不相同，比如自求值表达式（如数字、布尔值）其值就是它自身，1就是1；
 
 > 环境是一系列**帧**（frame）的集合，每个帧包含一些符号到值的绑定，并可能有指向外围环境的链接。如果在当前环境中找不到变量，会沿着链寻找全局环境，找不到则报未绑定错误。
 
@@ -32,28 +32,33 @@ Lambda(匿名函数)， 解释器不会立即执行匿名函数中的主体内�
 ```go
 import "fmt"
 
-// 表达式类型定义：数字、符号、以及由多个子表达式构成的列表
 type Number float64
 type Symbol string
 type Expr interface{}      
 type List []Expr
 
 
-type Value interface{}      
+type Value interface{}     
+
+type Proc struct {
+    params []string
+    body   Expr
+    env    *Env 
+}
 
 // 环境：保存变量绑定的结构，支持嵌套（链表结构）
 type Env struct {
-    vars  map[string]Value  // 当前环境的名字->值映射
-    outer *Env              // 指向外层环境（用于实现嵌套的词法作用域）
+    vars  map[string]Value  
+    outer *Env             //外层环境
 }
 
 // 在环境中查找变量的值
 func (env *Env) Lookup(name string) Value {
     if val, ok := env.vars[name]; ok {
-        return val  // 当前环境找到变量
+        return val  
     }
     if env.outer != nil {
-        return env.outer.Lookup(name)  // 在外层环境递归查找
+        return env.outer.Lookup(name)  
     }
     panic("未绑定的变量: " + name)
 }
@@ -67,10 +72,8 @@ func NewEnv(outer *Env) *Env {
 func Eval(expr Expr, env *Env) Value {
     switch e := expr.(type) {
     case Number:
-        // 数字字面量，直接返回其值
         return float64(e)
     case Symbol:
-        // 符号（变量），从环境中查询其值
         return env.Lookup(string(e))
     case List:
         if len(e) == 0 {
@@ -95,7 +98,7 @@ func Eval(expr Expr, env *Env) Value {
 }
 
 // Apply: 将过程proc应用于参数列表args
-func Apply(proc Value, args []Value, env *Env) Value {
+func Apply(proc Value, args []Value) Value {
     switch fn := proc.(type) {
     case func([]Value) Value:
         // 原生过程（基本过程）：直接调用Go函数执行
@@ -131,7 +134,6 @@ func Apply(proc Value, args []Value, env *Env) Value {
 ```go
 var globalEnv = NewEnv(nil)
 
-// 将加法过程 "+" 加入环境：实现为求和的Go函数
 globalEnv.vars["+"] = func(args []Value) Value {
     sum := 0.0
     for _, arg := range args {
@@ -140,7 +142,6 @@ globalEnv.vars["+"] = func(args []Value) Value {
     return sum
 }
 
-// 将 "=" 过程加入环境：判断两个参数是否相等
 globalEnv.vars["="] = func(args []Value) Value {
     if len(args) != 2 {
         panic("= 需要2个参数")
@@ -148,12 +149,12 @@ globalEnv.vars["="] = func(args []Value) Value {
     return args[0] == args[1]
 }
 
-// 构造表达式 (+ 1 2) 对应的 Go 数据结构
 expr := List{Symbol("+"), Number(1), Number(2)}
 
 // 在 globalEnv 环境中求值该表达式
 result := Eval(expr, globalEnv)
-fmt.Println(result)  // 输出结果: 3
+fmt.Println(result)
+$ 输出结果: 3
 ```
 
 List 这个新的结构体是描述了一个列表表达式，表示想要计算的信息，这个表达式作为Go数据直接传递给 eval 函数。eval 会识别出这是一个列表表达式，它会按照预设的逻辑先识别出运算符是 Symbol("+") 然后在 globalEnv 中找到符号 + 对应的过程，接着求值两个参数 Number(1) 和 Number(2) 得到 1.0 和 2.0，最后调用加法函数将它们相加。
@@ -176,7 +177,7 @@ func (env *Env) Set(name string, val Value) {
     if _, ok := env.vars[name]; ok {
         env.vars[name] = val
     } else if env.outer != nil {
-        env.outer.Set(name, val)  // 尝试在外层环境设置
+        env.outer.Set(name, val) 
     } else {
         panic("赋值出错，变量未定义: " + name)
     }
@@ -191,13 +192,14 @@ localEnv := NewEnv(globalEnv)
 // 在嵌套环境中新建变量 y
 localEnv.vars["y"] = 5.0
 
-// 可以在 localEnv 中查找 y，也可以查找到外层的 x
-fmt.Println(localEnv.Lookup("y"))  // 输出: 5
-fmt.Println(localEnv.Lookup("x"))  // 输出: 10  (在外层globalEnv找到)
 
-// 修改嵌套环境中外层的变量 x
+fmt.Println(localEnv.Lookup("y"))
+$ 输出: 5
+fmt.Println(localEnv.Lookup("x")) 
+$ 输出: 10
 localEnv.Set("x", 20.0)
-fmt.Println(globalEnv.Lookup("x")) // 输出: 20  (globalEnv的x已被修改)
+fmt.Println(globalEnv.Lookup("x"))
+$ 输出: 20 
 ```
 
 上述代码展示了环境的层级关系和作用域规则：创建了一个 localEnv 指向 globalEnv，此时的localEnv相当于一个函数调用时产生的局部环境，其中定义的新变量 y 只存于 localEnv 中。当在 localEnv 中查找 x 时，由于当前层没有 x，会自动转向它的外层 globalEnv 找到已定义的 x。这说明 localEnv 可以使用它外部环境中的定义。localEnv.Set("x", 20.0) 来给外层的 x 变量赋新值，这也表明赋值操作会沿着环境链找变量。一旦找到，就在那个环境帧中更新它。结果，全局的 x 从10变为20。
@@ -215,24 +217,24 @@ fmt.Println(globalEnv.Lookup("x")) // 输出: 20  (globalEnv的x已被修改)
 ```go
 // 修改 Eval 函数以打印调试信息
 func Eval(expr Expr, env *Env) Value {
-    fmt.Printf("%s求值：%v\n", currentIndent(), expr)  // 打印当前表达式
-    evalDepth++                                       // 递归深度计数，用于缩进
-    defer func() { evalDepth-- }()                    // 确保函数返回时减小深度
+    fmt.Printf("%s求值：%v\n", currentIndent(), expr)  
+    evalDepth++                                      
+    defer func() { evalDepth-- }()                   
 
     switch e := expr.(type) {
-    // ...（Number、Symbol处理同前略）...
+    ...
     case List:
-        // ...（同前略）...
+        ...
         proc := Eval(e[0], env)
         var argVals []Value
         for _, arg := range e[1:] {
             argVals = append(argVals, Eval(arg, env))
         }
         result := Apply(proc, argVals, env)
-        fmt.Printf("%s完成：%v => %v\n", currentIndent(), expr, result)  // 打印完成信息
+        fmt.Printf("%s完成：%v => %v\n", currentIndent(), expr, result)  
         return result
     }
-    // ...
+     ...
 }
 
 // 工具函数：根据当前递归深度返回相应个数的缩进
@@ -259,25 +261,25 @@ SICP中提到：可以把程序看作一台机器的描述，而解释器就是�
 
 ```go
 func Eval(expr Expr, env *Env) Value {
-    // ... (前面 Number、Symbol、特殊形式if和begin的处理) ...
+    ...
     case List:
         firstSym, _ := e[0].(Symbol)
         switch string(firstSym) {
         case "set!":
-            // (set! var expr) 将 var 赋值为 expr 的值
+        
+            // 模拟SICP 中的赋值
             varName := string(e[1].(Symbol))
             newVal := Eval(e[2], env)      // 计算赋值的值
             env.Set(varName, newVal)       // 更新环境中的变量绑定
             return newVal                 // 返回赋值后的值（或可返回特殊标记）
-        // ... (if, begin 等前述分支) ...
+       
         default:
-            // 常规函数调用 (与之前相同) ...
+            ...
         }
     }
 }
 
 
-// 假设环境中已有变量 x = 1
 globalEnv.vars["x"] = 1.0
 
 // 执行赋值表达式 (set! x (+ x 5))
@@ -286,9 +288,7 @@ expr := List{Symbol("set!"), Symbol("x"),
 result := Eval(expr, globalEnv)
 fmt.Println("赋值结果:", result)
 fmt.Println("x的新值:", globalEnv.Lookup("x"))
-// 输出：
-// 赋值结果: 6
-// x的新值: 6
+$ 输出：赋值结果: 6 ; x的新值: 6
 ```
 
 赋值引入了**状态改变**：执行赋值前后，同样的变量 x 有不同的值。如果重复执行 (set! x (+ x 5))，结果会依次改变 x 的值为 11、16 等。副作用也意味着**执行顺序**变得重要：如果交换两条赋值语句，程序结果可能不同。在构造解释器时要正确维护环境状态，让后续求值看到的是最新的变量绑定。
@@ -302,10 +302,6 @@ fmt.Println("x的新值:", globalEnv.Lookup("x"))
 对于解释器来说，支持块结构需要特别处理内部定义。如果遇到内部定义时，需要把这些定义的名字加入当前的环境帧，这样在后续同个函数体中，其他的表达式才能访问这些局部定义。同时还要保证定义只影响局部环境而不污染全局。
 
 SICP中为了实现上述，提出了两种实现方式：1.求值时顺序处理定义，当进入一个过程体环境时，先顺序求值所有内部定义的右侧表达式，将名字绑定，再继续执行函数体剩余部分。这相当于在进入块时**执行一系列赋值**。2.语法分析和执行分离，在进入过程体时，预先扫描整个块找出所有内部定义的名字，在环境中占位，再执行体。类似编译器在编译阶段分配局部变量，然后运行时直接使用的思路。这种方式避免了每次执行都重复分析内部定义，提高效率。
-
-有兴趣的读者可以读一下《编译原理》等书，针对解释器会更加详细和全面。
-
-
 
 
 
@@ -328,23 +324,74 @@ func StrictIf(cond bool, a int, b int) int {
 // 惰性求值的条件函数：使用函数闭包延迟参数计算
 func LazyIf(cond bool, a func() int, b func() int) int {
     if cond {
-        return a()  // 需要时才调用计算
+        return a() 
     } else {
         return b()
     }
 }
 
 // 测试 StrictIf 和 LazyIf
-val1 := StrictIf(true, 1, 1/0)       // 后半部分1/0会在调用前计算，导致运行时错误
+val1 := StrictIf(true, 1, 1/0) 
 val2 := LazyIf(true,
                func() int { return 1 },
                func() int { return 1/0 })
-fmt.Println("LazyIf结果:", val2)    // 输出 LazyIf结果: 1
+fmt.Println("LazyIf结果:", val2)
+$  输出 LazyIf结果: 1
 ```
 
 这里只是用一个例子来说明惰性求值的效果，StrictIf(true, 1, 1/0) 会造成 Go panic，因为 1/0在传入函数前就被求值（除零异常）。而 LazyIf(true, func(){return 1}, func(){return 1/0}) 则能够正常返回1，因为cond为真，所以只调用了第一个函数 a() 返回1，第二个函数 b()根本没有被执行。使用这种手动延迟计算的方式模拟了惰性求值。
 
+原书中通过更改元循环求值器，实现了正常序(惰性)求值，它的核心就是将过程应用时对参数求值的动作换成了创建Thunk。包括缓存的具体实现，但在这里不再赘述。
 
 
 
+### 非确定性求值
 
+非确定性求值允许一个表达式有不止一个可能的值。程序在某处可以非确定性地，在多个选项中选择一个继续执行。计算的过程也不是线性的，而是带有探索和回溯（backtracking）：求值器会在需要时搜索所有可能的选择，直到找到满足条件的结果或者发现无解。
+
+这种方式可以很好地解决搜索类的问题，而且因为解释器实现了它，意味着在底层的解释器会尝试各种组合。
+
+在具体的实现上，amb (*ambiguous*) 可以被视为产生“选择点”的操作：它从一组给定的候选值里选一个继续执行。如果后续计算发现走不通（不满足条件），解释器会**回溯**到这个选择点，尝试下一个备选值，如此直到找到解或耗尽选项。为了实现回溯，求值器需要保存执行的分叉点和状态，并在失败时恢复。这通常可以用高级控制结构如**continuation（续延）**或者回溯算法来完成。
+
+SICP中直接修改了解释器，让每个计算分支“携带”“成功继续”和“失败继续”两个过程，当一个分支走不通时调用失败继续跳回先前的选择点。
+
+```go
+func choose(options []int, f func(int) bool) bool {
+    for _, opt := range options {
+        if f(opt) {
+            return true 
+        }
+    }
+    return false 
+}
+
+func main() {
+    var solX, solY int
+    found := choose([]int{1, 2, 3, 7, 8}, func(x int) bool {
+        return choose([]int{2, 5, 8}, func(y int) bool {
+            if x+y == 10 {
+                solX, solY = x, y
+                return true 
+            }
+            return false  
+        })
+    })
+    if found {
+        fmt.Printf("找到一组解: x=%d, y=%d\n", solX, solY)
+    } else {
+        fmt.Println("没有找到解")
+    }
+}
+```
+
+这点很像图算法，虽然Go中没有continuation(延续)，但是可以通过递归来穷举。在上述例子中函数choose会尝试将列表中的每个选项opt送入f，如果f(opt)返回真就立即停止并返回真，否则继续。
+
+用了两个嵌套的choose来模拟两个amb选择点：外层为x的选择，内层为y的选择。f内部检查条件 if x+y==10，一旦条件满足，就保存解并返回真来停止选择。这个结构正对应上面的伪代码：choose相当于amb操作符，而条件判断相当于require（或称 assert）失败就触发回溯。
+
+需要强调的是，上面的 choose 更像“存在性搜索（find first solution）”：它返回的是“是否存在一组满足条件的解”，一旦找到一组解就立刻停止，并不会继续枚举更多解。
+
+而 SICP 的 amb 是把“选择点”和“回溯机制”内建到求值器里：每个分支不仅携带“成功后怎么继续”的逻辑（success continuation），还携带“失败后回到哪里、继续尝试下一个分支”的逻辑（fail continuation）。因此 amb 天然支持在找到一个解之后，继续调用 fail continuation 回溯，从而枚举第二个、第三个解。这也是 amb 更像一种语言原语（由解释器统一管理搜索树）而不仅仅是一个普通的递归穷举函数。
+
+当然这个例子并不十分严谨，如果要集成在解释器中需要做更加通用细致的处理。原书中使用更强大的技术，如continuation-passing style 让求值器自动回溯，但是这里只是作为一个了解思维的入口。
+
+非确定性求值器赋予了语言**自动搜索**能力，使表达程序的方式更接近逻辑推理而非过程指令。通过非确定性求值，只需要列出可能值集合和约束条件，求值器就会输出令条件为真的值组合。
