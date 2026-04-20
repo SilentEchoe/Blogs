@@ -5,4 +5,3 @@ tags: [人工智能,Agent]
 category: AI
 ---
 
-过去的一年是AI工程领域名词爆发的一年，从Vibe Coding 到Agent SKILL 
